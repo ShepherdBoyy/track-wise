@@ -52,8 +52,8 @@ class User extends Authenticatable
         return $this->hasMany(Invoice::class, 'created_by');
     }
 
-    public function updatedDetails()
+    public function updatedInvoices()
     {
-        return $this->hasMany(InvoiceDetail::class, 'updated_by');
+        return $this->hasMany(Invoice::class, 'updated_by');
     }
 }

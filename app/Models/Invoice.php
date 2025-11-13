@@ -7,28 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     protected $fillable = [
-        'customer_name_id',
+        'hospital_id',
         'invoice_number',
         'amount',
         'status',
         'transaction_date',
         'date_closed',
         'processing_days',
-        'created_by'
+        'created_by',
+        'updated_by',
     ];
 
     public function customer()
     {
-        return $this->belongsTo(Customer::class, 'customer_name_id');
+        return $this->belongsTo(Hospital::class, 'hospital_id');
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'invoice_id');
+        return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function details()
+    public function updater()
     {
-        return $this->hasMany(InvoiceDetail::class);
+        return $this->belongsTo(User::class, 'updated_by');
     }
 }
