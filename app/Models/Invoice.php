@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Invoice extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'hospital_id',
         'invoice_number',
@@ -13,14 +16,13 @@ class Invoice extends Model
         'status',
         'transaction_date',
         'date_closed',
-        'processing_days',
         'created_by',
         'updated_by',
     ];
 
-    public function customer()
+    public function hospital()
     {
-        return $this->belongsTo(Hospital::class, 'hospital_id');
+        return $this->belongsTo(Hospital::class);
     }
 
     public function creator()

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('status');
             $table->date('transaction_date');
             $table->dateTime('date_closed')->nullable();
-            $table->integer('processing_days');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->foreignId('updated_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
