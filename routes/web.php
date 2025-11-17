@@ -9,6 +9,8 @@ Route::redirect('/', '/hospitals');
 
 Route::prefix("hospitals")->group(function () {
     Route::get("/", [HospitalController::class, "index"]);
+    Route::get("/create", [HospitalController::class, "create"]);
+    Route::post("/create", [HospitalController::class, "store"]);
 });
 
 Route::prefix("invoices")->group(function () {
