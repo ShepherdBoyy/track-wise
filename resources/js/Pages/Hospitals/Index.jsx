@@ -1,11 +1,24 @@
 import { router } from "@inertiajs/react";
 import Master from "../components/Master";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import Create from "./Create";
 
 export default function Index({ hospitals }) {
+    const [open, setOpen] = useState(false);
+
     return (
         <Master>
             <div className="p-6">
+                <div className="flex justify-end mb-4">
+                    <button
+                        className="btn btn-neutral btn-outline"
+                        onClick={() => setOpen(true)}
+                    >
+                        Add Hospital
+                    </button>
+                </div>
+
                 <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 ">
                     <table className="table">
                         <thead>
@@ -79,6 +92,8 @@ export default function Index({ hospitals }) {
                         );
                     })}
                 </div>
+
+                {open && <Create setOpen={setOpen} />}
             </div>
         </Master>
     );
