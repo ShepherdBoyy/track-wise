@@ -4,23 +4,30 @@ import { useState } from "react";
 export default function Create({ setOpen }) {
     const [error, setError] = useState("");
 
-    console.log(error)
+    console.log(error);
 
     return (
         <dialog open className="modal">
             <div className="modal-box">
-                <h3 className="font-bold text-lg text-center">Add Hospital</h3>
+                <h3 className="font-bold text-lg">Add Hospital</h3>
+                <p className="text-sm text-gray-500">
+                    Input a new hospital to register it to our server
+                </p>
 
                 <Form
                     action="/hospitals/create"
                     method="post"
                     onError={(error) => setError(error.hospital_name)}
                 >
-                    <div className="flex flex-col gap-2 mt-3">
+                    <div className="flex flex-col gap-1 mt-8">
                         <div className="flex justify-between">
-                            <label htmlFor="hospital_name">Hospital Name:</label>
+                            <label htmlFor="hospital_name" className="text-sm">
+                                Hospital Name
+                            </label>
                             {error && (
-                                <span className="text-destructive text-sm">{error}</span>
+                                <span className="text-red-500 text-sm">
+                                    {error}
+                                </span>
                             )}
                         </div>
                         <input
@@ -34,9 +41,9 @@ export default function Create({ setOpen }) {
                     <div className="flex justify-end mt-6">
                         <button
                             type="submit"
-                            className="btn bg-gray-800 text-white"
+                            className="btn bg-gray-800 text-white rounded-xl w-30"
                         >
-                            Submit
+                            Confirm
                         </button>
                     </div>
                 </Form>
