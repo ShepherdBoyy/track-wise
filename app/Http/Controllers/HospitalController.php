@@ -15,9 +15,9 @@ class HospitalController extends Controller
     {
         $hospitals = Hospital::withCount("invoices")
             ->orderBy("hospital_name")
-            ->get();
+            ->paginate(10);
 
-        return Inertia::render("Hospitals/Hospitals", [
+        return Inertia::render("Hospitals/Index", [
             "hospitals" => $hospitals
         ]);
     }
