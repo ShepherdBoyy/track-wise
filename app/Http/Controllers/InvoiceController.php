@@ -104,7 +104,7 @@ class InvoiceController extends Controller
             $days = $invoice->processing_days;
 
             return match($range) {
-                "0-30 days" => $days >= 0 && $days <= 30,
+                "30 days" => $days >= 0 && $days <= 30,
                 "31-60 days" => $days >= 31 && $days <= 60,
                 "61-90 days" => $days >= 61 && $days <= 90,
                 "91-over" => $days >= 91,
