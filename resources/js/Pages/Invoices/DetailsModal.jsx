@@ -1,7 +1,6 @@
 import {
     Building2,
     FileText,
-    DollarSign,
 } from "lucide-react";
 
 export default function DetailsModal({
@@ -30,7 +29,7 @@ export default function DetailsModal({
                                 Invoice No.
                             </p>
                             <p className="font-bold text-lg">
-                                #{selectedInvoice.invoice_number}
+                                {selectedInvoice.invoice_number}
                             </p>
                         </div>
                     </div>
@@ -40,7 +39,7 @@ export default function DetailsModal({
                     <div className="grid md:grid-cols-3 gap-6">
                         <div>
                             <p className="text-xs uppercase opacity-60 mb-1">
-                                Created By
+                                Created By / At
                             </p>
                             <p className="font-semibold">
                                 {selectedInvoice.creator.name}
@@ -122,7 +121,6 @@ export default function DetailsModal({
                                 Amount
                             </p>
                             <div className="flex gap-2 items-center text-base font-medium">
-                                <DollarSign className="w-4 h-4 opacity-70" />
                                 ₱
                                 {parseFloat(
                                     selectedInvoice.amount
