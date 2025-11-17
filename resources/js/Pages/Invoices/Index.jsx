@@ -29,7 +29,7 @@ export default function Index({
     const showEmptyState = !hospital && !searchQuery;
 
     const processingDays = [
-        { label: "30 days" },
+        { label: "0-30 days" },
         { label: "31-60 days" },
         { label: "61-90 days" },
         { label: "91-over" },

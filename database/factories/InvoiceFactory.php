@@ -24,7 +24,7 @@ class InvoiceFactory extends Factory
             "description" => $this->faker->paragraph(3),
             "status" => $status,
             "transaction_date" => $transactionDate,
-            "date_closed" => $status === "paid" ? $this->faker->dateTimeBetween($transactionDate, "now") : null,
+            "date_closed" => $status === "closed" ? $this->faker->dateTimeBetween($transactionDate, "now") : null,
             "created_by" => User::factory(),
             "updated_by" => User::factory()
         ];
