@@ -13,7 +13,7 @@ class InvoiceFactory extends Factory
 {    
     public function definition(): array
     {
-        $statuses = ["pending", "paid", "cancelled", "overdue"];
+        $statuses = ["open", "overdue", "closed"];
         $status = $this->faker->randomElement($statuses);
         $transactionDate = $this->faker->dateTimeBetween("-1 year", "now");
 

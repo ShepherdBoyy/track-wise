@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             ->create();
         
         Hospital::factory()
-            ->count(5)
+            ->count(50)
             ->has(Invoice::factory()->count(15))
             ->create();
     }
