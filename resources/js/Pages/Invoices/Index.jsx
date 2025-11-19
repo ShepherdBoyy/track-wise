@@ -47,7 +47,7 @@ export default function Index({
                         </p>
                     </div>
                 ) : (
-                    <div className="p-6 bg-white rounded-xl">
+                    <div className="p-6 bg-white rounded-xl shadow-lg">
                         <div className="flex items-center justify-between mb-4 gap-2 ">
                             <div className="flex items-center gap-x-3">
                                 <h1 className="flex-1 text-3xl">
@@ -150,16 +150,16 @@ export default function Index({
                                             </td>
                                             <td className="text-left">
                                                 <span
-                                                    className={`badge badge-sm  text-sm font-medium rounded-full ${
+                                                    className={`badge badge-md text-sm rounded-full ${
                                                         invoice.status.toLowerCase() ===
                                                         "closed"
-                                                            ? "bg-emerald-100 text-emerald-700"
+                                                            ? "bg-emerald-100 text-emerald-700 border-green-600"
                                                             : invoice.status.toLowerCase() ===
                                                               "open"
-                                                            ? "bg-yellow-100 text-yellow-700"
+                                                            ? "bg-yellow-100 text-yellow-700 border-yellow-600"
                                                             : invoice.status.toLowerCase() ===
                                                               "overdue"
-                                                            ? "bg-red-100 text-red-700"
+                                                            ? "bg-red-100 text-red-700 border-red-600"
                                                             : "bg-gray-100 text-gray-700"
                                                     }`}
                                                 >

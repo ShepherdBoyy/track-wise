@@ -15,12 +15,12 @@ export default function Index({ hospitals }) {
 
     return (
         <Master>
-            <div className="px-10 bg-base-200 min-h-screen">
+            <div className="p-8 bg-base-200 min-h-screen">
                 <div className="p-6 bg-white rounded-xl">
                     <div className="flex items-center justify-between mb-4">
-                        <span className="text-xl">All Hospitals</span>
+                        <span className="text-2xl">All Hospitals</span>
                         <button
-                            className="btn btn-neutral rounded-xl text-sm"
+                            className="btn bg-gray-800 text-white rounded-xl"
                             onClick={() => setOpenCreateModal(true)}
                         >
                             <Plus size={18} />
@@ -56,7 +56,7 @@ export default function Index({ hospitals }) {
                                                         processing_days:
                                                             "30 days",
                                                         invoices_count:
-                                                            hospital.invoices_count
+                                                            hospital.invoices_count,
                                                     })
                                                 }
                                                 className="cursor-pointer"
