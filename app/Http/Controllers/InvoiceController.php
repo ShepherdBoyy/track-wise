@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Hospital;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,10 +14,8 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
-        $hospitalId = $request->query("hospital_id");
         $searchQuery = $request->query("search");
-        $processingFilter = $request->query("processing_days") ?? "0-30 days";
-        $invoicesCount = $request->query("invoices_count");
+        $processingFilter = $request->processing_days;
 
         $invoices = Invoice::query()
             ->with(["hospital", "creator", "updater"])
@@ -28,27 +25,27 @@ class InvoiceController extends Controller
                     transaction_date
                 ) AS processing_days
             "))
-            ->when($hospitalId, function ($query) use ($hospitalId) {
-                $query->where("hospital_id", $hospitalId);
-            })
             ->when($searchQuery, function ($query) use ($searchQuery) {
-                $hospitalIds = Hospital::where("hospital_name", "like", "%{$searchQuery}")
-                    ->pluck("id");
-                $query->whereIn("hospital_id", $hospitalIds);
+                $query->where("invoice_number", "like", "%{$searchQuery}%");
             })
-            ->orderBy("transaction_date", "desc")
-            ->get();
-        
-        $invoices = $this->filterByProcessingDays($invoices, $processingFilter);
-        
+            ->when(!$searchQuery && $processingFilter, function ($query) use ($processingFilter) {
+                match ($processingFilter) {
+                    "30-days" => $query->havingBetween("processing_days", [0, 30]),
+                    "31-60-days" => $query->havingBetween("processing_days", [31, 60]),
+                    "61-90-days" => $query->havingBetween("processing_days", [61, 90]),
+                    "91-over" => $query->having("processing_days", ">=", 91),
+                    default => null,
+                };
+            })
+            ->orderBy("created_at", "desc")
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render("Invoices/Index", [
             "invoices" => $invoices,
-            "hospital" => $hospitalId ? Hospital::find($hospitalId) : null,
             "searchQuery" => $searchQuery,
-            "processingFilter" => $processingFilter ?? "0-30 days",
-            "invoicesCount" => $invoicesCount
+            "processingFilter" => $processingFilter ?? "30-days",
         ]);
-        
     }
 
     public function invoicePage()
@@ -102,20 +99,5 @@ class InvoiceController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    private function filterByProcessingDays($invoices, $range)
-    {
-        return $invoices->filter(function ($invoice) use ($range) {
-            $days = $invoice->processing_days;
-
-            return match($range) {
-                "30 days" => $days >= 0 && $days <= 30,
-                "31-60 days" => $days >= 31 && $days <= 60,
-                "61-90 days" => $days >= 61 && $days <= 90,
-                "91-over" => $days >= 91,
-                default => true
-            };
-        })->values();
     }
 }
