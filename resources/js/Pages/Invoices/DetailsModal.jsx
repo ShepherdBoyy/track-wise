@@ -8,7 +8,7 @@ export default function DetailsModal({
 }) {
     return (
         <dialog open className="modal">
-            <div className="modal-box max-w-4xl p-0 rounded-2xl overflow-hidden shadow-xl">
+            <div className="modal-box max-w-5xl p-0 rounded-2xl overflow-hidden shadow-xl ">
                 <div className="bg-linear-to-br from-primary/10 to-base-200 p-8 border-b border-base-300">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                         <div>
@@ -66,13 +66,13 @@ export default function DetailsModal({
                         <div>
                             <p className="text-sm  opacity-60 mb-1">Status</p>
                             <span
-                                className={`badge badge-lg   ${
+                                className={`badge badge-md text-sm rounded-full   ${
                                     selectedInvoice.status === "closed"
-                                        ? "bg-green-100 text-green-700"
+                                        ? "bg-emerald-100 text-emerald-700 border-green-600"
                                         : selectedInvoice.status === "open"
-                                        ? "bg-yellow-100 text-yellow-700"
+                                        ? "bg-yellow-100 text-yellow-700 border-yellow-600"
                                         : selectedInvoice.status === "overdue"
-                                        ? "bg-red-100 text-red-700"
+                                        ? "bg-red-100 text-red-700 border-red-600"
                                         : "badge-neutral"
                                 }`}
                             >
