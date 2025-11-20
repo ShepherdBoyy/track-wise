@@ -57,7 +57,7 @@ export default function Index({ hospitals }) {
                                                 >
                                                     <Eye
                                                         onClick={() =>
-                                                            router.get(`/hospitals/invoices/${hospital.id}/30-days/${hospital.invoices_count}`)
+                                                            router.get(`/hospitals/invoices/${hospital.id}/all/${hospital.invoices_count}`)
                                                         }
                                                         className="cursor-pointer"
                                                     />

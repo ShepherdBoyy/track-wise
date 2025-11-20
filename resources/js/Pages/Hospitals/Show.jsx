@@ -4,6 +4,7 @@ import SearchIt from "../components/SearchIt";
 import { router } from "@inertiajs/react";
 import DetailsModal from "../Invoices/DetailsModal";
 import useDebounce from "../hooks/useDebounce";
+import Pagination from "../components/Pagination";
 
 export default function Show({
     invoices,
@@ -98,7 +99,7 @@ export default function Show({
                             </thead>
 
                             <tbody>
-                                {invoices.map((invoice, index) => (
+                                {invoices.data.map((invoice, index) => (
                                     <tr
                                         key={invoice.id}
                                         className="hover:bg-base-300 cursor-pointer"
@@ -157,6 +158,8 @@ export default function Show({
                             />
                         )}
                     </div>
+
+                    <Pagination data={invoices} />
                 </div>
             </div>
         </Master>

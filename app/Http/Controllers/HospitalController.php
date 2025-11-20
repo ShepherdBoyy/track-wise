@@ -56,12 +56,18 @@ class HospitalController extends Controller
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where("invoice_number", "like", "%{$searchQuery}%");
             })
+            ->when(!$searchQuery && $processingFilter, function ($query) use ($processingFilter) {
+                match ($processingFilter) {
+                    "30-days" => $query->havingBetween("processing_days", [0, 30]),
+                    "31-60-days" => $query->havingBetween("processing_days", [31, 60]),
+                    "61-90-days" => $query->havingBetween("processing_days", [61, 90]),
+                    "91-over" => $query->having("processing_days", ">=", 91),
+                    default => null,
+                };
+            })
             ->orderBy("transaction_date", "desc")
-            ->get();
-        
-        if (!$searchQuery) {
-            $invoices = $this->filterByProcessingDays($invoices, $processingFilter);
-        }
+            ->paginate(10)
+            ->withQueryString();
         
         return Inertia::render("Hospitals/Show", [
             "invoices" => $invoices,
