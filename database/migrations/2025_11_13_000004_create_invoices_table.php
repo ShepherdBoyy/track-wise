@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('hospital_id')->constrained('hospitals')->onDelete('cascade');
             $table->string('invoice_number');
             $table->float('amount');
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->string('status');
             $table->date('transaction_date');
             $table->dateTime('date_closed')->nullable();
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->foreignId('updated_by')->constrained('users')->onDelete('cascade');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

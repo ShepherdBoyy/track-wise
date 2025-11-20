@@ -21,7 +21,7 @@ class InvoiceFactory extends Factory
             "hospital_id" => Hospital::factory(),
             "invoice_number" => "INV-" . $this->faker->unique()->numerify("######"),
             "amount" => $this->faker->randomFloat(2, 100, 50000),
-            "description" => $this->faker->paragraph(3),
+            "description" => $this->faker->boolean(80) ? $this->faker->paragraph(3) : null,
             "status" => $status,
             "transaction_date" => $transactionDate,
             "date_closed" => $status === "closed" ? $this->faker->dateTimeBetween($transactionDate, "now") : null,
