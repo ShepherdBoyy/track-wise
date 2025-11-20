@@ -103,19 +103,4 @@ class HospitalController extends Controller
 
         return back()->with("success", true);
     }
-
-    private function filterByProcessingDays($invoices, $range)
-    {
-        return $invoices->filter(function ($invoice) use ($range) {
-            $days = $invoice->processing_days;
-
-            return match($range) {
-                "30-days" => $days >= 0 && $days <= 30,
-                "31-60-days" => $days >= 31 && $days <= 60,
-                "61-90-days" => $days >= 61 && $days <= 90,
-                "91-over" => $days >= 91,
-                default => true
-            };
-        })->values();
-    }
 }

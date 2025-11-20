@@ -1,25 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Master from "../components/Master";
 import DetailsModal from "./DetailsModal";
 import SearchIt from "../components/SearchIt";
-import { router } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import Pagination from "../components/Pagination"
+import useDebounce from "../hooks/useDebounce";
 
 export default function Index({ invoices, searchQuery, processingFilter }) {
-    const [open, setOpen] = useState(false);
-    const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [search, setSearch] = useState(searchQuery || "");
     const [active, setActive] = useState(processingFilter);
 
-    // const handleSearch = (e) => {
-    //     e.preventDefault();
+    const debouncedSearch = useDebounce(search, 300);
 
-    //     if (search.trim()) {
-    //         router.get("/invoices", {
-    //             search: search.trim(),
-    //         });
-    //     }
-    // };
+    useEffect(() => {
+        if (debouncedSearch.trim() !== "") {
+            router.get(
+                `/invoices/${processingFilter}`,
+                { search: debouncedSearch },
+                { preserveState: true, replace: true }
+            )
+        }
+    }, [debouncedSearch])
 
     const processingDays = [
         { label: "30 days" },
@@ -77,7 +78,6 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                                     <th>#</th>
                                     <th>Hospital Name</th>
                                     <th>Invoice No.</th>
-                                    <th>Amount</th>
                                     <th>Status</th>
                                     <th>Transaction Date</th>
                                 </tr>
@@ -85,25 +85,14 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
 
                             <tbody>
                                 {invoices.data.map((invoice, index) => (
-                                    <tr
-                                        key={invoice.id}
-                                        className="hover:bg-base-300 cursor-pointer"
-                                        onClick={() => {
-                                            setSelectedInvoice(invoice);
-                                            setOpen(true);
-                                        }}
-                                    > 
+                                    <tr key={invoice.id}> 
                                         <td>{index + 1}</td>
-                                        <td>{invoice.hospital.hospital_name}</td>
-                                        <td>{invoice.invoice_number}</td>
                                         <td>
-                                            ₱
-                                            {parseFloat(
-                                                invoice.amount
-                                            ).toLocaleString("en-PH", {
-                                                minimumFractionDigits: 2,
-                                            })}
+                                            <Link href="/hospitals/invoices">
+                                                {invoice.hospital.hospital_name}
+                                            </Link>
                                         </td>
+                                        <td>{invoice.invoice_number}</td>
                                         <td className="text-left">
                                             <span
                                                 className={`badge badge-md text-sm rounded-full ${
@@ -131,18 +120,6 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                                 ))}
                             </tbody>
                         </table>
-
-                        {open && (
-                            <DetailsModal
-                                selectedInvoice={selectedInvoice}
-                                hospitalName={
-                                    hospital?.hospital_name ||
-                                    selectedInvoice?.hospital?.hospital_name
-                                }
-                                setSelectedInvoice={setSelectedInvoice}
-                                setOpen={setOpen}
-                            />
-                        )}
                     </div>
 
                     <Pagination data={invoices} />
