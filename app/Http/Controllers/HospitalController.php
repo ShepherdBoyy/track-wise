@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreHospitalRequest;
+use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateHospitalRequest;
 use App\Models\Hospital;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -32,9 +34,6 @@ class HospitalController extends Controller
         return back()->with("success", true);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Request $request)
     {
         $hospitalId = $request->hospital_id;
@@ -93,13 +92,27 @@ class HospitalController extends Controller
         return back()->with("success", true);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $hospital = Hospital::findOrFail($id);
         $hospital->delete();
+
+        return back()->with("success", true);
+    }
+
+    public function createInvoice()
+    {
+        return Inertia::render("Hospitals/elements/CreateInvoice", [
+            "hospitalId" => request("hospital_id")
+        ]);
+    }
+
+    public function storeInvoice(StoreInvoiceRequest $request)
+    {
+        $validated = $request->validated();
+        // $validated['created_by'] = Auth::id();
+
+        Invoice::create($validated);
 
         return back()->with("success", true);
     }

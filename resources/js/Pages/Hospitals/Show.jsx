@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import Master from "../components/Master";
 import SearchIt from "../components/SearchIt";
 import { router } from "@inertiajs/react";
-import DetailsModal from "../Invoices/DetailsModal";
+import DetailsModal from "./elements/DetailsModal";
 import useDebounce from "../hooks/useDebounce";
 import Pagination from "../components/Pagination";
+import { Plus } from "lucide-react";
+import CreateInvoiceModal from "./elements/CreateInvoiceModal";
 
 export default function Show({
     invoices,
@@ -17,6 +19,9 @@ export default function Show({
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [search, setSearch] = useState(searchQuery || "");
     const [active, setActive] = useState(processingFilter);
+    const [openCreateInvoiceModal, setOpenCreateInvoiceModal] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
 
     const debouncedSearch = useDebounce(search, 300);
 
@@ -52,7 +57,16 @@ export default function Show({
                                 </div>
                             )}
                         </div>
-                        <div className="flex items-center gap-x-2 ">
+                        <div className="flex items-center gap-x-2">
+                            <button
+                                className="btn btn-primary rounded-xl"
+                                onClick={() => {
+                                    setOpenCreateInvoiceModal(true);
+                                }}
+                            >
+                                Add Invoice
+                                <Plus size={16} />
+                            </button>
                             <fieldset className="fieldset w-36 ">
                                 <select
                                     defaultValue="Filter By Age"
@@ -162,6 +176,25 @@ export default function Show({
                                 setSelectedInvoice={setSelectedInvoice}
                                 setOpen={setOpen}
                             />
+                        )}
+
+                        {openCreateInvoiceModal && (
+                            <CreateInvoiceModal
+                                hospitalId={hospital.id}
+                                setOpenCreateInvoiceModal={
+                                    setOpenCreateInvoiceModal
+                                }
+                                setShowToast={setShowToast}
+                                setSuccessMessage={setSuccessMessage}
+                            />
+                        )}
+
+                        {showToast && (
+                            <div className="toast toast-top toast-center">
+                                <div className="alert alert-success">
+                                    <span>{successMessage}</span>
+                                </div>
+                            </div>
                         )}
                     </div>
 
