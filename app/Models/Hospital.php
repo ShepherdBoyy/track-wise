@@ -14,6 +14,21 @@ class Hospital extends Model
         'hospital_name'
     ];
 
+    protected static function booted()
+    {
+        static::deleting(function ($hospital) {
+            if ($hospital->isForceDeleting()) {
+                $hospital->invoices->forceDelete();
+            } else {
+                $hospital->invoices()->delete();
+            }
+        });
+
+        static::restoring(function ($hospital) {
+            $hospital->invoices()->restore();
+        });
+    }
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
