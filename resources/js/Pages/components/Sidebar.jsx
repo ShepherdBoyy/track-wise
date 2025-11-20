@@ -31,14 +31,14 @@ export default function Sidebar() {
         },
     ];
     return (
-        <div className="drawer-side is-drawer-close:overflow-visible">
+        <div className="drawer-side is-drawer-close:overflow-visible ">
             <label
                 htmlFor="my-drawer-4"
                 aria-label="close sidebar"
                 className="drawer-overlay"
             ></label>
             <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-64 border-r border-base-content/5 bg-base-100">
-                <ul className="menu w-full grow gap-y-3">
+                <ul className="menu w-full grow gap-y-2">
                     <label
                         htmlFor="my-drawer-4"
                         className="btn btn-square btn-ghost"
@@ -53,11 +53,12 @@ export default function Sidebar() {
                             <li key={item.id}>
                                 <Link
                                     href={item.href}
-                                    className={`is-drawer-close:tooltip is-drawer-close:tooltip-right  ${
-                                        isActive
-                                            ? " bg-linear-to-br from-primary/40 rounded-lg "
-                                            : "hover:text-gray-900"
-                                    }`}
+                                    className={`is-drawer-close:tooltip is-drawer-close: is-drawer-close:tooltip-right rounded-lg transition-colors duration-300 ease-in-out 
+                                        ${
+                                            isActive
+                                                ? "bg-linear-to-br from-primary/40 to-primary/20 text-black"
+                                                : "hover:bg-gray-100 hover:text-gray-900 text-gray-400"
+                                        }`}
                                     data-tip={item.label}
                                 >
                                     <Icon className="my-1.5 inline-block size-4" />
