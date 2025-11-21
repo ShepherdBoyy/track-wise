@@ -30,7 +30,10 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
 
     return (
         <Master>
-            <div className="px-10 py-8 bg-base-200 min-h-screen">
+            <div className="bg-base-200 ">
+                <div className="p-6">
+                    <span className="text-2xl">Invoices</span>
+                </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">
                     <div className="flex items-center justify-between mb-4 gap-2 ">
                         <div className="flex items-center gap-x-3">
@@ -75,11 +78,10 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                     </div>
 
                     <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 pt-5">
-                        <table className="table">
+                        <table className="table  table-fixed">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Invoice No.</th>
+                                    <th className="w-[100px]">#</th>
                                     <th>Hospital Name</th>
                                     <th>Status</th>
                                     <th>Transaction Date</th>

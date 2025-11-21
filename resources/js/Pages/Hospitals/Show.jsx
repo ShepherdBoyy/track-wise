@@ -106,8 +106,8 @@ export default function Show({
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 pt-5">
-                        <table className="table">
+                    <div className="rounded-box border border-base-content/5 bg-base-100 pt-5 ">
+                        <table className="table table-fixed ">
                             <thead>
                                 <tr>
                                     <th>#</th>

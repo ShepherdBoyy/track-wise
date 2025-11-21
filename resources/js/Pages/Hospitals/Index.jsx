@@ -1,6 +1,6 @@
 import { router } from "@inertiajs/react";
 import Master from "../components/Master";
-import { Eye, SquarePen, Plus, Trash2, Pencil } from "lucide-react";
+import { Eye, CirclePlus, Trash2, Pencil } from "lucide-react";
 import { useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
@@ -28,22 +28,24 @@ export default function Index({ hospitals }) {
                         </span>
 
                         <button
-                            className="btn btn-primary rounded-xl "
+                            className="btn btn-primary rounded-xl flex"
                             onClick={() => setOpenCreateModal(true)}
                         >
+                            <CirclePlus size={18} />
                             Add Hospital
-                            <Plus size={16} />
                         </button>
                     </div>
 
                     <div className="rounded-box border border-base-content/5 bg-base-100 pt-5">
-                        <table className="table w-full">
+                        <table className="table table-fixed ">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Hospital Name</th>
-                                    <th>Number of Invoices</th>
-                                    <th className="text-right">Action</th>
+                                    <th className="w-[100px]">#</th>
+                                    <th className="w-1/3">Hospital Name</th>
+                                    <th className="w-1/3">
+                                        Number of Invoices
+                                    </th>
+                                    <th className="w-1/4 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
