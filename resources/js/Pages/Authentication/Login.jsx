@@ -1,5 +1,28 @@
+import { Form } from "@inertiajs/react";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 export default function Login() {
+    const [error, setError] = useState({
+        username: "",
+        password: "",
+        loginError: ""
+    });
+    const [countdown, setCountdown] = useState(0);
+
+    useEffect(() => {
+        if (countdown > 0) {
+            const timer = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+            return () => clearInterval(timer);
+        } else if (
+            countdown === 0 &&
+            error.loginError.includes("Too many login attempts")
+        ) {
+            setError((prev) => ({ ...prev, loginError: "" }));
+        }
+    }, [countdown, error]);
+
     return (
         <>
             <div className="grid min-h-svh lg:grid-cols-2">
@@ -37,7 +60,14 @@ export default function Login() {
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                             >
                                 <div className=" w-[500px] flex items-center justify-center">
-                                    <form>
+                                    <Form
+                                        action="/login"
+                                        method="post"
+                                        onError={(error) => {
+                                            setError(error);
+                                            setCountdown(error.cooldownSeconds);
+                                        }}
+                                    >
                                         <div className="flex flex-col items-center gap-2 text-center ">
                                             <div className="flex  items-center justify-center rounded-md">
                                                 {/* <img src="images/pmcLogo.jpg" className="w-20" /> */}
@@ -48,36 +78,67 @@ export default function Login() {
                                             <span>Login your credentials</span>
 
                                             <div className="flex flex-col gap-y-4 w-full ">
-                                                <fieldset className="fieldset ">
-                                                    <legend className="fieldset-legend text-left">
-                                                        Username
-                                                    </legend>
+                                                <fieldset className="fieldset">
+                                                    <div className="flex justify-between">
+                                                        <legend className="fieldset-legend text-left">
+                                                            Username
+                                                        </legend>
+                                                        {error.username && (
+                                                            <span className="text-red-500 text-xs mt-2.5">
+                                                                {error.username}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <input
                                                         type="text"
                                                         className="input w-96 "
                                                         placeholder="Type here"
+                                                        name="username"
+                                                        disabled={countdown > 0}
                                                     />
                                                 </fieldset>
                                                 <fieldset className="fieldset w-full">
-                                                    <legend className="fieldset-legend text-left">
-                                                        Password
-                                                    </legend>
+                                                    <div className="flex justify-between">
+                                                        <legend className="fieldset-legend text-left">
+                                                            Password
+                                                        </legend>
+                                                        {error.password && (
+                                                            <span className="text-red-500 text-xs mt-2.5">
+                                                                {error.password}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     <input
-                                                        type="text"
+                                                        type="password"
                                                         className="input w-96"
                                                         placeholder="Type here"
+                                                        name="password"
+                                                        disabled={countdown > 0}
                                                     />
                                                 </fieldset>
                                             </div>
 
                                             <div className="w-96 pt-8">
-                                                <button className="cursor-pointer w-full btn btn-neutral">
+                                                <button className="cursor-pointer w-full btn btn-neutral" disabled={countdown > 0}>
                                                     {" "}
                                                     Login
                                                 </button>
                                             </div>
                                         </div>
-                                    </form>
+                                        {error.loginError && (
+                                            <div className="mt-4 text-red-600 text-sm max-w-sm text-center">
+                                                {countdown > 0
+                                                    ? `${
+                                                          error.loginError
+                                                      } Please wait ${countdown} second${
+                                                          countdown !== 1
+                                                              ? "s"
+                                                              : ""
+                                                      } before trying again`
+                                                    : error.loginError}
+                                            </div>
+                                        )}
+                                    </Form>
                                 </div>
                             </motion.div>
                         </div>
