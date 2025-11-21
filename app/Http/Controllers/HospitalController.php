@@ -39,7 +39,6 @@ class HospitalController extends Controller
         $hospitalId = $request->hospital_id;
         $searchQuery = $request->query("search");
         $processingFilter = $request->processing_days;
-        $invoicesCount = $request->invoices_count;
 
         $invoices = Invoice::query()
             ->with(["hospital", "creator", "updater"])
@@ -70,10 +69,11 @@ class HospitalController extends Controller
         
         return Inertia::render("Hospitals/Show", [
             "invoices" => $invoices,
-            "hospital" => $hospitalId ? Hospital::find($hospitalId) : null,
+            "hospital" => $hospitalId 
+                ? Hospital::withCount("invoices")->find($hospitalId) 
+                : null,
             "searchQuery" => $searchQuery,
             "processingFilter" => $processingFilter ?? "30-days",
-            "invoicesCount" => $invoicesCount
         ]);
     }
 
@@ -110,9 +110,28 @@ class HospitalController extends Controller
     public function storeInvoice(StoreInvoiceRequest $request)
     {
         $validated = $request->validated();
-        // $validated['created_by'] = Auth::id();
+        $validated['created_by'] = Auth::id();
 
         Invoice::create($validated);
+
+        return back()->with("success", true);
+    }
+
+    public function editInvoice()
+    {
+        return Inertia::render("Hospitals/elements/EditInvoice");
+    }
+
+    public function deleteInvoice(Request $request, $hospital_id)
+    {
+        $validated = $request->validate([
+            "ids" => ["required", "array", "min:1"],
+            "ids.*" => ["integer", "exists:invoices,id"]
+        ]);
+
+        Invoice::where("hospital_id", $hospital_id)
+            ->whereIn("id", $validated["ids"])
+            ->delete();
 
         return back()->with("success", true);
     }

@@ -27,7 +27,6 @@ class StoreInvoiceRequest extends FormRequest
             "amount" => "required|numeric|min:0.01",
             "status" => "required|in:open,closed",
             "transaction_date" => "required|date",
-            "created_by" => "required|integer"
         ];
     }
 }
