@@ -26,7 +26,7 @@ class InvoiceFactory extends Factory
             "transaction_date" => $transactionDate,
             "date_closed" => $status === "closed" ? $this->faker->dateTimeBetween($transactionDate, "now") : null,
             "created_by" => User::factory(),
-            "updated_by" => User::factory()
+            'updated_by' => fake()->optional()->randomElement(User::pluck('id')->toArray()),
         ];
     }
 }
