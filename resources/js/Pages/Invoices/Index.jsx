@@ -82,9 +82,10 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                             <thead>
                                 <tr>
                                     <th className="w-[100px]">#</th>
+                                    <th>Invoice No.</th>
                                     <th>Hospital Name</th>
-                                    <th>Status</th>
                                     <th>Transaction Date</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
 
@@ -95,11 +96,16 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                                         <td>{invoice.invoice_number}</td>
                                         <td>
                                             <Link
-                                                href={`/hospitals/invoices/${invoice.hospital.id}/all/${invoice.hospital.invoices_count}`}
+                                                href={`/hospitals/${invoice.hospital.id}/invoices/all`}
                                                 className="hover:underline"
                                             >
                                                 {invoice.hospital.hospital_name}
                                             </Link>
+                                        </td>
+                                        <td>
+                                            {new Date(
+                                                invoice.transaction_date
+                                            ).toLocaleDateString()}
                                         </td>
                                         <td className="text-left">
                                             <span
@@ -118,11 +124,6 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                                             >
                                                 {invoice.status}
                                             </span>
-                                        </td>
-                                        <td>
-                                            {new Date(
-                                                invoice.transaction_date
-                                            ).toLocaleDateString()}
                                         </td>
                                     </tr>
                                 ))}
