@@ -13,9 +13,11 @@ class Invoice extends Model
     protected $fillable = [
         'hospital_id',
         'invoice_number',
+        'document_date',
+        'due_date',
         'amount',
+        'description',
         'status',
-        'transaction_date',
         'date_closed',
         'created_by',
         'updated_by',

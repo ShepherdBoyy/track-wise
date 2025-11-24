@@ -24,9 +24,9 @@ class StoreInvoiceRequest extends FormRequest
         return [
             "hospital_id" => "required|integer",
             "invoice_number" => "required|string|max:255",
+            "document_date" => "required|date",
+            "due_date" => "required|date",
             "amount" => "required|numeric|min:0.01",
-            "status" => "required|in:open,closed",
-            "transaction_date" => "required|date",
         ];
     }
 }

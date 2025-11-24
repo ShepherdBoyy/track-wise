@@ -21,25 +21,32 @@ class InvoiceController extends Controller
             ->with(["hospital" => function ($query) {
                 $query->withCount("invoices");
             }, "creator", "updater"])
-            ->select("*", DB::raw("
-                DATEDIFF(
-                    IFNULL(date_closed, CURDATE()),
-                    transaction_date
-                ) AS processing_days
-            "))
+            ->select("invoices.*")
+            ->addSelect([
+                "processing_days" => function ($query) {
+                    $query->selectRaw("
+                        CASE
+                            WHEN date_closed IS NOT NULL THEN 0
+                            ELSE DATEDIFF(due_date, CURDATE())
+                        END
+                    ");
+                }
+            ])
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where("invoice_number", "like", "%{$searchQuery}%");
             })
             ->when(!$searchQuery && $processingFilter, function ($query) use ($processingFilter) {
                 match ($processingFilter) {
-                    "30-days" => $query->havingBetween("processing_days", [0, 30]),
-                    "31-60-days" => $query->havingBetween("processing_days", [31, 60]),
-                    "61-90-days" => $query->havingBetween("processing_days", [61, 90]),
-                    "91-over" => $query->having("processing_days", ">=", 91),
+                    "Current" => $query->having("processing_days", ">", 0),
+                    "30-days" => $query->havingBetween("processing_days", [-30, -1]),
+                    "31-60-days" => $query->havingBetween("processing_days", [-60, -31]),
+                    "61-90-days" => $query->havingBetween("processing_days", [-90, -61]),
+                    "91-over" => $query->having("processing_days", "<=", -91),
+                    "Closed" => $query->having("processing_days", "=", 0),
                     default => null,
                 };
             })
-            ->orderBy("created_at", "desc")
+            ->orderBy("due_date", "desc")
             ->paginate(10)
             ->withQueryString();
 

@@ -10,7 +10,7 @@ export default function CreateInvoiceModal({
     const [error, setError] = useState("");
     const [invoiceNumber, setInvoiceNumber] = useState("");
 
-    console.log(error)
+    console.log(error);
 
     return (
         <dialog open className="modal">
@@ -60,6 +60,44 @@ export default function CreateInvoiceModal({
 
                     <div className="flex flex-col gap-1 mt-8">
                         <div className="flex justify-between">
+                            <label htmlFor="document_date" className="text-md">
+                                Document Date
+                            </label>
+                            {error.document_date && (
+                                <span className="text-red-500 text-sm">
+                                    {error.document_date}
+                                </span>
+                            )}
+                        </div>
+                        <input
+                            type="date"
+                            className="input w-full"
+                            id="document_date"
+                            name="document_date"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-1 mt-8">
+                        <div className="flex justify-between">
+                            <label htmlFor="due_date" className="text-md">
+                                Due Date
+                            </label>
+                            {error.due_date && (
+                                <span className="text-red-500 text-sm">
+                                    {error.due_date}
+                                </span>
+                            )}
+                        </div>
+                        <input
+                            type="date"
+                            className="input w-full"
+                            id="due_date"
+                            name="due_date"
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-1 mt-8">
+                        <div className="flex justify-between">
                             <label htmlFor="amount" className="text-md">
                                 Amount
                             </label>
@@ -76,55 +114,6 @@ export default function CreateInvoiceModal({
                             className="input w-full"
                             name="amount"
                             id="amount"
-                        />
-                    </div>
-
-                    <div className="flex flex-col gap-1 mt-8">
-                        <div className="flex justify-between">
-                            <label htmlFor="status" className="text-md">
-                                Status
-                            </label>
-                            {error.status && (
-                                <span className="text-red-500 text-sm">
-                                    {error.status}
-                                </span>
-                            )}
-                        </div>
-                        <fieldset className="fieldset">
-                            <select
-                                className="select w-full"
-                                defaultValue="default"
-                                name="status"
-                                id="status"
-                            >
-                                <option value="default" disabled>
-                                    Select Status
-                                </option>
-                                <option value="open">Open</option>
-                                <option value="closed">Closed</option>
-                            </select>
-                        </fieldset>
-                    </div>
-
-                    <div className="flex flex-col gap-1 mt-8">
-                        <div className="flex justify-between">
-                            <label
-                                htmlFor="transaction_date"
-                                className="text-md"
-                            >
-                                Transaction Date
-                            </label>
-                            {error.transaction_date && (
-                                <span className="text-red-500 text-sm">
-                                    {error.transaction_date}
-                                </span>
-                            )}
-                        </div>
-                        <input
-                            type="date"
-                            className="input w-full"
-                            id="transaction_date"
-                            name="transaction_date"
                         />
                     </div>
 
