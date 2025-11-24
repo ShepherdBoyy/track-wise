@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function Edit({ setOpenEditModal, hospital, setShowToast, setSuccessMessage }) {
     const [error, setError] = useState("");
-    const [hospitalName, setHospitalName] = useState("")
+    const [hospitalName, setHospitalName] = useState(hospital.hospital_name || "")
 
     return (
         <dialog open className="modal">
@@ -13,7 +13,7 @@ export default function Edit({ setOpenEditModal, hospital, setShowToast, setSucc
                 <Form
                     action={`/hospitals/edit/${hospital.id}`}
                     method="put"
-                    onError={(error) => setError(error.hospital_name)}
+                    onError={(error) => setError(error)}
                     onSuccess={() => {
                         setOpenEditModal(false);
                         setShowToast(true);
@@ -23,12 +23,32 @@ export default function Edit({ setOpenEditModal, hospital, setShowToast, setSucc
                 >
                     <div className="flex flex-col gap-2 mt-3">
                         <div className="flex justify-between">
-                            <label htmlFor="hospital_name">
-                                Hospital Name:
+                            <label htmlFor="hospital_number" className="text-sm">
+                                Hospital No.
                             </label>
-                            {error && (
-                                <span className="text-destructive text-sm">
-                                    {error}
+                            {error.hospital_number && (
+                                <span className="text-red-500 text-sm">
+                                    {error.hospital_number}
+                                </span>
+                            )}
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Type here"
+                            className="input w-full"
+                            name="hospital_number"
+                            defaultValue={hospital.hospital_number}
+                        />
+                    </div>
+
+                    <div className="flex flex-col gap-2 mt-3">
+                        <div className="flex justify-between">
+                            <label htmlFor="hospital_name" className="text-sm">
+                                Hospital Name
+                            </label>
+                            {error.hospital_name && (
+                                <span className="text-red-500 text-sm">
+                                    {error.hospital_name}
                                 </span>
                             )}
                         </div>

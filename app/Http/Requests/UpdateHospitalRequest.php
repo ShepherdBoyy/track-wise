@@ -22,7 +22,8 @@ class UpdateHospitalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "hospital_name" => "required|string|max:255|regex:/^[A-Za-z](?:[A-Za-z\s\.\'\-]*[A-Za-z])?$/"
+            "hospital_number" => "sometimes|string|max:255",
+            "hospital_name" => "sometimes|string|max:255|regex:/^[A-Za-z](?:[A-Za-z\s\.\'\-,]*[A-Za-z])?$/"
         ];
     }
 }
