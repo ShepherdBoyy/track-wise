@@ -3,8 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\InvoiceHistoryController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::redirect('/', '/hospitals');
 
@@ -27,6 +27,8 @@ Route::middleware(["auth"])->group(function () {
         Route::post("/invoices/store", [HospitalController::class, "storeInvoice"]);
         Route::get("/invoices/{id}/edit", [HospitalController::class, "editInvoice"]);
         Route::post("/{hospital_id}/invoices/delete", [HospitalController::class, "deleteInvoice"]);
+
+        Route::post("/invoices/{id}/history/store", [InvoiceHistoryController::class, "store"]);
     }); 
 
     Route::prefix("invoices")->group(function () {
