@@ -16,11 +16,9 @@ class Invoice extends Model
         'document_date',
         'due_date',
         'amount',
-        'description',
         'status',
         'date_closed',
         'created_by',
-        'updated_by',
     ];
 
     public function hospital()
@@ -33,8 +31,8 @@ class Invoice extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updater()
+    public function history()
     {
-        return $this->belongsTo(User::class, 'updated_by');
+        return $this->hasMany(InvoiceHistory::class);
     }
 }

@@ -152,6 +152,8 @@ export default function Show({
                                     <th className="w-1/4">Amount</th>
                                     <th className="w-1/4">Status</th>
                                     <th className="w-1/4">Processing Days</th>
+                                    <th className="w-1/4">Issued By</th>
+                                    <th className="w-1/8">Created At</th>
                                     <th className="w-1/5 text-right">Action</th>
                                 </tr>
                             </thead>
@@ -229,6 +231,12 @@ export default function Show({
                                             </span>
                                         </td>
                                         <td>{invoice.processing_days}</td>
+                                        <td>{invoice.creator.name}</td>
+                                        <td>
+                                            {new Date(
+                                                invoice.created_at
+                                            ).toLocaleDateString()}
+                                        </td>
                                         <td>
                                             <div className="flex gap-3 items-center justify-end">
                                                 <div

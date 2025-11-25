@@ -20,7 +20,7 @@ class InvoiceController extends Controller
         $invoices = Invoice::query()
             ->with(["hospital" => function ($query) {
                 $query->withCount("invoices");
-            }, "creator", "updater"])
+            }, "creator"])
             ->select("invoices.*")
             ->addSelect([
                 "processing_days" => function ($query) {
