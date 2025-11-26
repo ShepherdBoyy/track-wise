@@ -20,7 +20,7 @@ export default function Sidebar() {
         {
             id: "invoices",
             label: "Invoices",
-            href: "/invoices/Current",
+            href: "/invoices",
             icon: PackageSearch,
         },
         {
