@@ -44,29 +44,28 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                         <div className="flex items-center gap-x-2 ">
                             <fieldset className="fieldset w-36 ">
                                 <select
-                                    defaultValue="Filter By Age"
+                                    defaultValue=""
                                     className="select rounded-xl"
+                                    onChange={(e) => {
+                                        const label = e.target.value;
+                                        router.get(
+                                            `/invoices/${label.replace(
+                                                / /g,
+                                                "-"
+                                            )}`,
+                                            {},
+                                            {
+                                                preserveState: true,
+                                                preserveScroll: true,
+                                            }
+                                        );
+                                    }}
                                 >
-                                    <option disabled={true}>
+                                    <option disabled value="">
                                         Filter By Days
                                     </option>
                                     {processingDays.map((day, index) => (
-                                        <option
-                                            key={index}
-                                            onClick={() => {
-                                                setActive(day.label);
-                                                router.get(
-                                                    `/invoices/${day.label.replace(
-                                                        / /g,
-                                                        "-"
-                                                    )}`,
-                                                    {},
-                                                    { preserveState: true }
-                                                );
-                                            }}
-                                        >
-                                            {day.label}
-                                        </option>
+                                        <option key={index}>{day.label}</option>
                                     ))}
                                 </select>
                             </fieldset>

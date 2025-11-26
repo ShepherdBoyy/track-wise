@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export default function Index({ invoice, history, editor }) {
     const [showToast, setShowToast] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [error, setError] = useState("");
 
     return (
@@ -26,26 +27,6 @@ export default function Index({ invoice, history, editor }) {
                                 {invoice.invoice_number}
                             </div>
                             <div className="grid grid-cols-2 gap-y-8 p-6">
-                                <div>
-                                    <p className="text-sm opacity-60 mb-1">
-                                        Issued by
-                                    </p>
-                                    <p className="text-md">
-                                        {invoice.creator.name}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <p className="text-sm opacity-60 mb-1">
-                                        Created At
-                                    </p>
-                                    <p className="text-md">
-                                        {new Date(
-                                            invoice.creator.created_at
-                                        ).toLocaleDateString()}
-                                    </p>
-                                </div>
-
                                 <div>
                                     <p className="text-sm opacity-60 mb-1">
                                         Status
@@ -109,17 +90,17 @@ export default function Index({ invoice, history, editor }) {
                             </div>
                             <Form
                                 className="flex flex-col gap-6 p-6"
-                                action={`/invoice-history/${invoice.id}/store`}
+                                action={`/hospitals/${invoice.hospital.id}/invoices/${invoice.id}/history/store`}
                                 method="post"
                                 resetOnSuccess
                                 options={{
                                     preserveScroll: true,
-                                    preserveState: true
+                                    preserveState: true,
                                 }}
                                 onSuccess={() => {
                                     setShowToast(true);
                                     setTimeout(() => setShowToast(false), 3000);
-                                    setError("")
+                                    setError("");
                                 }}
                                 onError={(error) => {
                                     setError(error);
@@ -227,7 +208,7 @@ export default function Index({ invoice, history, editor }) {
                                             <tr key={index}>
                                                 <td className="w-[150px]">
                                                     {new Date(
-                                                        item.updated_at
+                                                        item.created_at
                                                     ).toLocaleDateString()}
                                                 </td>
                                                 <td className="w-[200px]">

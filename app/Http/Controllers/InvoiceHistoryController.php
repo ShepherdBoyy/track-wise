@@ -10,8 +10,10 @@ use Inertia\Inertia;
 
 class InvoiceHistoryController extends Controller
 {
-    public function index($invoiceId)
+    public function index(Request $request)
     {
+        $invoiceId = $request->invoice_id;
+
         $invoice = Invoice::with(["hospital", "creator"])->findOrFail($invoiceId);
 
         $history = InvoiceHistory::where("invoice_id", $invoiceId)
@@ -37,8 +39,10 @@ class InvoiceHistoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, string $invoiceId)
+    public function store(Request $request)
     {
+        $invoiceId = $request->invoice_id;
+
         $validated = $request->validate([
             "description" => "required|string"
         ]);
