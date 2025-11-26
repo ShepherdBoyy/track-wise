@@ -27,12 +27,15 @@ Route::middleware(["auth"])->group(function () {
         Route::post("/invoices/store", [HospitalController::class, "storeInvoice"]);
         Route::get("/invoices/{id}/edit", [HospitalController::class, "editInvoice"]);
         Route::post("/{hospital_id}/invoices/delete", [HospitalController::class, "deleteInvoice"]);
-
-        Route::post("/invoices/{id}/history/store", [InvoiceHistoryController::class, "store"]);
     }); 
 
     Route::prefix("invoices")->group(function () {
         Route::get("/{processing_days}", [InvoiceController::class, "index"]);
+    });
+
+    Route::prefix("invoice-history")->group(function () {
+        Route::get("/{id}", [InvoiceHistoryController::class, "index"]);
+        Route::post("/{id}/store", [InvoiceHistoryController::class, "store"]);
     });
 });
 
