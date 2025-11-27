@@ -4,6 +4,7 @@ import SearchIt from "../components/SearchIt";
 import { Link, router } from "@inertiajs/react";
 import Pagination from "../components/Pagination";
 import useDebounce from "../hooks/useDebounce";
+import { motion } from "motion/react";
 
 export default function Index({ invoices, searchQuery, processingFilter }) {
     const [search, setSearch] = useState(searchQuery || "");
@@ -33,15 +34,19 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
     return (
         <Master>
             <div className="bg-base-200 ">
-                <div className="p-6">
+                <div className="flex items-center justify-between pb-4">
                     <span className="text-2xl">Invoices</span>
+                    <SearchIt
+                        search={search}
+                        setSearch={setSearch}
+                        name="Invoice No."
+                    />
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">
-                    <div className="flex items-center justify-between mb-4 gap-2 ">
-                        <div className="flex items-center gap-x-3">
-                            <span className="text-2xl">All Invoices</span>
-                        </div>
-                        <div className="flex items-center gap-x-2 ">
+                    <div className="flex items-center justify-between mb-4  ">
+                        <span className="text-xl">All Invoices</span>
+
+                        <div className="flex ">
                             <fieldset className="fieldset w-36 ">
                                 <select
                                     defaultValue=""
@@ -69,13 +74,7 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                                     ))}
                                 </select>
                             </fieldset>
-                            <div className="flex justify-content-end">
-                                <SearchIt
-                                    search={search}
-                                    setSearch={setSearch}
-                                    name="Invoice No."
-                                />
-                            </div>
+                            <div className="flex justify-content-end"></div>
                         </div>
                     </div>
 
@@ -93,7 +92,16 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
 
                             <tbody>
                                 {invoices.data.map((invoice, index) => (
-                                    <tr key={invoice.id}>
+                                    <motion.tr
+                                        key={invoice.id}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{
+                                            duration: 0.2,
+                                            delay: index * 0.05,
+                                        }}
+                                    >
                                         <td>{index + 1}</td>
                                         <td>{invoice.invoice_number}</td>
                                         <td>
@@ -127,7 +135,7 @@ export default function Index({ invoices, searchQuery, processingFilter }) {
                                                 {invoice.status}
                                             </span>
                                         </td>
-                                    </tr>
+                                    </motion.tr>
                                 ))}
                             </tbody>
                         </table>
