@@ -142,15 +142,13 @@ export default function Show({
                                             }}
                                         />
                                     </th>
-                                    <th className="w-[50px]"> #</th>
+                                    <th className="w-[50px]">#</th>
                                     <th className="w-1/4">Invoice No.</th>
                                     <th className="w-1/4">Document Date</th>
                                     <th className="w-1/4">Due Date</th>
                                     <th className="w-1/4">Amount</th>
                                     <th className="w-1/4">Status</th>
                                     <th className="w-1/4">Processing Days</th>
-                                    <th className="w-1/4">Issued By</th>
-                                    <th className="w-1/8">Created At</th>
                                 </tr>
                             </thead>
 
@@ -244,12 +242,6 @@ export default function Show({
                                             </span>
                                         </td>
                                         <td>{invoice.processing_days}</td>
-                                        <td>{invoice.creator.name}</td>
-                                        <td>
-                                            {new Date(
-                                                invoice.created_at
-                                            ).toLocaleDateString()}
-                                        </td>
                                     </motion.tr>
                                 ))}
                             </tbody>
