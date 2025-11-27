@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -23,11 +24,14 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $plainPassword = $this->faker->password();
+
         return [
             'name' => fake()->name(),
             'username' => fake()->unique()->userName(),
             'role' => fake()->randomElement(['agent', 'purchasing', 'accounting', 'collector']),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => Hash::make($plainPassword),
+            'visible_password' => Crypt::encryptString($plainPassword)
         ];
     }
 

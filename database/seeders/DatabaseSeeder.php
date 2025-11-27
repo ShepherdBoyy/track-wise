@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceHistory;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -20,7 +21,8 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Administrator',
                 'role' => 'purchasing',
-                'password' => Hash::make('password'),
+                'password' => Hash::make("password"),
+                "visible_password" => Crypt::encryptString("password"),
             ]
         );
 
