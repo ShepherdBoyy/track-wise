@@ -4,6 +4,7 @@ import {
     Hospital,
     PackageSearch,
     ArrowRightLeft,
+    CircleUserRound
 } from "lucide-react";
 import { usePage } from "@inertiajs/react";
 
@@ -28,6 +29,12 @@ export default function Sidebar() {
             label: "Reports",
             href: "/reports",
             icon: FolderUp,
+        },
+        {
+            id: "user-management",
+            label: "User Management",
+            href: "/user-management",
+            icon: CircleUserRound ,
         },
     ];
     return (
