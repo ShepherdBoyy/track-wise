@@ -15,10 +15,18 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy("name")
-            ->paginate(10);
+        $searchQuery = $request->query("search");
+        $perPage = $request->query("per_page", 10);
+
+        $users = User::query()
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where("name", "like", "%{$searchQuery}%");
+            })
+            ->orderBy("name")
+            ->paginate($perPage)
+            ->withQueryString();
 
         $users->getCollection()->transform(function ($user) {
             $user->plain_password = Crypt::decryptString($user->visible_password);
