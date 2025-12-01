@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\InvoiceHistory;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -26,6 +28,43 @@ class InvoiceHistoryController extends Controller
             "history" => $history,
             "editor" => Auth::user()->name
         ]);
+    }
+
+    public function download(Request $request)
+    {
+        $invoiceId = $request->invoice_id;
+
+        $invoice = Invoice::with(["hospital", "creator"])->findOrFail($invoiceId);
+
+        $history = InvoiceHistory::where("invoice_id", $invoiceId)
+            ->with(["updater"])
+            ->orderBy("updated_at", "desc")
+            ->get();
+        
+        $today = Carbon::today();
+        $dueDate = Carbon::parse($invoice->due_date);
+
+        $daysRemaining = $today->lessThanOrEqualTo($dueDate)
+            ? $today->diffInDays($dueDate)
+            : 0;
+        
+        $daysOverdue = $today->greaterThan($dueDate)
+            ? $today->diffInDays($dueDate)
+            : 0;
+        
+        $dateClosed = $invoice->date_closed
+            ? Carbon::parse($invoice->date_closed)->format('m/d/Y')
+            : null;
+        
+        $pdf = Pdf::loadView("pdf.invoice", [
+            "invoice" => $invoice,
+            "history" => $history,
+            "daysRemaining" => $daysRemaining,
+            "daysOverdue" => $daysOverdue,
+            "dateClosed" => $dateClosed
+        ])->setPaper("letter");
+
+         return $pdf->stream();
     }
 
     /**
