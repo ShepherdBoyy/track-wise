@@ -2,11 +2,13 @@ import { CirclePlus, Pencil, Trash2 } from "lucide-react";
 import Master from "../components/Master";
 import Pagination from "../components/Pagination";
 import SearchIt from "../components/SearchIt";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ViewModal from "./elements/ViewModal";
 import Create from "./Create"
 import Edit from "./Edit";
 import DeleteUserModal from "./elements/DeleteUserModal";
+import useDebounce from "../hooks/useDebounce";
+import { router } from "@inertiajs/react";
 
 export default function Index({ users }) {
     const [showToast, setShowToast] = useState(false);
@@ -16,6 +18,19 @@ export default function Index({ users }) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState({});
     const [successMesage, setSuccessMessage] = useState("");
+    const [search, setSearch] = useState("");
+
+    const debouncedSearch = useDebounce(search, 300);
+
+    useEffect(() => {
+        if (debouncedSearch.trim() !== "") {
+            router.get(
+                "/user-management",
+                { search: debouncedSearch },
+                { preserveState: true, preserveScroll: true }
+            )
+        }
+    }, [debouncedSearch]);
 
     return (
         <Master>
@@ -40,9 +55,9 @@ export default function Index({ users }) {
                             </div>
                             <div className="flex justify-content-end">
                                 <SearchIt
-                                    // search={search}
-                                    // setSearch={setSearch}
-                                    name="Invoice No."
+                                    search={search}
+                                    setSearch={setSearch}
+                                    name="User"
                                 />
                             </div>
                         </div>
