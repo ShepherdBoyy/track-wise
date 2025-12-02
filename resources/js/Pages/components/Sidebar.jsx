@@ -4,7 +4,7 @@ import {
     Hospital,
     PackageSearch,
     ArrowRightLeft,
-    CircleUserRound
+    CircleUserRound,
 } from "lucide-react";
 import { usePage } from "@inertiajs/react";
 
@@ -18,27 +18,27 @@ export default function Sidebar() {
             href: "/hospitals",
             icon: Hospital,
         },
+        // {
+        //     id: "invoices",
+        //     label: "Invoices",
+        //     href: "/invoices",
+        //     icon: PackageSearch,
+        // },
         {
-            id: "invoices",
-            label: "Invoices",
-            href: "/invoices",
-            icon: PackageSearch,
-        },
-        {
-            id: "reports",
-            label: "Reports",
-            href: "/reports",
+            id: "import-data",
+            label: "Import Data",
+            href: "/import-data",
             icon: FolderUp,
         },
         {
             id: "user-management",
             label: "User Management",
             href: "/user-management",
-            icon: CircleUserRound ,
+            icon: CircleUserRound,
         },
     ];
     return (
-        <div className="drawer-side is-drawer-close:overflow-visible ">
+        <div className="drawer-side is-drawer-close:overflow-visible">
             <label
                 htmlFor="my-drawer-4"
                 aria-label="close sidebar"
