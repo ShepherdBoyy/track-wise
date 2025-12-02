@@ -64,7 +64,13 @@ class InvoiceHistoryController extends Controller
             "dateClosed" => $dateClosed
         ])->setPaper("letter");
 
-         return $pdf->stream();
+        $hospitalName = str_replace(" ", "-", $invoice->hospital->hospital_name);
+        $invoiceNumber = $invoice->invoice_number;
+        $dateNow = Carbon::now()->format("F j, Y");
+
+        $filename = "{$hospitalName}-{$invoiceNumber}-{$dateNow}.pdf";
+
+        return $pdf->stream($filename);
     }
 
     /**
