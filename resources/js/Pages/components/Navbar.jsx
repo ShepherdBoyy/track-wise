@@ -32,7 +32,7 @@ export default function Navbar() {
                         <li>
                             <a>Settings</a>
                         </li>
-                        <Link href="/logout" method="post">
+                        <Link className="cursor-pointer" href="/logout" method="post">
                             Logout
                         </Link>
                     </ul>
