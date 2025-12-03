@@ -222,7 +222,7 @@ export default function Index({ invoice, history, editor }) {
                                                         item.created_at
                                                     ).toLocaleDateString()}
                                                 </td>
-                                                <td className="w-[200px]">
+                                                <td className="w-[250px]">
                                                     {item.updater.name}
                                                 </td>
                                                 <td>{item.description}</td>
