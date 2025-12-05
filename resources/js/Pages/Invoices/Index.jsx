@@ -55,29 +55,23 @@ export default function Show({
                 <div className="flex items-center gap-2 justify-between pb-4">
                     <fieldset className="fieldset w-36">
                         <select
-                            defaultValue="Filter By Age"
                             className="select rounded-xl"
+                            value={active}
+                            onChange={(e) => {
+                                const selectedDay = e.target.value;
+                                setActive(selectedDay);
+                                router.get(
+                                    `/hospitals/${
+                                        hospital.id
+                                    }/invoices/${selectedDay.replace(/ /g, "-")}`,
+                                    {},
+                                    { preserveState: true }
+                                );
+                            }}
                         >
                             <option disabled={true}>Filter By Days</option>
                             {processingDays.map((day, index) => (
-                                <option
-                                    key={index}
-                                    onClick={() => {
-                                        setActive(day.label);
-                                        router.get(
-                                            `/hospitals/${
-                                                hospital.id
-                                            }/invoices/${day.label.replace(
-                                                / /g,
-                                                "-"
-                                            )}`,
-                                            {},
-                                            { preserveState: true }
-                                        );
-                                    }}
-                                >
-                                    {day.label}
-                                </option>
+                                <option key={index} value={day.label}>{day.label}</option>
                             ))}
                         </select>
                     </fieldset>
@@ -264,11 +258,13 @@ export default function Show({
                                                     size={18}
                                                     className="cursor-pointer"
                                                     onClick={(e) => {
-                                                        e.stopPropagation()
+                                                        e.stopPropagation();
                                                         setOpenEditInvoiceModal(
                                                             true
                                                         );
-                                                        setSelectedInvoice(invoice);
+                                                        setSelectedInvoice(
+                                                            invoice
+                                                        );
                                                     }}
                                                 />
                                             </div>
@@ -292,7 +288,9 @@ export default function Show({
                         {openEditInvoiceModal && (
                             <Edit
                                 invoice={selectedInvoice}
-                                setOpenEditInvoiceModal={setOpenEditInvoiceModal}
+                                setOpenEditInvoiceModal={
+                                    setOpenEditInvoiceModal
+                                }
                                 setShowToast={setShowToast}
                                 setSuccessMessage={setSuccessMessage}
                             />
