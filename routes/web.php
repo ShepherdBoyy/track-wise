@@ -25,6 +25,7 @@ Route::middleware(["auth"])->group(function () {
         Route::delete("/delete/{id}", [HospitalController::class, "destroy"]);
 
         Route::prefix("{hospital_id}/invoices")->group(function () {
+            Route::get('/', fn() => redirect('hospitals/{hospital_id}/Current'));
             Route::get("/{processing_days}", [InvoiceController::class, "index"]);
             Route::get("/create", [InvoiceController::class, "create"]);
             Route::post("/store", [InvoiceController::class, "store"]);
