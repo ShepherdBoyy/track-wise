@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\TemplateExport;
+use App\Imports\DataImport;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -21,6 +22,16 @@ class ImportDataController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
+        $request->validate([
+            "file" => "required|mimes:xlsx"
+        ]);
+
+        try {
+            Excel::import(new DataImport, $request->file("file"));
+
+            return back()->with("success", true);
+        } catch (\Exception $e) {
+            return back()->with("error", "Import failed: " . $e->getMessage());
+        }
     }
 }
