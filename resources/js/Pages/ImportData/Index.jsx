@@ -10,14 +10,15 @@ export default function Index() {
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [error, setError] = useState("");
     const dragCounter = useRef(0);
-
-    console.log(dragCounter);
 
     const handleDrag = (e) => {
         e.preventDefault();
         e.stopPropagation();
     };
+
+    console.log(error);
 
     const handleDragIn = (e) => {
         e.preventDefault();
@@ -70,13 +71,23 @@ export default function Index() {
                     onProgress: (progressEvent) => {
                         setProgress(progressEvent.percentage);
                     },
-                    onSuccess: () => {
+                    onSuccess: (page) => {
                         setUploading(false);
                         setProgress(0);
                         setFile(null);
                         setFileName("");
+
+                        // Check for success message
+                        if (page.props.flash?.success) {
+                            setError(null);
+                            alert("Import successful!"); // Or use a toast notification
+                        }
                     },
-                    onError: () => {
+                    onError: (errors) => {
+                        console.log("Import errors:", errors); // Debug log
+                        setError(
+                            errors.file || errors.error || "Import failed"
+                        );
                         setUploading(false);
                         setProgress(0);
                     },
