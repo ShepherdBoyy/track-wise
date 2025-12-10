@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Area;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +31,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'username' => fake()->unique()->userName(),
             'role' => fake()->randomElement(['agent', 'purchasing', 'accounting', 'collector']),
+            "area_id" => Area::factory(),
             'password' => Hash::make($plainPassword),
             'visible_password' => Crypt::encryptString($plainPassword)
         ];

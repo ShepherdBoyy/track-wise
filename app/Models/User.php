@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'username',
         'role',
+        'area_id',
         'password',
         "visible_password"
     ];
@@ -51,5 +52,10 @@ class User extends Authenticatable
     public function createdInvoices()
     {
         return $this->hasMany(Invoice::class, 'created_by');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
     }
 }
