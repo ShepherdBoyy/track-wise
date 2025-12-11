@@ -16,7 +16,7 @@ class HospitalController extends Controller
     {
         $searchQuery = $request->query("search");
         $perPage = $request->query("per_page", 10);
-        $userAreaId = Auth::user();
+        $userAreaId = Auth::user()->area_id;
 
         $hospitals = Hospital::withCount("invoices")
             ->where("area_id", $userAreaId)
