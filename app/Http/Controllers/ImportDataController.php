@@ -31,7 +31,9 @@ class ImportDataController extends Controller
 
             return back()->with("success", true);
         } catch (\Exception $e) {
-            return back()->with("error", "Import failed: " . $e->getMessage());
+            return back()->withErrors([
+                "error" => "Import failed: " . $e->getMessage()
+            ]);
         }
     }
 }

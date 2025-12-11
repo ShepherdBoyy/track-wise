@@ -11,6 +11,7 @@ export default function Index() {
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState("");
+    const [showToast, setShowToast] = useState(false);
     const dragCounter = useRef(0);
 
     const handleDrag = (e) => {
@@ -76,18 +77,11 @@ export default function Index() {
                         setProgress(0);
                         setFile(null);
                         setFileName("");
-
-                        // Check for success message
-                        if (page.props.flash?.success) {
-                            setError(null);
-                            alert("Import successful!"); // Or use a toast notification
-                        }
+                        setShowToast(true);
+                        setTimeout(() => setShowToast(false), 3000);
                     },
                     onError: (errors) => {
-                        console.log("Import errors:", errors); // Debug log
-                        setError(
-                            errors.file || errors.error || "Import failed"
-                        );
+                        setError(errors.error);
                         setUploading(false);
                         setProgress(0);
                     },
@@ -99,6 +93,13 @@ export default function Index() {
     return (
         <Master>
             <div className="bg-base-200">
+                {showToast && (
+                    <div className="toast toast-top toast-center">
+                        <div className="alert alert-info">
+                            <span>Import Successful</span>
+                        </div>
+                    </div>
+                )}
                 <div className="flex items-center justify-between pb-4">
                     <span className="text-2xl">Import New Data</span>
                 </div>
@@ -292,7 +293,9 @@ export default function Index() {
                         </div>
                     </div>
                 </div>
-                <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6">hello</div>
+                <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6">
+                    hello
+                </div>
             </div>
         </Master>
     );

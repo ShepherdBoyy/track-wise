@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Area;
 use App\Models\Hospital;
 use App\Models\Invoice;
 use App\Models\InvoiceHistory;
@@ -21,35 +22,38 @@ class DataImport implements ToCollection, WithHeadingRow
 
         try {
             foreach ($rows as $row) {
+                $area = Area::firstOrCreate(["area_name" => $row["area"]]);
+
                 $hospital = Hospital::firstOrCreate(
                     ["hospital_number" => $row["customer_number"]],
-                    ["hospital_name" => $row["customer_name"]]
+                    [
+                        "hospital_name" => $row["customer_name"],
+                        "area_id" => $area->id
+                    ]
                 );
 
                 $documentDate = $this->transformDate($row["document_date"]);
                 $dueDate = $this->transformDate($row["due_date"]);
                 $dateClosed = !empty($row["date_closed"]) ? $this->transformDate($row["date_closed"]) : null;
 
-                $invoice = Invoice::firstOrCreate(
-                    ["invoice_number" => $row["invoice_number"]],
+                $invoice = Invoice::create(
                     [
+                        "invoice_number" => $row["invoice_number"],
                         "hospital_id" => $hospital->id,
                         "document_date" => $documentDate,
                         "due_date" => $dueDate,
-                        "amount" => $row["amount"],
+                        "amount" => floatval(str_replace(",", "", $row["amount"])),
                         "status" => $this->determineStatus($row["due_date"], $row["date_closed"] ?? null),
                         "date_closed" => $dateClosed,
                         "created_by" => Auth::id(),
                     ]
                 );
 
-                if ($invoice->wasRecentlyCreated) {
-                    InvoiceHistory::create([
-                        "invoice_id" => $invoice->id,
-                        "updated_by" => Auth::id(),
-                        "description" => "Invoice has been created"
-                    ]);
-                }
+                InvoiceHistory::create([
+                    "invoice_id" => $invoice->id,
+                    "updated_by" => Auth::id(),
+                    "description" => "Invoice has been created"
+                ]);
             }
 
             DB::commit();
