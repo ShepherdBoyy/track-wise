@@ -12,7 +12,8 @@ class Hospital extends Model
 
     protected $fillable = [
         'hospital_name',
-        'hospital_number'
+        'hospital_number',
+        'area_id'
     ];
 
     protected static function booted()
@@ -47,10 +48,5 @@ class Hospital extends Model
     public function area()
     {
         return $this->belongsTo(Area::class);
-    }
-
-    public function scopeForUser($query, User $user)
-    {
-        return $query->where("area_id", $user->area_id);
     }
 }

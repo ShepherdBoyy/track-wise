@@ -16,8 +16,8 @@ class Area extends Model
         return $this->hasMany(Hospital::class);
     }
 
-    public function area()
+    public function users()
     {
-        return $this->hasMany(Area::class);
+        return $this->hasMany(User::class);
     }
 }
