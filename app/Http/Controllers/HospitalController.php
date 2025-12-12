@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreHospitalRequest;
 use App\Http\Requests\UpdateHospitalRequest;
+use App\Models\Area;
 use App\Models\Hospital;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
@@ -17,8 +18,10 @@ class HospitalController extends Controller
         $searchQuery = $request->query("search");
         $perPage = $request->query("per_page", 10);
         $userAreaId = Auth::user()->area_id;
+        $areas = Area::all();
 
         $hospitals = Hospital::withCount("invoices")
+            ->with("area")
             ->where("area_id", $userAreaId)
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where(function ($q) use ($searchQuery) {
@@ -31,7 +34,8 @@ class HospitalController extends Controller
             ->withQueryString();
 
         return Inertia::render("Hospitals/Index", [
-            "hospitals" => $hospitals
+            "hospitals" => $hospitals,
+            "areas" => $areas
         ]);
     }
 

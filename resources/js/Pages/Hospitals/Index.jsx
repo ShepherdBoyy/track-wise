@@ -10,7 +10,7 @@ import useDebounce from "../hooks/useDebounce";
 import DeleteHospitalModal from "./elements/DeleteHospitalModal";
 import { motion } from "framer-motion";
 
-export default function Index({ hospitals }) {
+export default function Index({ hospitals, areas }) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -66,9 +66,10 @@ export default function Index({ hospitals }) {
                             <thead>
                                 <tr>
                                     <th className="w-[100px]">#</th>
-                                    <th className="w-1/3">Hospital No.</th>
-                                    <th className="w-3/4">Hospital Name</th>
-                                    <th className="w-1/3">
+                                    <th className="w-1/5">Hospital No.</th>
+                                    <th className="w-1/5">Hospital Name</th>
+                                    <th className="w-1/5">Area</th>
+                                    <th className="w-1/20">
                                         Number of Invoices
                                     </th>
                                     <th className="w-1/4 text-right">Action</th>
@@ -100,6 +101,7 @@ export default function Index({ hospitals }) {
                                         </td>
                                         <td>{hospital.hospital_number}</td>
                                         <td>{hospital.hospital_name}</td>
+                                        <td>{hospital.area.area_name}</td>
                                         <td>{hospital.invoices_count}</td>
                                         <td>
                                             <div className="flex gap-3 items-center justify-end">
@@ -154,6 +156,7 @@ export default function Index({ hospitals }) {
                             setOpenCreateModal={setOpenCreateModal}
                             setShowToast={setShowToast}
                             setSuccessMessage={setSuccessMessage}
+                            areas={areas}
                         />
                     )}
 
@@ -163,6 +166,7 @@ export default function Index({ hospitals }) {
                             hospital={hospital}
                             setShowToast={setShowToast}
                             setSuccessMessage={setSuccessMessage}
+                            areas={areas}
                         />
                     )}
 
