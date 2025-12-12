@@ -19,14 +19,14 @@ export default function DeleteUserModal({
 
                 <div className="flex justify-end mt-5">
                     <button
-                        className="btn btn-outline mr-2"
+                        className="btn btn-outline mr-2 rounded-xl"
                         onClick={() => setOpenDeleteModal(false)}
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        className="btn bg-red-600 text-white hover:bg-red-800"
+                        className="btn bg-red-600 text-white hover:bg-red-800 rounded-xl"
                         onClick={() => {
                             router.delete(
                                 `/user-management/${selectedUser.id}/delete`,
