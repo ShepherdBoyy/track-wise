@@ -116,6 +116,9 @@ export default function Index() {
                                                 Customer No.
                                             </th>
                                             <th className="border border-base-content/20 text-center p-2 font-normal">
+                                                Area
+                                            </th>
+                                            <th className="border border-base-content/20 text-center p-2 font-normal">
                                                 Customer Name
                                             </th>
                                             <th className="border border-base-content/20 text-center p-2 font-normal">
@@ -141,6 +144,9 @@ export default function Index() {
                                             <tr key={index}>
                                                 <td className="border border-base-content/20 text-center p-2 whitespace-normal">
                                                     {item.customer_no}
+                                                </td>
+                                                <td className="border border-base-content/20 text-center p-2 whitespace-normal">
+                                                    {item.area}
                                                 </td>
                                                 <td className="border border-base-content/20 text-center p-2 whitespace-normal">
                                                     {item.customer_name}

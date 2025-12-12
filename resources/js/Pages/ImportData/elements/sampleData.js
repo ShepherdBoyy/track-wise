@@ -1,6 +1,7 @@
 export const sampleData = [
     {
         customer_no: "1-B0008",
+        area: "NCR South",
         customer_name: "ABC Hospital",
         invoice_number: "A0301234",
         document_date: "11/10/2025",
@@ -10,6 +11,7 @@ export const sampleData = [
     },
     {
         customer_no: "1-C0012",
+        area: "NCR P",
         customer_name: "Valley Clinic",
         invoice_number: "A0305678",
         document_date: "11/05/2025",
@@ -19,6 +21,7 @@ export const sampleData = [
     },
     {
         customer_no: "1-D0045",
+        area: "V Ormoc",
         customer_name: "Medical Center",
         invoice_number: "A0298765",
         document_date: "10/20/2025",
@@ -28,6 +31,7 @@ export const sampleData = [
     },
     {
         customer_no: "1-A0021",
+        area: "M Gensan",
         customer_name: "Metro Group",
         invoice_number: "A0311122",
         document_date: "11/15/2025",
@@ -37,6 +41,7 @@ export const sampleData = [
     },
     {
         customer_no: "1-B0039",
+        area: "M Davao",
         customer_name: "Elite Hospital",
         invoice_number: "A0309988",
         document_date: "10/10/2025",
