@@ -15,6 +15,7 @@ class TemplateExport implements FromArray, WithHeadings, ShouldAutoSize
             "Customer No.",
             "Customer Name",
             "Invoice No.",
+            "Area",
             "Document Date",
             "Due Date",
             "Days Overdue",
