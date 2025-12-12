@@ -10,8 +10,6 @@ export default function Create({
     const [error, setError] = useState("");
     const [invoiceNumber, setInvoiceNumber] = useState("");
 
-    console.log(error);
-
     return (
         <dialog open className="modal">
             <div className="modal-box">
@@ -112,13 +110,23 @@ export default function Create({
                             id="amount"
                         />
                     </div>
-
-                    <button
-                        type="submit"
-                        className="btn bg-gray-800 text-white rounded-xl mt-8"
-                    >
-                        Confirm
-                    </button>
+                    
+                    <div className="flex justify-end mt-6 gap-2">
+                        <button
+                            className="btn btn-outline rounded-xl"
+                            onClick={() => {
+                                setOpenCreateInvoiceModal(false);
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="btn bg-gray-800 text-white rounded-xl "
+                        >
+                            Confirm
+                        </button>
+                    </div>
                 </Form>
             </div>
 

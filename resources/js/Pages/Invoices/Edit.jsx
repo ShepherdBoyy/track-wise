@@ -8,7 +8,9 @@ export default function Edit({
     invoice,
 }) {
     const [error, setError] = useState("");
-    const [invoiceNumber, setInvoiceNumber] = useState(invoice.invoice_number || "");
+    const [invoiceNumber, setInvoiceNumber] = useState(
+        invoice.invoice_number || ""
+    );
 
     return (
         <dialog open className="modal">
@@ -114,12 +116,22 @@ export default function Edit({
                         />
                     </div>
 
-                    <button
-                        type="submit"
-                        className="btn bg-gray-800 text-white rounded-xl mt-8"
-                    >
-                        Confirm
-                    </button>
+                    <div className="flex justify-end mt-6 gap-2">
+                        <button
+                            className="btn btn-outline rounded-xl"
+                            onClick={() => {
+                                setOpenEditInvoiceModal(false);
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="btn bg-gray-800 text-white rounded-xl "
+                        >
+                            Confirm
+                        </button>
+                    </div>
                 </Form>
             </div>
 
