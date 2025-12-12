@@ -24,6 +24,7 @@ class StoreUserRequest extends FormRequest
         return [
             "name" => "required|string|min:2|max:50",
             "role" => "required|in:Purchasing,Agent,Collector,Accounting",
+            "area_id" => "required|integer",
             'username' => "required|string|min:4|max:30|regex:/^[A-za-z0-9.]+$/",
             "password" => "required|string|min:8"
         ];

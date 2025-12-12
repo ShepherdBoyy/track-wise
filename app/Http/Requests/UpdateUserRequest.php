@@ -25,6 +25,7 @@ class UpdateUserRequest extends FormRequest
         return [
             "name" => "sometimes|string|min:2|max:50",
             "role" => "sometimes|in:Purchasing,Agent,Collector,Accounting",
+            "area_id" => "sometimes|integer",
             'username' => "sometimes|string|min:4|max:30|regex:/^[A-za-z0-9.]+$/",
             "password" => "sometimes|string|min:8"
         ];
