@@ -103,7 +103,7 @@ export default function Index() {
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6">
                     <div className="flex gap-5">
-                        <div className="w-1/2 flex flex-col justify-between">
+                        <div className="w-2/3 flex flex-col justify-between">
                             <div>
                                 <span className="text-md block text-center font-semibold mb-3">
                                     Sample Excel Format
@@ -113,10 +113,10 @@ export default function Index() {
                                     <thead>
                                         <tr className="bg-base-200 text-base-content">
                                             <th className="border border-base-content/20 text-center p-2 font-normal">
-                                                Customer No.
+                                                Area
                                             </th>
                                             <th className="border border-base-content/20 text-center p-2 font-normal">
-                                                Area
+                                                Customer No.
                                             </th>
                                             <th className="border border-base-content/20 text-center p-2 font-normal">
                                                 Customer Name
@@ -143,10 +143,10 @@ export default function Index() {
                                         {sampleData.map((item, index) => (
                                             <tr key={index}>
                                                 <td className="border border-base-content/20 text-center p-2 whitespace-normal">
-                                                    {item.customer_no}
+                                                    {item.area}
                                                 </td>
                                                 <td className="border border-base-content/20 text-center p-2 whitespace-normal">
-                                                    {item.area}
+                                                    {item.customer_no}
                                                 </td>
                                                 <td className="border border-base-content/20 text-center p-2 whitespace-normal">
                                                     {item.customer_name}
