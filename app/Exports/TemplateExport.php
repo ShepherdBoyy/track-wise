@@ -12,8 +12,8 @@ class TemplateExport implements FromArray, WithHeadings, ShouldAutoSize
     public function headings(): array
     {
         return [
-            "Customer No.",
             "Area",
+            "Customer No.",
             "Customer Name",
             "Invoice No.",
             "Document Date",
