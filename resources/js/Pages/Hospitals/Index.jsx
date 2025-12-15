@@ -8,7 +8,7 @@ import Pagination from "../components/Pagination";
 import SearchIt from "../components/SearchIt";
 import useDebounce from "../hooks/useDebounce";
 import DeleteHospitalModal from "./elements/DeleteHospitalModal";
-import { filterProps, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Index({ hospitals, areas, filters }) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
