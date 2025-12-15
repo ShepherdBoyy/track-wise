@@ -20,6 +20,8 @@ class UserController extends Controller
     {
         $searchQuery = $request->query("search");
         $perPage = $request->query("per_page", 10);
+        $sortBy = $request->query("sort_by", "created_at");
+        $sortOrder = $request->query("sort_order", "asc");
 
         $users = User::query()
             ->with("area")
@@ -39,7 +41,11 @@ class UserController extends Controller
 
         return Inertia::render("UserManagement/Index", [
             "users" => $users,
-            "areas" => $areas
+            "areas" => $areas,
+            "filters" => [
+                "sort_by" => $sortBy,
+                "sort_order" => $sortOrder
+            ]
         ]);
     }
 

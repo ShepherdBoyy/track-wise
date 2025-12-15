@@ -1,17 +1,17 @@
-import { CirclePlus, Pencil, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, CirclePlus, Pencil, Trash2 } from "lucide-react";
 import Master from "../components/Master";
 import Pagination from "../components/Pagination";
 import SearchIt from "../components/SearchIt";
 import { useEffect, useState } from "react";
 import ViewModal from "./elements/ViewModal";
-import Create from "./Create"
+import Create from "./Create";
 import Edit from "./Edit";
 import DeleteUserModal from "./elements/DeleteUserModal";
 import useDebounce from "../hooks/useDebounce";
 import { motion } from "framer-motion";
 import { router } from "@inertiajs/react";
 
-export default function Index({ users, areas }) {
+export default function Index({ users, areas, filters }) {
     const [showToast, setShowToast] = useState(false);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -20,6 +20,8 @@ export default function Index({ users, areas }) {
     const [selectedUser, setSelectedUser] = useState({});
     const [successMesage, setSuccessMessage] = useState("");
     const [search, setSearch] = useState("");
+    const [sortBy, setSortBy] = useState(filters.sort_by || "created_at");
+    const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
 
     const debouncedSearch = useDebounce(search, 300);
 
@@ -29,9 +31,40 @@ export default function Index({ users, areas }) {
                 "/user-management",
                 { search: debouncedSearch },
                 { preserveState: true, preserveScroll: true }
-            )
+            );
         }
     }, [debouncedSearch]);
+
+    const handleSort = (column) => {
+        let newSortOrder = "asc";
+
+        if (sortBy === column) {
+            newSortOrder = sortOrder === "asc" ? "desc" : "asc";
+        }
+
+        setSortBy(column);
+        setSortOrder(newSortOrder);
+
+        router.get(
+            "/user-management",
+            {
+                sort_by: column,
+                sort_order: newSortOrder,
+            },
+            { preserveScroll: true, preserveState: true }
+        );
+    };
+
+    const SortIcon = ({ column }) => {
+        if (sortBy !== column) {
+            return null;
+        }
+        return sortOrder === "asc" ? (
+            <ArrowUp size={16} className="mb-1" />
+        ) : (
+            <ArrowDown size={16} className="mb-1" />
+        );
+    };
 
     return (
         <Master>
@@ -68,11 +101,51 @@ export default function Index({ users, areas }) {
                         <table className="table  table-fixed">
                             <thead>
                                 <tr>
-                                    <th className="w-1/20">#</th>
-                                    <th className="w-1/5">Name</th>
-                                    <th className="w-1/5">Role</th>
-                                    <th className="w-1/4">Area</th>
-                                    <th className="w-1/5">Created At</th>
+                                    <th className="w-[100px]">#</th>
+                                    <th
+                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        onClick={() => {
+                                            handleSort("name");
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Name
+                                            <SortIcon column={"name"} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        onClick={() => {
+                                            handleSort("role");
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Role
+                                            <SortIcon column={"role"} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="w-1/4 cursor-pointer hover:bg-base-200"
+                                        onClick={() => {
+                                            handleSort("area_name");
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Area
+                                            <SortIcon column={"area_name"} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        onClick={() => {
+                                            handleSort("created_at");
+                                        }}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Created At
+                                            <SortIcon column={"created_at"} />
+                                        </div>
+                                    </th>
                                     <th className="text-right">Action</th>
                                 </tr>
                             </thead>
@@ -129,7 +202,9 @@ export default function Index({ users, areas }) {
                                                     data-tip="Delete"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        setOpenDeleteModal(true);
+                                                        setOpenDeleteModal(
+                                                            true
+                                                        );
                                                         setSelectedUser(user);
                                                     }}
                                                 >
