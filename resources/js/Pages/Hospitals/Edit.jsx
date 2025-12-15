@@ -31,6 +31,34 @@ export default function Edit({
                         );
                     }}
                 >
+                    <div className="flex flex-col gap-2 mt-3">
+                        <div className="flex justify-between">
+                            <label htmlFor="area_id" className="text-sm">
+                                Area
+                            </label>
+                            {error.area_id && (
+                                <span className="text-red-500 text-sm">
+                                    {error.area_id}
+                                </span>
+                            )}
+                        </div>
+                        <select
+                            defaultValue={hospital.area.area_name}
+                            className="select w-full"
+                            name="area_id"
+                            id="area_id"
+                        >
+                            <option value="" disabled>
+                                Select
+                            </option>
+                            {areas.map((area) => (
+                                <option key={area.id} value={area.id}>
+                                    {area.area_name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
                     <div className="flex flex-col gap-2 mt-8">
                         <div className="flex justify-between">
                             <label
@@ -73,34 +101,6 @@ export default function Edit({
                             defaultValue={hospital.hospital_name}
                             onChange={(e) => setHospitalName(e.target.value)}
                         />
-                    </div>
-
-                    <div className="flex flex-col gap-2 mt-8">
-                        <div className="flex justify-between">
-                            <label htmlFor="area_id" className="text-sm">
-                                Area
-                            </label>
-                            {error.area_id && (
-                                <span className="text-red-500 text-sm">
-                                    {error.area_id}
-                                </span>
-                            )}
-                        </div>
-                        <select
-                            defaultValue={hospital.area.area_name}
-                            className="select w-full"
-                            name="area_id"
-                            id="area_id"
-                        >
-                            <option value="" disabled>
-                                Select
-                            </option>
-                            {areas.map((area) => (
-                                <option key={area.id} value={area.id}>
-                                    {area.area_name}
-                                </option>
-                            ))}
-                        </select>
                     </div>
 
                     <div className="flex justify-end mt-6 gap-2">
