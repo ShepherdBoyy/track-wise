@@ -21,8 +21,7 @@ export default function ViewModal({ selectedUser, setOpenViewModal }) {
                     </h3>
                     <button
                         onClick={() => setOpenViewModal(false)}
-                        className="text-gray-400 hover:text-gray-600 transition-colors tooltip"
-                        data-tip="close"
+                        className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                     >
                         <X size={20} />
                     </button>
