@@ -2,7 +2,6 @@ import { Link } from "@inertiajs/react";
 import {
     FolderUp,
     Hospital,
-    PackageSearch,
     ArrowRightLeft,
     CircleUserRound,
 } from "lucide-react";
@@ -18,12 +17,6 @@ export default function Sidebar() {
             href: "/hospitals",
             icon: Hospital,
         },
-        // {
-        //     id: "invoices",
-        //     label: "Invoices",
-        //     href: "/invoices",
-        //     icon: PackageSearch,
-        // },
         {
             id: "import-data",
             label: "Import Data",
@@ -37,6 +30,7 @@ export default function Sidebar() {
             icon: CircleUserRound,
         },
     ];
+    
     return (
         <div className="drawer-side is-drawer-close:overflow-visible">
             <label
@@ -46,12 +40,15 @@ export default function Sidebar() {
             ></label>
             <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-64 border-r border-base-content/5 bg-base-100">
                 <ul className="menu w-full grow gap-y-2">
-                    <label
-                        htmlFor="my-drawer-4"
-                        className="btn btn-square btn-ghost"
-                    >
-                        <ArrowRightLeft className="size-3" />
-                    </label>
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-lg is-drawer-close:hidden ml-3">Invoice Tracker</span>
+                        <label
+                            htmlFor="my-drawer-4"
+                            className="btn btn-square btn-ghost"
+                        >
+                            <ArrowRightLeft className="size-3" />
+                        </label>
+                    </div>
 
                     {navItems.map((item) => {
                         const isActive = url.startsWith(item.href);
@@ -60,7 +57,7 @@ export default function Sidebar() {
                             <li key={item.id}>
                                 <Link
                                     href={item.href}
-                                    className={`is-drawer-close:tooltip is-drawer-close: is-drawer-close:tooltip-right rounded-lg transition-colors duration-300 ease-in-out 
+                                    className={`is-drawer-close:tooltip is-drawer-close:tooltip-right rounded-lg transition-colors duration-300 ease-in-out 
                                         ${
                                             isActive
                                                 ? "bg-linear-to-br from-primary/40 to-primary/20 text-black"
