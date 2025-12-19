@@ -86,13 +86,24 @@ class InvoiceHistoryController extends Controller
             "description" => "required|string"
         ]);
 
+        $description = $validated['description'] === 'closed'
+            ? 'Invoice has been closed'
+            : $validated['description'];
+
         InvoiceHistory::create([
             "invoice_id" => $invoiceId,
             "updated_by" => Auth::id(),
-            "description" => $validated["description"]
+            "description" => $description
         ]);
 
-        return back()->with("success", true);
+        if ($validated["description"] === "closed") {
+            Invoice::where("id", $invoiceId)->update([
+                "status" => "closed",
+                "date_closed" => now()
+            ]);
+        }
+
+        return back()->with("success", true);   
     }
 
     public function show(string $id)
