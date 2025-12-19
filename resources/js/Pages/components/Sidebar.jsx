@@ -37,7 +37,7 @@ export default function Sidebar() {
                 aria-label="close sidebar"
                 className="drawer-overlay"
             ></label>
-            <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-64 border-r border-base-content/5 bg-base-100">
+            <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-74 border-r border-base-content/5 bg-base-100">
                 <ul className="menu w-full grow gap-y-2">
                     <div className="flex justify-between items-center mb-3">
                         <span className="text-lg is-drawer-close:hidden ml-3">Invoice Tracker</span>
