@@ -94,7 +94,7 @@ class InvoiceController extends Controller
 
         $invoice->history()->create([
             "updated_by" => Auth::id(),
-            "description" => "Invoice has been created"
+            "description" => "Invoice has been created manually"
         ]);
 
         return back()->with("success", true);
