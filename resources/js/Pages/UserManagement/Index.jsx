@@ -20,7 +20,7 @@ export default function Index({ users, areas, filters }) {
     const [selectedUser, setSelectedUser] = useState({});
     const [successMesage, setSuccessMessage] = useState("");
     const [search, setSearch] = useState("");
-    const [sortBy, setSortBy] = useState(filters.sort_by || "created_at");
+    const [sortBy, setSortBy] = useState(filters.sort_by || null);
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
 
     const debouncedSearch = useDebounce(search, 300);
