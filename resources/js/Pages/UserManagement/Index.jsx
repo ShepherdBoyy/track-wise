@@ -258,7 +258,7 @@ export default function Index({ users, areas, filters }) {
 
                     {showToast && (
                         <div className="toast toast-top toast-center">
-                            <div className="alert alert-success">
+                            <div className="alert alert-info">
                                 <span>{successMesage}</span>
                             </div>
                         </div>

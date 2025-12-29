@@ -15,7 +15,7 @@ export default function Index({ invoice, history, editor }) {
             <div className="p-8 bg-base-200 ">
                 {showToast && (
                     <div className="toast toast-top toast-center">
-                        <div className="alert alert-success">
+                        <div className="alert alert-info">
                             <span>Updated Successfully</span>
                         </div>
                     </div>

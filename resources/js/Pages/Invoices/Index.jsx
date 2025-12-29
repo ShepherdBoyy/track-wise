@@ -311,7 +311,7 @@ export default function Show({
 
                         {showToast && (
                             <div className="toast toast-top toast-center">
-                                <div className="alert alert-success">
+                                <div className="alert alert-info">
                                     <span>{successMessage}</span>
                                 </div>
                             </div>
