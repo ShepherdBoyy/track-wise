@@ -69,31 +69,28 @@ export default function Index({ users, areas, filters }) {
     return (
         <Master>
             <div className="bg-base-200 ">
-                <div className="p-6">
+                <div className="flex justify-between items-center mb-4">
                     <span className="text-2xl">User Management</span>
+                    <SearchIt
+                        search={search}
+                        setSearch={setSearch}
+                        name="User"
+                    />
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">
-                    <div className="flex items-center justify-between mb-4 gap-2 ">
+                    <div className="flex items-center justify-between mb-4 gap-2">
                         <div className="flex items-center gap-x-3">
                             <span className="text-2xl">All Users</span>
                         </div>
-                        <div className="flex items-center gap-x-2">
-                            <div className="flex gap-2">
-                                <button
-                                    className="btn btn-primary rounded-xl flex"
-                                    onClick={() => setOpenCreateModal(true)}
-                                >
-                                    <CirclePlus size={18} />
-                                    Add User
-                                </button>
-                            </div>
-                            <div className="flex justify-content-end">
-                                <SearchIt
-                                    search={search}
-                                    setSearch={setSearch}
-                                    name="User"
-                                />
-                            </div>
+
+                        <div className="flex gap-2">
+                            <button
+                                className="btn btn-primary rounded-xl flex"
+                                onClick={() => setOpenCreateModal(true)}
+                            >
+                                <CirclePlus size={18} />
+                                Add User
+                            </button>
                         </div>
                     </div>
 
