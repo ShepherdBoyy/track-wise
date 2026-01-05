@@ -47,7 +47,7 @@ export default function Login() {
                                         color="black"
                                     /> */}
                                 </div>
-                                SaleSync
+                                Invoice Tracker
                             </div>
                         </motion.div>
                     </div>
