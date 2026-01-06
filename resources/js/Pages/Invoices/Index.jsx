@@ -76,10 +76,11 @@ export default function Index({
                                 <button
                                     key={index}
                                     type="button"
-                                    className={`px-4 border-b-0 rounded-2xl text-gray-500 tab gap-2 ${
-                                        active === day.label ? "tab-active text-gray-950" : ""
+                                    className={`px-4 border-b-0 rounded-2xl text-black tab gap-2 ${
+                                        active === day.label
+                                            ? "tab-active font-semibold"
+                                            : "hover:bg-white hover:text-black"
                                     }`}
-                                    disabled={day.invoices_count == 0}
                                     onClick={() => {
                                         setActive(day.label);
                                         setSelectedIds([]);
