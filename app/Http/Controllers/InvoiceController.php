@@ -9,7 +9,6 @@ use App\Models\Invoice;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class InvoiceController extends Controller
@@ -20,6 +19,47 @@ class InvoiceController extends Controller
         $searchQuery = $request->query("search");
         $processingFilter = $request->processing_days;
         $perPage = $request->query("per_page", 10);
+
+        $countsQuery = Invoice::query()
+            ->when($hospitalId, function ($query) use ($hospitalId) {
+                $query->where("hospital_id", $hospitalId);
+            })
+            ->selectRaw("
+                SUM(CASE
+                    WHEN date_closed is NULL AND DATEDIFF(due_date, CURDATE()) > 0
+                    THEN 1 ELSE 0
+                END) as current_count,
+                SUM(CASE
+                    WHEN date_closed is NULL AND DATEDIFF(due_date, CURDATE()) BETWEEN -30 and -1
+                    THEN 1 ELSE 0
+                END) as thirty_days_count,
+                SUM(CASE
+                    WHEN date_closed is NULL AND DATEDIFF(due_date, CURDATE()) BETWEEN -60 and -31
+                    THEN 1 ELSE 0
+                END) as sixty_days_count,
+                SUM(CASE
+                    WHEN date_closed is NULL AND DATEDIFF(due_date, CURDATE()) BETWEEN -90 and -61
+                    THEN 1 ELSE 0
+                END) as ninety_days_count,
+                SUM(CASE
+                    WHEN date_closed is NULL AND DATEDIFF(due_date, CURDATE()) <= -91
+                    THEN 1 ELSE 0
+                END) as over_ninety_count,
+                SUM(CASE
+                    WHEN date_closed is NOT NULL
+                    THEN 1 ELSE 0
+                END) as closed_count
+            ")
+            ->first();
+        
+        $filterCounts = [
+            "current" => $countsQuery->current_count ?? 0,
+            "thirty_days" => $countsQuery->thirty_days_count ?? 0,
+            "sixty_days" => $countsQuery->sixty_days_count ?? 0,
+            "ninety_days" => $countsQuery->ninety_days_count ?? 0,
+            "over_ninety" => $countsQuery->over_ninety_count ?? 0,
+            "closed" => $countsQuery->closed_count ?? 0
+        ];
 
         $invoices = Invoice::query()
             ->with(["hospital", "creator"])
@@ -64,6 +104,7 @@ class InvoiceController extends Controller
                 : null,
             "searchQuery" => $searchQuery,
             "processingFilter" => str_replace("-days", " days", $processingFilter),
+            "filterCounts" => $filterCounts
         ]);
     }
 
