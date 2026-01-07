@@ -3,8 +3,9 @@ import { useState } from "react";
 import { FileText } from "lucide-react";
 import OpenInvoice from "./elements/OpenInvoice";
 import ClosedInvoice from "./elements/ClosedInvoice";
+import Breadcrumbs from "../components/Breadcrumbs";
 
-export default function Index({ invoice, history, editor }) {
+export default function Index({ invoice, history, editor, breadcrumbs }) {
     const [showToast, setShowToast] = useState(false);
     const [error, setError] = useState("");
 
@@ -12,7 +13,7 @@ export default function Index({ invoice, history, editor }) {
 
     return (
         <Master>
-            <div className="p-8 bg-base-200 ">
+            <div className="bg-base-200">
                 {showToast && (
                     <div className="toast toast-top toast-center">
                         <div className="alert alert-info">
@@ -20,7 +21,10 @@ export default function Index({ invoice, history, editor }) {
                         </div>
                     </div>
                 )}
-                <div className="flex flex-col bg-white p-6 rounded-xl">
+                <div className="flex items-center gap-2 justify-between pb-4">
+                    <Breadcrumbs items={breadcrumbs} />
+                </div>
+                <div className="flex flex-col bg-white p-6 rounded-xl shadow-lg">
                     <div className="flex justify-between cursor-pointer items-center mb-4">
                         <span className="text-2xl">
                             {invoice.hospital.hospital_name}
