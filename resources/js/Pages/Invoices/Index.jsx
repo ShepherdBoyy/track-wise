@@ -9,6 +9,7 @@ import Create from "./Create";
 import DeleteInvoiceModal from "./elements/DeleteInvoiceModal";
 import { motion } from "framer-motion";
 import Edit from "./Edit";
+import Breadcrumbs from "../components/Breadcrumbs";
 
 export default function Index({
     invoices,
@@ -16,6 +17,7 @@ export default function Index({
     searchQuery,
     processingFilter,
     filterCounts,
+    breadcrumbs,
 }) {
     const [search, setSearch] = useState(searchQuery || "");
     const [active, setActive] = useState(processingFilter);
@@ -58,11 +60,7 @@ export default function Index({
         <Master>
             <div className="bg-base-200">
                 <div className="flex items-center gap-2 justify-between pb-4">
-                    <div className="flex items-center gap-x-3">
-                        <h1 className="flex-1 text-2xl">
-                            {hospital.hospital_name}
-                        </h1>
-                    </div>
+                    <Breadcrumbs items={breadcrumbs} />
                     <SearchIt
                         search={search}
                         setSearch={setSearch}
