@@ -9,8 +9,9 @@ import SearchIt from "../components/SearchIt";
 import useDebounce from "../hooks/useDebounce";
 import DeleteHospitalModal from "./elements/DeleteHospitalModal";
 import { motion } from "framer-motion";
+import Breadcrumbs from "../components/Breadcrumbs";
 
-export default function Index({ hospitals, areas, filters }) {
+export default function Index({ hospitals, areas, filters, breadcrumbs }) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -68,7 +69,7 @@ export default function Index({ hospitals, areas, filters }) {
         <Master>
             <div className="bg-base-200">
                 <div className="flex items-center justify-between pb-4">
-                    <span className="text-2xl">Hospitals</span>
+                    <Breadcrumbs items={breadcrumbs} />
                     <div className="flex justify-content-end">
                         <SearchIt
                             search={search}

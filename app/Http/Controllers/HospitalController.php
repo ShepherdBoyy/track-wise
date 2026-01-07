@@ -41,6 +41,9 @@ class HospitalController extends Controller
             "filters" => [
                 "sort_by" => $sortBy,
                 "sort_order" => $sortOrder
+            ],
+            "breadcrumbs" => [
+                ["label" => "Hospitals", "url" => null]
             ]
         ]);
     }
