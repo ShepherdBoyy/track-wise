@@ -36,8 +36,11 @@ export default function Index({
     useEffect(() => {
         if (debouncedSearch.trim() !== "") {
             router.get(
-                `/hospitals/${hospital.id}/invoices/${active}`,
-                { search: debouncedSearch },
+                `/hospitals/${hospital.id}/invoices`,
+                {
+                    search: debouncedSearch,
+                    processing_days: active.replace(/ /g, "-"),
+                },
                 {
                     preserveState: true,
                     replace: true,
@@ -83,9 +86,15 @@ export default function Index({
                                         setActive(day.label);
                                         setSelectedIds([]);
                                         setIsDeleteMode(false);
-                                        router.visit(
-                                            `/hospitals/${hospital.id}/invoices/${day.label.replace(/ /g, "-")}`,
-                                            {},
+                                        router.get(
+                                            `/hospitals/${hospital.id}/invoices`,
+                                            {
+                                                processing_days:
+                                                    day.label.replace(
+                                                        / /g,
+                                                        "-"
+                                                    ),
+                                            },
                                             {
                                                 preserveScroll: true,
                                                 preserveState: true,

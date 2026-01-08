@@ -17,7 +17,7 @@ class InvoiceController extends Controller
     {
         $hospitalId = $request->hospital_id;
         $searchQuery = $request->query("search");
-        $processingFilter = $request->processing_days;
+        $processingFilter = $request->query("processing_days");
         $perPage = $request->query("per_page", 10);
         $hospital = $hospitalId ? Hospital::withCount("invoices")->find($hospitalId) : null;
 
@@ -98,11 +98,20 @@ class InvoiceController extends Controller
             ->paginate($perPage)
             ->withQueryString();
         
+        $processingLabelMap = [
+            "Current" => "Current",
+            "30-days" => "30 days",
+            "31-60-days" => "31-60 days",
+            "61-90-days" => "61-90 days",
+            "91-over" => "91-over",
+            "Closed" => "Closed"
+        ];
+        
         return Inertia::render("Invoices/Index", [
             "invoices" => $invoices,
             "hospital" => $hospital,
             "searchQuery" => $searchQuery,
-            "processingFilter" => str_replace("-days", " days", $processingFilter),
+            "processingFilter" => $processingLabelMap[$processingFilter] ?? "Current",
             "filterCounts" => $filterCounts,
             "breadcrumbs" => [
                 ["label" => "Hospitals", "url" => "/hospitals"],
