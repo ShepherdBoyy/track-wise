@@ -153,7 +153,8 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         }}
                                         onClick={() =>
                                             router.get(
-                                                `/hospitals/${hospital.id}/invoices`
+                                                `/hospitals/${hospital.id}/invoices`,
+                                                { processing_days: "Current" }
                                             )
                                         }
                                     >
