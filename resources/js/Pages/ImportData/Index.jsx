@@ -197,16 +197,16 @@ export default function Index() {
                                     dragActive
                                         ? "border-blue-500"
                                         : "border-gray-300"
-                                } border-dashed rounded-md p-4 min-h-[300px] flex flex-col items-center justify-center cursor-pointer transition-colors`}
+                                } border-dashed rounded-md p-4 min-h-[300px] flex flex-col items-center justify-center transition-colors`}
                                 onDragEnter={handleDragIn}
                                 onDragLeave={handleDragOut}
                                 onDragOver={handleDrag}
                                 onDrop={handleDrop}
-                                onClick={() =>
-                                    document
-                                        .getElementById("chooseFile")
-                                        .click()
-                                }
+                                // onClick={() =>
+                                //     document
+                                //         .getElementById("chooseFile")
+                                //         .click()
+                                // }
                             >
                                 {/* Gray overlay when dragging - appears on top */}
                                 {dragActive && (
