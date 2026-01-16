@@ -14,6 +14,8 @@ export default function Index() {
     const [showToast, setShowToast] = useState(false);
     const dragCounter = useRef(0);
 
+    console.log(error)
+
     const handleDrag = (e) => {
         e.preventDefault();
         e.stopPropagation();
