@@ -21,12 +21,10 @@ class AreaFactory extends Factory
             "Iloilo",
             "Bacolod",
             "Zamboanga",
-            "All"
         ];
 
         return [
             "area_name" => $this->faker->unique()->randomElement($areas),
         ];
     }
-
 }

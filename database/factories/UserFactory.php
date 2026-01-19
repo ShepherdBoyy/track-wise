@@ -30,8 +30,6 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'username' => fake()->unique()->userName(),
-            'role' => fake()->randomElement(['agent', 'purchasing', 'accounting', 'collector']),
-            "area_id" => Area::factory(),
             'password' => Hash::make($plainPassword),
             'visible_password' => Crypt::encryptString($plainPassword)
         ];
