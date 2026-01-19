@@ -78,11 +78,6 @@ class InvoiceHistoryController extends Controller
         return $pdf->stream($filename);
     }
 
-    public function create()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
         $invoiceId = $request->invoice_id;
@@ -109,25 +104,5 @@ class InvoiceHistoryController extends Controller
         }
 
         return back()->with("success", true);   
-    }
-
-    public function show(string $id)
-    {
-        //
-    }
-
-    public function edit(string $id)
-    {
-        //
-    }
-
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    public function destroy(string $id)
-    {
-        //
     }
 }

@@ -6,9 +6,9 @@ use App\Http\Requests\StoreHospitalRequest;
 use App\Http\Requests\UpdateHospitalRequest;
 use App\Models\Area;
 use App\Models\Hospital;
-use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
 class HospitalController extends Controller
@@ -19,12 +19,16 @@ class HospitalController extends Controller
         $perPage = $request->query("per_page", 10);
         $sortBy = $request->query("sort_by", "created_at");
         $sortOrder = $request->query("sort_order", "asc");
-        $userAreaId = Auth::user()->area_id;
+        $user = Auth::user();
         $areas = Area::all();
 
-        $hospitals = Hospital::withCount("invoices")
-            ->with("area")
-            ->where("area_id", $userAreaId)
+        $query = Hospital::withCount("invoices")->with("area");
+
+        if (Gate::denies("viewAny", Hospital::class)) {
+            $query->where("area_id", $user->area_id);
+        }
+            
+        $hospitals = $query
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where(function ($q) use ($searchQuery) {
                     $q->where("hospital_name", "like", "%{$searchQuery}%")
