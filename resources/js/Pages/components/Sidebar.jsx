@@ -7,9 +7,7 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
-    const { url, props } = usePage();
-
-    console.log(props.permissions);
+    const { url } = usePage();
 
     const navItems = [
         {
@@ -17,28 +15,21 @@ export default function Sidebar() {
             label: "Hospital",
             href: "/hospitals",
             icon: Hospital,
-            canView: props.permissions.canViewHospitals
         },
         {
             id: "import-data",
             label: "Import Data",
             href: "/import-data",
             icon: FolderUp,
-            canView: props.permissions.canViewImportData
         },
         {
             id: "user-management",
             label: "User Management",
             href: "/user-management",
             icon: CircleUserRound,
-            canView: props.permissions.canViewUserManagement
         },
     ];
 
-    const visibleNavItems = navItems.filter((item) => item.canView);
-
-    console.log(visibleNavItems);
-    
     return (
         <div className="drawer-side is-drawer-close:overflow-visible">
             <label
@@ -58,7 +49,7 @@ export default function Sidebar() {
                         </label>
                     </div>
 
-                    {visibleNavItems.map((item) => {
+                    {navItems.map((item) => {
                         const isActive = url.startsWith(item.href);
                         const Icon = item.icon;
                         return (

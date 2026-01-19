@@ -110,7 +110,7 @@ export default function Index({ users, areas, filters }) {
                                             <SortIcon column={"name"} />
                                         </div>
                                     </th>
-                                    <th
+                                    {/* <th
                                         className="w-1/5 cursor-pointer hover:bg-base-200"
                                         onClick={() => {
                                             handleSort("role");
@@ -120,8 +120,8 @@ export default function Index({ users, areas, filters }) {
                                             Role
                                             <SortIcon column={"role"} />
                                         </div>
-                                    </th>
-                                    <th
+                                    </th> */}
+                                    {/* <th
                                         className="w-1/4 cursor-pointer hover:bg-base-200"
                                         onClick={() => {
                                             handleSort("area_name");
@@ -131,7 +131,7 @@ export default function Index({ users, areas, filters }) {
                                             Area
                                             <SortIcon column={"area_name"} />
                                         </div>
-                                    </th>
+                                    </th> */}
                                     <th
                                         className="w-1/5 cursor-pointer hover:bg-base-200"
                                         onClick={() => {
@@ -171,8 +171,7 @@ export default function Index({ users, areas, filters }) {
                                                 1}
                                         </td>
                                         <td>{user.name}</td>
-                                        <td>{user.role}</td>
-                                        <td>{user.area.area_name}</td>
+                                        {/* <td>{user.area.area_name}</td> */}
                                         <td>
                                             {new Date(
                                                 user.created_at
