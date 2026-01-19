@@ -9,38 +9,20 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'username',
-        'role',
-        'area_id',
         'password',
         "visible_password"
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -57,5 +39,40 @@ class User extends Authenticatable
     public function area()
     {
         return $this->belongsTo(Area::class);
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, "user_permissions");
+    }
+
+    public function areas()
+    {
+        return $this->belongsToMany(Area::class, "user_areas");
+    }
+
+    public function hasPermission(string $permissionName)
+    {
+        return $this->permissions()->where("name", $permissionName)->exists();
+    }
+
+    public function hasAnyPermission(array $permissions)
+    {
+        return $this->permissions()->whereIn("name", $permissions)->exists();
+    }
+
+    public function hasAllPermissions(array $permissions)
+    {
+        return $this->permissions()->whereIn("name", $permissions)->count() === count($permissions);
+    }
+
+    public function canViewAllHospitals()
+    {
+        return $this->hasPermission("view_all_hospitals");
+    }
+
+    public function hasAreaRestrictions()
+    {
+        return !$this->canViewAllHospitals() && $this->areas()->exists();
     }
 }
