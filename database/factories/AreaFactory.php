@@ -21,6 +21,7 @@ class AreaFactory extends Factory
             "Iloilo",
             "Bacolod",
             "Zamboanga",
+            "All"
         ];
 
         return [
