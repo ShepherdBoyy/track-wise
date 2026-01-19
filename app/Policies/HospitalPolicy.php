@@ -9,7 +9,7 @@ class HospitalPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->hasAnyPermissions(["view_all_hospitals", "view_area_hospitals"]);
+        return $user->hasAnyPermission(["view_all_hospitals", "view_area_hospitals"]);
     }
 
     public function viewAll(User $user): bool
