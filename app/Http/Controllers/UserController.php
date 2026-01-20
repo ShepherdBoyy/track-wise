@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Area;
+use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -24,7 +25,7 @@ class UserController extends Controller
         $sortOrder = $request->query("sort_order", "asc");
 
         $users = User::query()
-            ->with("area")
+            ->with(["permissions", "areas"])
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where("name", "like", "%{$searchQuery}%");
             })
@@ -35,23 +36,26 @@ class UserController extends Controller
                             ->select("users.*");
                     } else {
                         $query->orderBy($sortBy, $sortOrder);
-                    }
-                            
+                    }   
                 },
             )
             ->paginate($perPage)
             ->withQueryString();
         
         $areas = Area::all();
+        $permissions = Permission::all()->groupBy("category");
 
         $users->getCollection()->transform(function ($user) {
             $user->plain_password = Crypt::decryptString($user->visible_password);
+            $user->permission_ids = $user->permissions->pluck("id")->toArray();
+            $user->area_ids = $user->areas->pluck("id")->toArray();
             return $user;
         });
 
         return Inertia::render("UserManagement/Index", [
             "users" => $users,
             "areas" => $areas,
+            "permissionList" => $permissions,
             "filters" => [
                 "sort_by" => $sortBy,
                 "sort_order" => $sortOrder
@@ -65,17 +69,22 @@ class UserController extends Controller
 
         $validated = $request->validated();
 
-        if (!empty($validated["password"])) {
-            $plainPassword = $validated["password"];
+        $plainPassword = $validated["password"];
+        $validated["password"] = Hash::make($plainPassword);
+        $validated["visible_password"] = Crypt::encryptString($plainPassword);
 
-            $validated["password"] = Hash::make($plainPassword);
-            $validated["visible_password"] = Crypt::encryptString($plainPassword);
-        } else {
-            unset($validated["password"]);
-            unset($validated["visible_password"]);
+        $user = User::create([
+            "name" => $validated["name"],
+            "username" => $validated["username"],
+            "password" => $validated["password"],
+            "visible_password" => $validated["visible_password"]
+        ]);
+
+        $user->permissions()->attach($validated["permissions"]);
+
+        if (!empty($validated["areas"])) {
+            $user->areas()->attach($validated["areas"]);
         }
-
-        User::create($validated);
 
         return back()->with("success", true);
     }
@@ -107,7 +116,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        Gate::authorize("delete");
+        Gate::authorize("delete", $user);
 
         $user->delete();
 

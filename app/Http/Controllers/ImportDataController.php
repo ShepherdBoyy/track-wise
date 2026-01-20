@@ -13,21 +13,21 @@ class ImportDataController extends Controller
 {
     public function index()
     {
-        Gate::authorize("viewAny");
+        Gate::authorize("viewImportData");
 
         return Inertia::render("ImportData/Index");
     }
 
     public function downloadTemplate()
     {
-        Gate::authorize("viewAny");
+        Gate::authorize("viewImportData");
 
         return Excel::download(new TemplateExport, "Invoice_Tracker_Template.xlsx");
     }
 
     public function store(Request $request)
     {
-        Gate::authorize("create");
+        Gate::authorize("importData");
 
         $request->validate([
             "file" => "required|mimes:xlsx,xls,csv"
