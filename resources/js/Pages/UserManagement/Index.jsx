@@ -30,7 +30,7 @@ export default function Index({ users, areas, filters, permissionList }) {
             router.get(
                 "/user-management",
                 { search: debouncedSearch },
-                { preserveState: true, preserveScroll: true }
+                { preserveState: true, preserveScroll: true },
             );
         }
     }, [debouncedSearch]);
@@ -51,7 +51,7 @@ export default function Index({ users, areas, filters, permissionList }) {
                 sort_by: column,
                 sort_order: newSortOrder,
             },
-            { preserveScroll: true, preserveState: true }
+            { preserveScroll: true, preserveState: true },
         );
     };
 
@@ -100,7 +100,7 @@ export default function Index({ users, areas, filters, permissionList }) {
                                 <tr>
                                     <th className="w-[100px]">#</th>
                                     <th
-                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        className="w-1/4 cursor-pointer hover:bg-base-200"
                                         onClick={() => {
                                             handleSort("name");
                                         }}
@@ -110,30 +110,13 @@ export default function Index({ users, areas, filters, permissionList }) {
                                             <SortIcon column={"name"} />
                                         </div>
                                     </th>
-                                    {/* <th
-                                        className="w-1/5 cursor-pointer hover:bg-base-200"
-                                        onClick={() => {
-                                            handleSort("role");
-                                        }}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            Role
-                                            <SortIcon column={"role"} />
-                                        </div>
-                                    </th> */}
-                                    {/* <th
-                                        className="w-1/4 cursor-pointer hover:bg-base-200"
-                                        onClick={() => {
-                                            handleSort("area_name");
-                                        }}
-                                    >
+                                    <th className="w-1/4 cursor-pointer hover:bg-base-200">
                                         <div className="flex items-center gap-2">
                                             Area
-                                            <SortIcon column={"area_name"} />
                                         </div>
-                                    </th> */}
+                                    </th>
                                     <th
-                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        className="w-1/4 cursor-pointer hover:bg-base-200"
                                         onClick={() => {
                                             handleSort("created_at");
                                         }}
@@ -148,71 +131,95 @@ export default function Index({ users, areas, filters, permissionList }) {
                             </thead>
 
                             <tbody>
-                                {users.data.map((user, index) => (
-                                    <motion.tr
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{
-                                            duration: 0.2,
-                                            delay: index * 0.05,
-                                        }}
-                                        key={user.id}
-                                        className="hover:bg-base-300 cursor-pointer"
-                                        onClick={() => {
-                                            setOpenViewModal(true);
-                                            setSelectedUser(user);
-                                        }}
-                                    >
-                                        <td>
-                                            {(users.current_page - 1) *
-                                                users.per_page +
-                                                index +
-                                                1}
-                                        </td>
-                                        <td>{user.name}</td>
-                                        {/* <td>{user.area.area_name}</td> */}
-                                        <td>
-                                            {new Date(
-                                                user.created_at
-                                            ).toLocaleDateString()}
-                                        </td>
-                                        <td>
-                                            <div className="flex gap-3 justify-end pr-2">
-                                                <div
-                                                    className="tooltip"
-                                                    data-tip="Edit"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setOpenEditModal(true);
-                                                        setSelectedUser(user);
-                                                    }}
-                                                >
-                                                    <Pencil
-                                                        size={18}
-                                                        className="cursor-pointer"
-                                                    />
+                                {users.data.map((user, index) => {
+                                    const getArea = () => {
+                                        const canViewAllHospitals = user.permissions.some(
+                                            (permission) => permission.name === "view_all_hospitals"
+                                        );
+
+                                        if (canViewAllHospitals) {
+                                            return "All Hospitals";
+                                        } else if (user.areas) {
+                                            return user.areas.map((area) => area.area_name).join(", ");
+                                        } else {
+                                            return "No Access";
+                                        }
+                                    }
+
+                                    const area = getArea();
+
+                                    return (
+                                        <motion.tr
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            exit={{ opacity: 0 }}
+                                            transition={{
+                                                duration: 0.2,
+                                                delay: index * 0.05,
+                                            }}
+                                            key={user.id}
+                                            className="hover:bg-base-300 cursor-pointer"
+                                            onClick={() => {
+                                                setOpenViewModal(true);
+                                                setSelectedUser(user);
+                                            }}
+                                        >
+                                            <td>
+                                                {(users.current_page - 1) *
+                                                    users.per_page +
+                                                    index +
+                                                    1}
+                                            </td>
+                                            <td>{user.name}</td>
+                                            <td>{area}</td>
+                                            <td>
+                                                {new Date(
+                                                    user.created_at,
+                                                ).toLocaleDateString()}
+                                            </td>
+                                            <td>
+                                                <div className="flex gap-3 justify-end pr-2">
+                                                    <div
+                                                        className="tooltip"
+                                                        data-tip="Edit"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setOpenEditModal(
+                                                                true,
+                                                            );
+                                                            setSelectedUser(
+                                                                user,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <Pencil
+                                                            size={18}
+                                                            className="cursor-pointer"
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        className="tooltip"
+                                                        data-tip="Delete"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setOpenDeleteModal(
+                                                                true,
+                                                            );
+                                                            setSelectedUser(
+                                                                user,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <Trash2
+                                                            size={18}
+                                                            className="cursor-pointer"
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <div
-                                                    className="tooltip"
-                                                    data-tip="Delete"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setOpenDeleteModal(
-                                                            true
-                                                        );
-                                                        setSelectedUser(user);
-                                                    }}
-                                                >
-                                                    <Trash2
-                                                        size={18}
-                                                        className="cursor-pointer"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </motion.tr>
-                                ))}
+                                            </td>
+                                        </motion.tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

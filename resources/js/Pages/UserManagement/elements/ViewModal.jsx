@@ -12,6 +12,22 @@ export default function ViewModal({ selectedUser, setOpenViewModal }) {
         }, 2000);
     };
 
+    const getAccessLevel = () => {
+        const canViewAllHospitals = selectedUser.permissions.some(
+            (permission) => permission.name === "view_all_hospitals",
+        );
+
+        if (canViewAllHospitals) {
+            return "All Hospitals";
+        } else if (selectedUser.areas) {
+            return selectedUser.areas.map((area) => area.area_name).join(", ");
+        } else {
+            return "No Access";
+        }
+    };
+
+    const accessLevel = getAccessLevel();
+
     return (
         <dialog open className="modal">
             <div className="modal-box max-w-xl bg-white rounded-2xl shadow-2xl p-0">
@@ -35,7 +51,7 @@ export default function ViewModal({ selectedUser, setOpenViewModal }) {
                                 {selectedUser.name}
                             </p>
                             <span className="bg-orange-100 text-orange-600 text-xs font-medium px-3 py-1 rounded-full">
-                                {selectedUser.role}
+                                {accessLevel}
                             </span>
                         </div>
                     </div>
@@ -53,7 +69,7 @@ export default function ViewModal({ selectedUser, setOpenViewModal }) {
                                     onClick={() =>
                                         handleCopy(
                                             selectedUser.username,
-                                            "username"
+                                            "username",
                                         )
                                     }
                                     className="text-gray-400 hover:text-gray-600 transition-colors ml-2 flex-shrink-0 cursor-pointer tooltip"
@@ -82,7 +98,7 @@ export default function ViewModal({ selectedUser, setOpenViewModal }) {
                                     onClick={() =>
                                         handleCopy(
                                             selectedUser.plain_password,
-                                            "password"
+                                            "password",
                                         )
                                     }
                                     className="text-gray-400 hover:text-gray-600 transition-colors ml-2 flex-shrink-0 cursor-pointer tooltip"
