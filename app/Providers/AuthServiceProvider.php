@@ -31,7 +31,7 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define("importData", function (User $user) {
-            return $user->hasPermission("import_data");
+            return $user->hasPermission("manage_import_data");
         });
     }
 }
