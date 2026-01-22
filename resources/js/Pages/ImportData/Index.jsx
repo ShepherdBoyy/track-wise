@@ -12,9 +12,9 @@ export default function Index() {
     const [progress, setProgress] = useState(0);
     const [showToast, setShowToast] = useState(false);
     const dragCounter = useRef(0);
-    const { import_errors, success } = usePage().props;
 
-    console.log(import_errors);
+    const { import_errors, success, permissions } = usePage().props;
+    const importErrors = import_errors || [];
 
     const handleDrag = (e) => {
         e.preventDefault();
@@ -70,13 +70,14 @@ export default function Index() {
                 {
                     forceFormData: true,
                     onProgress: (progressEvent) => {
+                        console.log(progressEvent);
                         setProgress(progressEvent.percentage);
                     },
                     onError: () => {
                         setUploading(false);
                         setProgress(0);
                     },
-                }
+                },
             );
         }
     };
@@ -89,10 +90,13 @@ export default function Index() {
             setFileName("");
             setShowToast(true);
             setTimeout(() => setShowToast(false), 3000);
+        } else if (importErrors.length > 0) {
+            setUploading(false);
+            setProgress(0);
         }
-    }, [success]);
+    }, [success, importErrors]);
 
-    const getAttributeLabel = (attribute) =>{
+    const getAttributeLabel = (attribute) => {
         const labels = {
             area: "Area",
             customer_no: "Customer No",
@@ -100,10 +104,10 @@ export default function Index() {
             invoice_no: "Invoice No",
             document_date: "Document Date",
             due_date: "Due Date",
-            amount: "Amount"
-        }
+            amount: "Amount",
+        };
         return labels[attribute] || attribute;
-    }
+    };
 
     return (
         <Master>
@@ -210,11 +214,12 @@ export default function Index() {
                                 Upload
                             </span>
                             <div
-                                className={`relative bg-white border-2 ${
-                                    dragActive
-                                        ? "border-blue-500"
-                                        : "border-gray-300"
-                                } border-dashed rounded-md p-4 min-h-[300px] flex flex-col items-center justify-center transition-colors`}
+                                className={`relative bg-white border-2 
+                                    ${
+                                        dragActive
+                                            ? "border-blue-500"
+                                            : "border-gray-300"
+                                    } border-dashed rounded-md p-4 min-h-[300px] flex flex-col items-center justify-center transition-colors`}
                                 onDragEnter={handleDragIn}
                                 onDragLeave={handleDragOut}
                                 onDragOver={handleDrag}
@@ -258,7 +263,7 @@ export default function Index() {
                                         </span>
                                         <label
                                             htmlFor="chooseFile"
-                                            className="text-blue-600 text-base font-semibold cursor-pointer"
+                                            className={`text-blue-600 text-base font-semibold ${permissions.canManageImportData ? "cursor-pointer" : "cursor-not-allowed"}`}
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             Choose file
@@ -269,6 +274,9 @@ export default function Index() {
                                             className="hidden"
                                             onChange={handleChange}
                                             accept=".xlsx"
+                                            disabled={
+                                                !permissions.canManageImportData
+                                            }
                                         />
                                         {fileName && (
                                             <div className="flex items-center gap-2">
@@ -305,35 +313,70 @@ export default function Index() {
                         </div>
                     </div>
                 </div>
-                <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6 mt-4">
-                    <div>
-                        <AlertCircle />
-                        <div>
-                            <p>Import Errors Found</p>
-                            <p>Please fix the following errors in your file and try again:</p>
+                {importErrors.length > 0 && (
+                    <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6 mt-4">
+                        <div className="flex gap-2">
+                            <AlertCircle
+                                className="text-red-600 flex-shrink-0 mt-0.5"
+                                size={25}
+                            />
+                            <div className="flex-1">
+                                <p className="text-red-800 font-semibold text-lg mb-2">
+                                    Import Errors Found
+                                </p>
+                                <p className="text-red-700 text-sm mb-3">
+                                    Please fix the following errors in your file
+                                    and try again:
+                                </p>
+                            </div>
+                        </div>
+                        <div className="max-h-96 overflow-y-auto">
+                            <table className="w-full text-sm">
+                                <thead className="bg-white sticky top-0 rounded-lg">
+                                    <tr>
+                                        <th className="px-4 py-2 text-red-800 text-left font-semibold border-b border-red-200">
+                                            Row
+                                        </th>
+                                        <th className="px-4 py-2 text-red-800 text-left font-semibold border-b border-red-200">
+                                            Field
+                                        </th>
+                                        <th className="px-4 py-2 text-red-800 text-left font-semibold border-b border-red-200">
+                                            Value
+                                        </th>
+                                        <th className="px-4 py-2 text-red-800 text-left font-semibold border-b border-red-200">
+                                            Error
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {import_errors?.map((error, index) => (
+                                        <tr
+                                            key={index}
+                                            className="border-b border-red-100"
+                                        >
+                                            <td className="px-4 py-3 text-red-800">
+                                                {error.row}
+                                            </td>
+                                            <td className="px-4 py-3 text-red-800">
+                                                {getAttributeLabel(
+                                                    error.header,
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-3 text-red-800">
+                                                {error.value}
+                                            </td>
+                                            <td className="px-4 py-3 text-red-800">
+                                                {Array.isArray(error.errors)
+                                                    ? error.errors.join(", ")
+                                                    : error.errors}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Row</th>
-                                    <th>Field</th>
-                                    <th>Error</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {import_errors?.map((error, index) => (
-                                    <tr key={index}>
-                                        <td>{error.row}</td>
-                                        <td>{getAttributeLabel(error.header)}</td>
-                                        <td>{error.errors}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                )}
             </div>
         </Master>
     );

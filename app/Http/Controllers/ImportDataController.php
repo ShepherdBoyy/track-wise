@@ -39,6 +39,9 @@ class ImportDataController extends Controller
 
         $file = $request->file("file");
 
+        set_time_limit(300);
+        ini_set("memory_limit", "512M");
+
         try {
             $validator = new DataValidationImport();
             Excel::import($validator, $file);
@@ -49,9 +52,10 @@ class ImportDataController extends Controller
                         "row" => $failure->row(),
                         "header" => $failure->attribute(),
                         "errors" => $failure->errors(),
+                        "value" => $failure->values()[$failure->attribute()]
                     ];
                 })->values()->toArray();
-                
+
                 return redirect()->back()->with([
                     "import_errors" => $formattedErrors
                 ]);
@@ -64,7 +68,8 @@ class ImportDataController extends Controller
                 "import_errors" => [[
                     "row" => "N/A",
                     "header" => "general",
-                    "errors" => ["Import error: " . $e->getMessage()]
+                    "errors" => ["Import error: " . $e->getMessage()],
+                    "value" => "N/A"
                 ]]
             ]);
         }
