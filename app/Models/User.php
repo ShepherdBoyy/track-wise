@@ -55,19 +55,4 @@ class User extends Authenticatable
     {
         return $this->permissions()->whereIn("name", $permissions)->exists();
     }
-
-    public function hasAllPermissions(array $permissions)
-    {
-        return $this->permissions()->whereIn("name", $permissions)->count() === count($permissions);
-    }
-
-    public function canViewAllHospitals()
-    {
-        return $this->hasPermission("view_all_hospitals");
-    }
-
-    public function hasAreaRestrictions()
-    {
-        return !$this->canViewAllHospitals() && $this->areas()->exists();
-    }
 }

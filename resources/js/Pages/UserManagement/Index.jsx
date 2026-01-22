@@ -9,7 +9,7 @@ import Edit from "./Edit";
 import DeleteUserModal from "./elements/DeleteUserModal";
 import useDebounce from "../hooks/useDebounce";
 import { motion } from "framer-motion";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 
 export default function Index({ users, areas, filters, permissionList }) {
     const [showToast, setShowToast] = useState(false);
@@ -22,6 +22,7 @@ export default function Index({ users, areas, filters, permissionList }) {
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState(filters.sort_by || null);
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
+    const { permissions } = usePage().props;
 
     const debouncedSearch = useDebounce(search, 300);
 
@@ -84,13 +85,15 @@ export default function Index({ users, areas, filters, permissionList }) {
                         </div>
 
                         <div className="flex gap-2">
-                            <button
-                                className="btn btn-primary rounded-xl flex"
-                                onClick={() => setOpenCreateModal(true)}
-                            >
-                                <CirclePlus size={18} />
-                                Add User
-                            </button>
+                            {permissions.canManageUsers && (
+                                <button
+                                    className="btn btn-primary rounded-xl flex"
+                                    onClick={() => setOpenCreateModal(true)}
+                                >
+                                    <CirclePlus size={18} />
+                                    Add User
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -126,7 +129,9 @@ export default function Index({ users, areas, filters, permissionList }) {
                                             <SortIcon column={"created_at"} />
                                         </div>
                                     </th>
-                                    <th className="text-right">Action</th>
+                                    {permissions.canManageUsers && (
+                                        <th className="text-right">Action</th>
+                                    )}
                                 </tr>
                             </thead>
 
@@ -177,46 +182,48 @@ export default function Index({ users, areas, filters, permissionList }) {
                                                     user.created_at,
                                                 ).toLocaleDateString()}
                                             </td>
-                                            <td>
-                                                <div className="flex gap-3 justify-end pr-2">
-                                                    <div
-                                                        className="tooltip"
-                                                        data-tip="Edit"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setOpenEditModal(
-                                                                true,
-                                                            );
-                                                            setSelectedUser(
-                                                                user,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Pencil
-                                                            size={18}
-                                                            className="cursor-pointer"
-                                                        />
+                                            {permissions.canManageUsers && (
+                                                <td>
+                                                    <div className="flex gap-3 justify-end pr-2">
+                                                        <div
+                                                            className="tooltip"
+                                                            data-tip="Edit"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setOpenEditModal(
+                                                                    true,
+                                                                );
+                                                                setSelectedUser(
+                                                                    user,
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Pencil
+                                                                size={18}
+                                                                className="cursor-pointer"
+                                                            />
+                                                        </div>
+                                                        <div
+                                                            className="tooltip"
+                                                            data-tip="Delete"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setOpenDeleteModal(
+                                                                    true,
+                                                                );
+                                                                setSelectedUser(
+                                                                    user,
+                                                                );
+                                                            }}
+                                                        >
+                                                            <Trash2
+                                                                size={18}
+                                                                className="cursor-pointer"
+                                                            />
+                                                        </div>
                                                     </div>
-                                                    <div
-                                                        className="tooltip"
-                                                        data-tip="Delete"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setOpenDeleteModal(
-                                                                true,
-                                                            );
-                                                            setSelectedUser(
-                                                                user,
-                                                            );
-                                                        }}
-                                                    >
-                                                        <Trash2
-                                                            size={18}
-                                                            className="cursor-pointer"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </td>
+                                                </td>
+                                            )}
                                         </motion.tr>
                                     );
                                 })}
