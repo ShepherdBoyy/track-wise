@@ -1,4 +1,4 @@
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import Master from "../components/Master";
 import { CirclePlus, Trash2, Pencil, ArrowUp, ArrowDown } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -21,6 +21,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
     const [search, setSearch] = useState("");
     const [sortBy, setSortBy] = useState(filters.sort_by || "created_at");
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
+    const { permissions } = usePage().props;
 
     const debouncedSearch = useDebounce(search, 300);
 
@@ -85,13 +86,15 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                         </span>
 
                         <div className="flex gap-2">
-                            <button
-                                className="btn btn-primary rounded-xl flex"
-                                onClick={() => setOpenCreateModal(true)}
-                            >
-                                <CirclePlus size={18} />
-                                Add Hospital
-                            </button>
+                            {permissions.canManageHospitals && (
+                                <button
+                                    className="btn btn-primary rounded-xl flex"
+                                    onClick={() => setOpenCreateModal(true)}
+                                >
+                                    <CirclePlus size={18} />
+                                    Add Hospital
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -134,9 +137,11 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                             <SortIcon column="invoices_count" />
                                         </div>
                                     </th>
-                                    <th className="w-[100px] text-right">
-                                        Action
-                                    </th>
+                                    {permissions.canManageHospitals && (
+                                        <th className="w-[100px] text-right">
+                                            Action
+                                        </th>
+                                    )}
                                 </tr>
                             </thead>
                             <tbody>
@@ -168,46 +173,48 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         <td>{hospital.hospital_number}</td>
                                         <td>{hospital.hospital_name}</td>
                                         <td>{hospital.invoices_count}</td>
-                                        <td>
-                                            <div className="flex gap-3 items-center justify-end">
-                                                <div
-                                                    className="tooltip"
-                                                    data-tip="Edit"
-                                                >
-                                                    <Pencil
-                                                        size={18}
-                                                        className="cursor-pointer"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setOpenEditModal(
-                                                                true
-                                                            );
-                                                            setHospital(
-                                                                hospital
-                                                            );
-                                                        }}
-                                                    />
+                                        {permissions.canManageHospitals && (
+                                            <td>
+                                                <div className="flex gap-3 items-center justify-end">
+                                                    <div
+                                                        className="tooltip"
+                                                        data-tip="Edit"
+                                                    >
+                                                        <Pencil
+                                                            size={18}
+                                                            className="cursor-pointer"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setOpenEditModal(
+                                                                    true
+                                                                );
+                                                                setHospital(
+                                                                    hospital
+                                                                );
+                                                            }}
+                                                        />
+                                                    </div>
+                                                    <div
+                                                        className="tooltip"
+                                                        data-tip="Delete"
+                                                    >
+                                                        <Trash2
+                                                            size={18}
+                                                            className="cursor-pointer"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setOpenDeleteModal(
+                                                                    true
+                                                                );
+                                                                setHospital(
+                                                                    hospital
+                                                                );
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <div
-                                                    className="tooltip"
-                                                    data-tip="Delete"
-                                                >
-                                                    <Trash2
-                                                        size={18}
-                                                        className="cursor-pointer"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setOpenDeleteModal(
-                                                                true
-                                                            );
-                                                            setHospital(
-                                                                hospital
-                                                            );
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </td>
+                                            </td>
+                                        )}
                                     </motion.tr>
                                 ))}
                             </tbody>

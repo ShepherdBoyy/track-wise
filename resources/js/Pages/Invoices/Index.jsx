@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Master from "../components/Master";
 import SearchIt from "../components/SearchIt";
-import { router } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import useDebounce from "../hooks/useDebounce";
 import Pagination from "../components/Pagination";
 import { Pencil, Plus, Trash2 } from "lucide-react";
@@ -30,6 +30,7 @@ export default function Index({
     const [isDeleteMode, setIsDeleteMode] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     const [error, setError] = useState("");
+    const { permissions } = usePage().props;
 
     const debouncedSearch = useDebounce(search, 300);
 
@@ -111,7 +112,7 @@ export default function Index({
                             ))}
                         </div>
                         <div className="flex gap-2">
-                            {isDeleteMode && (
+                            {isDeleteMode && permissions.canManageInvoices && (
                                 <button
                                     className="btn btn-outline rounded-xl"
                                     onClick={() => setOpenDeleteModal(true)}
@@ -122,15 +123,17 @@ export default function Index({
                                     />
                                 </button>
                             )}
-                            <button
-                                className="btn btn-primary rounded-xl"
-                                onClick={() => {
-                                    setOpenCreateInvoiceModal(true);
-                                }}
-                            >
-                                Add Invoice
-                                <Plus size={16} />
-                            </button>
+                            {permissions.canManageInvoices && (
+                                <button
+                                    className="btn btn-primary rounded-xl"
+                                    onClick={() => {
+                                        setOpenCreateInvoiceModal(true);
+                                    }}
+                                >
+                                    Add Invoice
+                                    <Plus size={16} />
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -138,39 +141,43 @@ export default function Index({
                         <table className="table table-fixed">
                             <thead>
                                 <tr>
-                                    <th className="w-15">
-                                        <input
-                                            type="checkbox"
-                                            className="checkbox w-5 h-5"
-                                            checked={
-                                                selectedIds.length ===
-                                                    invoices.data.length &&
-                                                invoices.data.length > 0
-                                            }
-                                            onChange={(e) => {
-                                                if (
-                                                    e.target.checked &&
+                                    {permissions.canManageInvoices && (
+                                        <th className="w-15">
+                                            <input
+                                                type="checkbox"
+                                                className="checkbox w-5 h-5"
+                                                checked={
+                                                    selectedIds.length ===
+                                                        invoices.data.length &&
                                                     invoices.data.length > 0
-                                                ) {
-                                                    setIsDeleteMode(true);
-                                                    setSelectedIds(
-                                                        invoices.data.map(
-                                                            (i) => i.id
-                                                        )
-                                                    );
-                                                } else {
-                                                    setSelectedIds([]);
-                                                    setIsDeleteMode(false);
                                                 }
-                                            }}
-                                        />
-                                    </th>
+                                                onChange={(e) => {
+                                                    if (
+                                                        e.target.checked &&
+                                                        invoices.data.length > 0
+                                                    ) {
+                                                        setIsDeleteMode(true);
+                                                        setSelectedIds(
+                                                            invoices.data.map(
+                                                                (i) => i.id
+                                                            )
+                                                        );
+                                                    } else {
+                                                        setSelectedIds([]);
+                                                        setIsDeleteMode(false);
+                                                    }
+                                                }}
+                                            />
+                                        </th>
+                                    )}
                                     <th className="w-1/4">Invoice No.</th>
                                     <th className="w-1/4">Document Date</th>
                                     <th className="w-1/4">Due Date</th>
                                     <th className="w-1/4">Amount</th>
                                     <th className="w-1/4">Processing Days</th>
-                                    <th className="w-20 text-right">Action</th>
+                                    {permissions.canManageInvoices && (
+                                        <th className="w-20 text-right">Action</th>
+                                    )}
                                 </tr>
                             </thead>
 
@@ -200,41 +207,43 @@ export default function Index({
                                                   }
                                         }
                                     >
-                                        <td>
-                                            <input
-                                                type="checkbox"
-                                                className="checkbox w-5 h-5"
-                                                checked={selectedIds.includes(
-                                                    invoice.id
-                                                )}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                }}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedIds([
-                                                            ...selectedIds,
-                                                            invoice.id,
-                                                        ]);
-                                                        setIsDeleteMode(true);
-                                                    } else {
-                                                        const newSelected =
-                                                            selectedIds.filter(
-                                                                (id) =>
-                                                                    id !==
-                                                                    invoice.id
+                                        {permissions.canManageInvoices && (
+                                            <td>
+                                                <input
+                                                    type="checkbox"
+                                                    className="checkbox w-5 h-5"
+                                                    checked={selectedIds.includes(
+                                                        invoice.id
+                                                    )}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                    }}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedIds([
+                                                                ...selectedIds,
+                                                                invoice.id,
+                                                            ]);
+                                                            setIsDeleteMode(true);
+                                                        } else {
+                                                            const newSelected =
+                                                                selectedIds.filter(
+                                                                    (id) =>
+                                                                        id !==
+                                                                        invoice.id
+                                                                );
+                                                            setSelectedIds(
+                                                                newSelected
                                                             );
-                                                        setSelectedIds(
-                                                            newSelected
-                                                        );
-                                                        setIsDeleteMode(
-                                                            newSelected.length >
-                                                                0
-                                                        );
-                                                    }
-                                                }}
-                                            />
-                                        </td>
+                                                            setIsDeleteMode(
+                                                                newSelected.length >
+                                                                    0
+                                                            );
+                                                        }
+                                                    }}
+                                                />
+                                            </td>
+                                        )}
                                         <td>{invoice.invoice_number}</td>
                                         <td>
                                             {new Date(
@@ -255,26 +264,28 @@ export default function Index({
                                             })}
                                         </td>
                                         <td>{invoice.processing_days}</td>
-                                        <td>
-                                            <div
-                                                className="flex justify-center items-center tooltip"
-                                                data-tip="Edit"
-                                            >
-                                                <Pencil
-                                                    size={18}
-                                                    className="cursor-pointer"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setOpenEditInvoiceModal(
-                                                            true
-                                                        );
-                                                        setSelectedInvoice(
-                                                            invoice
-                                                        );
-                                                    }}
-                                                />
-                                            </div>
-                                        </td>
+                                        {permissions.canManageInvoices && (
+                                            <td>
+                                                <div
+                                                    className="flex justify-center items-center tooltip"
+                                                    data-tip="Edit"
+                                                >
+                                                    <Pencil
+                                                        size={18}
+                                                        className="cursor-pointer"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setOpenEditInvoiceModal(
+                                                                true
+                                                            );
+                                                            setSelectedInvoice(
+                                                                invoice
+                                                            );
+                                                        }}
+                                                    />
+                                                </div>
+                                            </td>
+                                        )}
                                     </motion.tr>
                                 ))}
                             </tbody>
