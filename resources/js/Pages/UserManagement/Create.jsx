@@ -196,7 +196,7 @@ export default function Create({
                                         >
                                             <input
                                                 type="checkbox"
-                                                className="toggle toggle-xs"
+                                                className="checkbox checkbox-xs"
                                                 checked={selectedAreas.includes(
                                                     area.id,
                                                 )}

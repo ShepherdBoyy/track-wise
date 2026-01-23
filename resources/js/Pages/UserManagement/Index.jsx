@@ -103,7 +103,7 @@ export default function Index({ users, areas, filters, permissionList }) {
                                 <tr>
                                     <th className="w-[100px]">#</th>
                                     <th
-                                        className="w-1/4 cursor-pointer hover:bg-base-200"
+                                        className={`${permissions.canManageUsers ? "1/4" : "1/3"} cursor-pointer hover:bg-base-200`}
                                         onClick={() => {
                                             handleSort("name");
                                         }}
@@ -113,13 +113,13 @@ export default function Index({ users, areas, filters, permissionList }) {
                                             <SortIcon column={"name"} />
                                         </div>
                                     </th>
-                                    <th className="w-1/4 cursor-pointer hover:bg-base-200">
+                                    <th className={`${permissions.canManageUsers ? "1/4" : "1/3"}`}>
                                         <div className="flex items-center gap-2">
                                             Area
                                         </div>
                                     </th>
                                     <th
-                                        className="w-1/4 cursor-pointer hover:bg-base-200"
+                                        className={`${permissions.canManageUsers ? "1/4" : "1/3"} cursor-pointer hover:bg-base-200`}
                                         onClick={() => {
                                             handleSort("created_at");
                                         }}
@@ -130,7 +130,7 @@ export default function Index({ users, areas, filters, permissionList }) {
                                         </div>
                                     </th>
                                     {permissions.canManageUsers && (
-                                        <th className="text-right">Action</th>
+                                        <th className="w-[100px] text-right">Action</th>
                                     )}
                                 </tr>
                             </thead>
@@ -143,7 +143,7 @@ export default function Index({ users, areas, filters, permissionList }) {
                                         );
 
                                         if (canViewAllHospitals) {
-                                            return "All Hospitals";
+                                            return "All Areas";
                                         } else if (user.areas) {
                                             return user.areas.map((area) => area.area_name).join(", ");
                                         } else {
