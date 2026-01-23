@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-    $areas = Area::factory()->count(12)->create();
-
     $permissions = [
         ['name' => 'view_all_hospitals', 'display_name' => 'View All Areas', 'category' => 'hospitals'],
         ['name' => 'view_area_hospitals', 'display_name' => 'View Specific Area', 'category' => 'hospitals'],
@@ -39,7 +37,6 @@ class DatabaseSeeder extends Seeder
         );
     }
 
-    // Create SINGLE Admin User
     $admin = User::firstOrCreate(
         ['username' => 'admin'],
         [
@@ -49,36 +46,8 @@ class DatabaseSeeder extends Seeder
         ]
     );
 
-    // Attach ALL permissions to admin
     $allPermissionIds = Permission::pluck('id');
     $admin->permissions()->sync($allPermissionIds);
-
-    // Optionally: Attach ALL areas to admin (if needed for testing)
-    $admin->areas()->sync($areas->pluck('id'));
-
-    // Create Hospitals + Invoices
-    foreach ($areas as $area) {
-        Hospital::factory()
-            ->count(30)
-            ->has(
-                Invoice::factory()
-                    ->count(15)
-                    ->state(fn () => [
-                        'created_by' => $admin->id,
-                    ])
-            )
-            ->create([
-                'area_id' => $area->id,
-            ]);
-    }
-
-    // Create Invoice Histories
-    Invoice::all()->each(function ($invoice) use ($admin) {
-        InvoiceHistory::factory()->create([
-            'invoice_id' => $invoice->id,
-            'updated_by' => $admin->id,
-        ]);
-    });
 
     //     $areas = Area::factory()->count(13)->create();
 
@@ -129,9 +98,5 @@ class DatabaseSeeder extends Seeder
     //             'updated_by' => collect($users)->random()->id,
     //         ]);
     //     });
-
-    
-
     }
-
 }
