@@ -38,7 +38,14 @@ class HospitalController extends Controller
                         ->orWhere("hospital_number", "like", "%{$searchQuery}%");
                 });
             })
-            ->orderBy($sortBy, $sortOrder)
+            ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
+                if ($sortBy === "area_name") {
+                    $query->leftJoin("areas", "hospitals.area_id", "=", "areas.id")
+                        ->orderBy("areas.area_name", $sortOrder);
+                } else {
+                    $query->orderBy($sortBy, $sortOrder);
+                }
+            })
             ->paginate($perPage)
             ->withQueryString();
 

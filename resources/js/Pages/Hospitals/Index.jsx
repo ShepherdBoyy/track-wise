@@ -30,7 +30,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
             router.get(
                 "/hospitals",
                 { search: debouncedSearch },
-                { preserveState: true, preserveScroll: true }
+                { preserveState: true, preserveScroll: true },
             );
         }
     }, [debouncedSearch]);
@@ -51,7 +51,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                 sort_by: column,
                 sort_order: newSortOrder,
             },
-            { preserveScroll: true, preserveState: true }
+            { preserveScroll: true, preserveState: true },
         );
     };
 
@@ -103,7 +103,15 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                             <thead>
                                 <tr>
                                     <th className="w-[100px]">#</th>
-                                    <th className="w-1/5">Area</th>
+                                    <th
+                                        className={`${permissions.canManageHospitals ? "w-1/5" : "1/4"} cursor-pointer hover:bg-base-200`}
+                                        onClick={() => handleSort("area_name")}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Area
+                                            <SortIcon column="area_name" />
+                                        </div>
+                                    </th>
                                     <th
                                         className="w-1/5 cursor-pointer hover:bg-base-200"
                                         onClick={() =>
@@ -116,7 +124,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         </div>
                                     </th>
                                     <th
-                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        className={`${permissions.canManageHospitals ? "w-1/5" : "1/4"} cursor-pointer hover:bg-base-200`}
                                         onClick={() =>
                                             handleSort("hospital_name")
                                         }
@@ -127,7 +135,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         </div>
                                     </th>
                                     <th
-                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        className={`${permissions.canManageHospitals ? "w-1/5" : "1/4"} cursor-pointer hover:bg-base-200`}
                                         onClick={() =>
                                             handleSort("invoices_count")
                                         }
@@ -159,7 +167,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         onClick={() =>
                                             router.get(
                                                 `/hospitals/${hospital.id}/invoices`,
-                                                { processing_days: "Current" }
+                                                { processing_days: "Current" },
                                             )
                                         }
                                     >
@@ -186,10 +194,10 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 setOpenEditModal(
-                                                                    true
+                                                                    true,
                                                                 );
                                                                 setHospital(
-                                                                    hospital
+                                                                    hospital,
                                                                 );
                                                             }}
                                                         />
@@ -204,10 +212,10 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 setOpenDeleteModal(
-                                                                    true
+                                                                    true,
                                                                 );
                                                                 setHospital(
-                                                                    hospital
+                                                                    hospital,
                                                                 );
                                                             }}
                                                         />
