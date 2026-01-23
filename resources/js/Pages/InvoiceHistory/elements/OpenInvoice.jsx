@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import HistoryTable from "./historyTable";
 import { Form, usePage } from "@inertiajs/react";
 
@@ -11,6 +11,9 @@ export default function OpenInvoice({
     setShowToast,
 }) {
     const { permissions } = usePage().props;
+
+    const [showCustomDescription, setShowCustomDescription] = useState(false);
+    const [customDescription, setCustomDescription] = useState("");
 
     return (
         <div className="grid grid-cols-3 auto-rows-min gap-4">
@@ -26,10 +29,10 @@ export default function OpenInvoice({
                                 invoice.status === "closed"
                                     ? "bg-emerald-100 text-emerald-700 border-green-600"
                                     : invoice.status === "open"
-                                    ? "bg-yellow-100 text-yellow-700 border-yellow-600"
-                                    : invoice.status === "overdue"
-                                    ? "bg-red-100 text-red-700 border-red-600"
-                                    : "badge-neutral"
+                                      ? "bg-yellow-100 text-yellow-700 border-yellow-600"
+                                      : invoice.status === "overdue"
+                                        ? "bg-red-100 text-red-700 border-red-600"
+                                        : "badge-neutral"
                             }`}
                         >
                             {invoice.status}
@@ -44,7 +47,7 @@ export default function OpenInvoice({
                                 "en-PH",
                                 {
                                     minimumFractionDigits: 2,
-                                }
+                                },
                             )}
                         </p>
                     </div>
@@ -53,7 +56,7 @@ export default function OpenInvoice({
                         <p className="text-sm opacity-60 mb-1">Document Date</p>
                         <p className="text-md">
                             {new Date(
-                                invoice.document_date
+                                invoice.document_date,
                             ).toLocaleDateString()}
                         </p>
                     </div>
@@ -124,6 +127,14 @@ export default function OpenInvoice({
                             name="description"
                             id="description"
                             disabled={!permissions.canManageInvoiceHistory}
+                            onChange={(e) => {
+                                setShowCustomDescription(
+                                    e.target.value === "others",
+                                );
+                                if (e.target.value !== "others") {
+                                    setCustomDescription("");
+                                }
+                            }}
                         >
                             <option value="" disabled>
                                 Select
@@ -153,18 +164,33 @@ export default function OpenInvoice({
                                 accounting department is ongoing to resolve
                                 amount differences before final closure
                             </option>
+                            <option value="others">Others</option>
                             <option value="closed">Close Invoice</option>
                         </select>
                     </fieldset>
-                    <div className="flex justify-end">
-                        <button className="btn btn-primary w-5xs rounded-xl" disabled={!permissions.canManageInvoiceHistory}>
+                    <div className={`flex ${showCustomDescription ? "justify-between gap-4" : "justify-end"}`}>
+                        {showCustomDescription && (
+                            <input
+                                placeholder="Enter Custom Description"
+                                name="description"
+                                className="input rounded-xl w-full"
+                                value={customDescription}
+                                onChange={(e) =>
+                                    setCustomDescription(e.target.value)
+                                }
+                            />
+                        )}
+                        <button
+                            className="btn btn-primary w-5xs rounded-xl"
+                            disabled={!permissions.canManageInvoiceHistory}
+                        >
                             Update
                         </button>
                     </div>
                 </Form>
             </div>
 
-            <HistoryTable history={history} />
+            <HistoryTable history={history} invoice={invoice} />
         </div>
     );
 }

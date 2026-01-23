@@ -25,21 +25,6 @@ export default function Index({ invoice, history, editor, breadcrumbs }) {
                     <Breadcrumbs items={breadcrumbs} />
                 </div>
                 <div className="flex flex-col bg-white p-6 rounded-xl shadow-lg">
-                    <div className="flex justify-end cursor-pointer items-center mb-4">
-                        {/* <span className="text-2xl">
-                            {invoice.hospital.hospital_name}
-                        </span> */}
-                        <a
-                            href={`/hospitals/${invoice.hospital.id}/invoices/${invoice.id}/history/download`}
-                            target="_blank"
-                            className="flex items-center btn gap-1 p-2 tooltip"
-                            data-tip="View PDF"
-                        >
-                            <FileText />
-                            <span>PDF</span>
-                        </a>
-                    </div>
-
                     {isClosed ? (
                         <ClosedInvoice invoice={invoice} history={history} />
                     ) : (
