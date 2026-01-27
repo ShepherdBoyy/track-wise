@@ -105,7 +105,7 @@ class UserController extends Controller
             "name" => $validated["name"],
             "username" => $validated["username"],
             "password" => $validated["password"],
-            "visible_password" => $validated["visible_password"] ?? $user->visible_password
+            "visible_password" => $validated["visible_password"]
         ]);
 
         $user->permissions()->sync($validated["permissions"]);
