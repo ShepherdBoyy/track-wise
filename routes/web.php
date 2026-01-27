@@ -61,6 +61,8 @@ Route::middleware(["auth"])->group(function () {
                 Route::post("/store", [ImportDataController::class, "store"]);
     });
 
+    Route::put("/profile-details/{user_id}", [AuthController::class, "update"]);
+
     Route::post("/logout", [AuthController::class, "destroy"]);
 });
 
