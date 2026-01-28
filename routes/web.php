@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HospitalController;
 use App\Http\Controllers\ImportDataController;
 use App\Http\Controllers\InvoiceController;
@@ -18,6 +19,8 @@ Route::middleware(["guest"])->group(function () {
 });
 
 Route::middleware(["auth"])->group(function () {
+    Route::get("/home", [HomeController::class, "index"]);
+
     Route::prefix("hospitals")
         ->middleware(["permission:view_all_hospitals,view_area_hospitals"])
         ->group(function () {

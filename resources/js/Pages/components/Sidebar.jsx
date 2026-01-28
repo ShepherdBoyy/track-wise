@@ -4,12 +4,20 @@ import {
     Hospital,
     ArrowRightLeft,
     CircleUserRound,
+    House
 } from "lucide-react";
 
 export default function Sidebar() {
     const { url, props } = usePage();
 
     const navItems = [
+        {
+            id: "home",
+            label: "Home",
+            href: "/home",
+            icon: House,
+            canView: true,
+        },
         {
             id: "hospitals",
             label: "Hospital",
