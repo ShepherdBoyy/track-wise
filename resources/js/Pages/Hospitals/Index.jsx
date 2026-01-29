@@ -1,6 +1,6 @@
 import { router, usePage } from "@inertiajs/react";
 import Master from "../components/Master";
-import { CirclePlus, Trash2, Pencil, ArrowUp, ArrowDown } from "lucide-react";
+import { CirclePlus, Trash2, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
@@ -10,6 +10,7 @@ import useDebounce from "../hooks/useDebounce";
 import DeleteHospitalModal from "./elements/DeleteHospitalModal";
 import { motion } from "framer-motion";
 import Breadcrumbs from "../components/Breadcrumbs";
+import SortIcon from "../components/SortIcon";
 
 export default function Index({ hospitals, areas, filters, breadcrumbs }) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -61,17 +62,6 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
         );
     };
 
-    const SortIcon = ({ column }) => {
-        if (sortBy !== column) {
-            return null;
-        }
-        return sortOrder === "asc" ? (
-            <ArrowUp size={16} className="mb-1" />
-        ) : (
-            <ArrowDown size={16} className="mb-1" />
-        );
-    };
-
     return (
         <Master>
             <div className="bg-base-200">
@@ -115,7 +105,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                     >
                                         <div className="flex items-center gap-2">
                                             Area
-                                            <SortIcon column="area_name" />
+                                            <SortIcon column="area_name" sortOrder={sortOrder} sortBy={sortBy} />
                                         </div>
                                     </th>
                                     <th
@@ -126,7 +116,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                     >
                                         <div className="flex items-center gap-2">
                                             Hospital No.
-                                            <SortIcon column="hospital_number" />
+                                            <SortIcon column="hospital_number" sortOrder={sortOrder} sortBy={sortBy} />
                                         </div>
                                     </th>
                                     <th
@@ -137,7 +127,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                     >
                                         <div className="flex items-center gap-2">
                                             Hospital Name
-                                            <SortIcon column="hospital_name" />
+                                            <SortIcon column="hospital_name" sortOrder={sortOrder} sortBy={sortBy} />
                                         </div>
                                     </th>
                                     <th
@@ -148,7 +138,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                     >
                                         <div className="flex items-center gap-2">
                                             Number of Invoices
-                                            <SortIcon column="invoices_count" />
+                                            <SortIcon column="invoices_count" sortOrder={sortOrder} sortBy={sortBy} />
                                         </div>
                                     </th>
                                     {permissions.canManageHospitals && (

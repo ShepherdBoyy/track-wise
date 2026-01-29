@@ -9,9 +9,7 @@ use App\Http\Controllers\InvoiceHistoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/hospitals');
-
-Route::get('/invoice_page', [InvoiceController::class, 'invoicePage']);
+Route::redirect('/', '/home');
 
 Route::middleware(["guest"])->group(function () {
     Route::get("/login", [AuthController::class, "index"])->name("login");
