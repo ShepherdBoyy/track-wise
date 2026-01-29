@@ -98,9 +98,9 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                         <table className="table table-fixed ">
                             <thead>
                                 <tr>
-                                    <th className="w-[100px]">#</th>
+                                    <th className="w-[50px]">#</th>
                                     <th
-                                        className={`${permissions.canManageHospitals ? "w-1/5" : "1/4"} cursor-pointer hover:bg-base-200`}
+                                        className="w-[200px] cursor-pointer hover:bg-base-200"
                                         onClick={() => handleSort("area_name")}
                                     >
                                         <div className="flex items-center gap-2">
@@ -109,7 +109,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         </div>
                                     </th>
                                     <th
-                                        className="w-1/5 cursor-pointer hover:bg-base-200"
+                                        className="w-[150px] cursor-pointer hover:bg-base-200"
                                         onClick={() =>
                                             handleSort("hospital_number")
                                         }
@@ -120,7 +120,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         </div>
                                     </th>
                                     <th
-                                        className={`${permissions.canManageHospitals ? "w-1/5" : "1/4"} cursor-pointer hover:bg-base-200`}
+                                        className="cursor-pointer hover:bg-base-200"
                                         onClick={() =>
                                             handleSort("hospital_name")
                                         }
@@ -131,7 +131,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         </div>
                                     </th>
                                     <th
-                                        className={`${permissions.canManageHospitals ? "w-1/5" : "1/4"} cursor-pointer hover:bg-base-200`}
+                                        className="w-[250px] wcursor-pointer hover:bg-base-200"
                                         onClick={() =>
                                             handleSort("invoices_count")
                                         }

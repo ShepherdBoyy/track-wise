@@ -1,6 +1,6 @@
 import { AlertCircle, CloudUpload, X } from "lucide-react";
 import Master from "../components/Master";
-import { sampleData } from "./elements/SampleData";
+import { sampleData } from "./elements/sampleData";
 import { router, usePage } from "@inertiajs/react";
 import { useState, useRef, useEffect } from "react";
 
