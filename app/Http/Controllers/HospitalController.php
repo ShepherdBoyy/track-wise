@@ -19,7 +19,7 @@ class HospitalController extends Controller
 
         $searchQuery = $request->query("search");
         $perPage = $request->query("per_page", 10);
-        $sortBy = $request->query("sort_by", "created_at");
+        $sortBy = $request->query("sort_by", "hospital_name");
         $sortOrder = $request->query("sort_order", "asc");
         $user = Auth::user();
         $areas = Area::all();

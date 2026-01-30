@@ -20,7 +20,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
     const [showToast, setShowToast] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [search, setSearch] = useState("");
-    const [sortBy, setSortBy] = useState(filters.sort_by || "created_at");
+    const [sortBy, setSortBy] = useState(filters.sort_by || "hospital_name");
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
     const { permissions } = usePage().props;
 
