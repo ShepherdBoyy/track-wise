@@ -101,7 +101,7 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                     <SearchIt
                         search={search}
                         setSearch={setSearch}
-                        name="Hospital or Invoice"
+                        name="Hospital or Invoice No."
                     />
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">
@@ -120,16 +120,7 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                     </div>
 
                     {showFilters && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{
-                                duration: 0.2,
-                                delay: 0.05,
-                            }}
-                            className="fixed top-0 right-0 h-full w-90 bg-base-100 shadow-lg pt-6 pb-18 px-6 z-50 transition-transform duration-300"
-                        >
+                        <div className="fixed top-0 right-0 h-full w-90 bg-base-100 shadow-lg pt-6 pb-18 px-6 z-50 transition-transform duration-300">
                             <div className="flex justify-between mb-6">
                                 <p className="text-xl">Filter Options</p>
                                 <X size={20} onClick={() => setShowFilters(false)} className="cursor-pointer" />
@@ -231,7 +222,7 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                                     </div>
                                 </div>
 
-                                <div className="flex justify-center gap-2">
+                                <div className="flex justify-center gap-2 ml-4">
                                     <button
                                         className="btn btn-outline rounded-3xl"
                                         onClick={handleClearFilters}
@@ -239,14 +230,14 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                                         Clear All
                                     </button>
                                     <button
-                                        className="btn btn-primary rounded-3xl"
+                                        className="btn bg-gray-800 text-white rounded-3xl"
                                         onClick={handleApplyFilters}
                                     >
                                         Apply Filters
                                     </button>
                                 </div>
                             </div>
-                        </motion.div>
+                        </div>
                     )}
 
                     <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100 pt-5">

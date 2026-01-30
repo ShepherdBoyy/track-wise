@@ -36,7 +36,7 @@ class DataValidationImport implements ToCollection, WithHeadingRow, WithValidati
     {
         return [
             "*.area" => ["required", "string"],
-            "*.customer_no" => ["required", "string", "unique:hospitals,hospital_number"],
+            "*.customer_no" => ["required", "string"],
             "*.customer_name" => ["required", "string"],
             "*.invoice_no" => ["required", "string", "unique:invoices,invoice_number"],
             "*.document_date" => ["required", "date_format:m/d/Y"],
