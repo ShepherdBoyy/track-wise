@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('document_date');
             $table->date('due_date');
             $table->float('amount');
-            $table->string('status');
             $table->dateTime('date_closed')->nullable();
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
