@@ -19,10 +19,14 @@ class HospitalController extends Controller
 
         $searchQuery = $request->query("search");
         $perPage = $request->query("per_page", 10);
-        $sortBy = $request->query("sort_by", "hospital_name");
+        $sortBy = $request->query("sort_by", "area_name");
         $sortOrder = $request->query("sort_order", "asc");
+        $filterAreas = $request->query("selected_areas", []);
         $user = Auth::user();
-        $areas = Area::all();
+
+        $userAreas = Gate::allows("viewAll", Hospital::class) 
+            ? Area::orderBy("area_name")->get() 
+            : $user->areas->sortBy("area_name")->values()->toArray();
 
         $query = Hospital::withCount("invoices")->with("area");
 
@@ -38,6 +42,9 @@ class HospitalController extends Controller
                         ->orWhere("hospital_number", "like", "%{$searchQuery}%");
                 });
             })
+            ->when(!empty($filterAreas), function ($query) use ($filterAreas) {
+                $query->whereIn("area_id", $filterAreas);
+            })
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
                 if ($sortBy === "area_name") {
                     $query->leftJoin("areas", "hospitals.area_id", "=", "areas.id")
@@ -51,10 +58,11 @@ class HospitalController extends Controller
 
         return Inertia::render("Hospitals/Index", [
             "hospitals" => $hospitals,
-            "areas" => $areas,
+            "userAreas" => $userAreas,
             "filters" => [
                 "sort_by" => $sortBy,
-                "sort_order" => $sortOrder
+                "sort_order" => $sortOrder,
+                "areas" => $filterAreas,
             ],
             "breadcrumbs" => [
                 ["label" => "Hospitals", "url" => null]

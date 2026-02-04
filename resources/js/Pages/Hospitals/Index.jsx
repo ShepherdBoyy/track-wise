@@ -1,6 +1,6 @@
 import { router, usePage } from "@inertiajs/react";
 import Master from "../components/Master";
-import { CirclePlus, Trash2, Pencil } from "lucide-react";
+import { CirclePlus, Trash2, Pencil, ListFilter, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import Create from "./Create";
 import Edit from "./Edit";
@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import Breadcrumbs from "../components/Breadcrumbs";
 import SortIcon from "../components/SortIcon";
 
-export default function Index({ hospitals, areas, filters, breadcrumbs }) {
+export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -20,8 +20,10 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
     const [showToast, setShowToast] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [search, setSearch] = useState("");
-    const [sortBy, setSortBy] = useState(filters.sort_by || "hospital_name");
-    const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
+    const [sortBy, setSortBy] = useState(filters.sort_by || "area_name");
+    const [sortOrder, setSortOrder] = useState(filters.sort_order || "asc");
+    const [selectedAreas, setSelectedAreas] = useState(filters.areas || []);
+    const [showFilters, setShowFilters] = useState(false);
     const { permissions } = usePage().props;
 
     const debouncedSearch = useDebounce(search, 300);
@@ -62,17 +64,53 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
         );
     };
 
+    const handleClearFilters = () => {
+        setSelectedAreas([]);
+        router.get(
+            "/hospitals",
+            {},
+            { preserveScroll: true, preserveState: true }
+        )
+    }
+
+    const handleApplyFilters = () => {
+        router.get(
+            "/hospitals",
+            {
+                selected_areas: selectedAreas,
+            },
+            { preserveState: true, preserveScroll: true }
+        )
+        setShowFilters(false);
+    }
+
+    const handleCheckboxChange = (areaId) => {
+        setSelectedAreas((prev) => {
+            if (prev.includes(areaId)) {
+                return prev.filter((id) => id !== areaId);
+            } else {
+                return [...prev, areaId];
+            }
+        })
+    }
+
     return (
         <Master>
             <div className="bg-base-200">
                 <div className="flex items-center justify-between pb-4">
                     <Breadcrumbs items={breadcrumbs} />
-                    <div className="flex justify-content-end">
+                    <div className="flex justify-content-end gap-2">
                         <SearchIt
                             search={search}
                             setSearch={setSearch}
-                            name="Hospital"
                         />
+                        <button
+                            className="btn btn-outline border border-gray-300 rounded-xl"
+                            onClick={() => setShowFilters(!showFilters)}
+                        >
+                            <ListFilter size={16} />
+                            Filters
+                        </button>
                     </div>
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg ">
@@ -93,6 +131,53 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                             )}
                         </div>
                     </div>
+
+                    {showFilters && (
+                        <div className="fixed top-0 right-0 h-full w-90 bg-base-100 shadow-lg pt-6 pb-18 px-6 z-50 transition-transform duration-300">
+                            <div className="flex justify-between mb-6">
+                                <p className="text-xl">Filter Options</p>
+                                <X size={20} onClick={() => setShowFilters(false)} className="cursor-pointer" />
+                            </div>
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex flex-col">
+                                    <label className="label text-md">
+                                        By Area
+                                    </label>
+                                    <div className="space-y-4 mt-4">
+                                        {userAreas.map((area) => (
+                                            <label 
+                                                key={area.id} 
+                                                className="flex items-center gap-3 cursor-pointer hover:bg-base-200 p-2 rounded-lg"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="checkbox checkbox-md"
+                                                    checked={selectedAreas.includes(area.id)}
+                                                    onChange={() => handleCheckboxChange(area.id)}
+                                                />
+                                                <span className="text-sm">{area.area_name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-center gap-2 ml-4">
+                                    <button
+                                        className="btn btn-outline rounded-3xl"
+                                        onClick={handleClearFilters}
+                                    >
+                                        Clear All
+                                    </button>
+                                    <button
+                                        className="btn bg-gray-800 text-white rounded-3xl"
+                                        onClick={handleApplyFilters}
+                                    >
+                                        Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="rounded-box border border-base-content/5 bg-base-100 pt-5">
                         <table className="table table-fixed ">
@@ -131,7 +216,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                                         </div>
                                     </th>
                                     <th
-                                        className="w-[250px] wcursor-pointer hover:bg-base-200"
+                                        className="w-[250px] cursor-pointer hover:bg-base-200"
                                         onClick={() =>
                                             handleSort("invoices_count")
                                         }
@@ -232,7 +317,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                             setOpenCreateModal={setOpenCreateModal}
                             setShowToast={setShowToast}
                             setSuccessMessage={setSuccessMessage}
-                            areas={areas}
+                            areas={userAreas}
                         />
                     )}
 
@@ -242,7 +327,7 @@ export default function Index({ hospitals, areas, filters, breadcrumbs }) {
                             hospital={hospital}
                             setShowToast={setShowToast}
                             setSuccessMessage={setSuccessMessage}
-                            areas={areas}
+                            areas={userAreas}
                         />
                     )}
 
