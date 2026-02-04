@@ -122,7 +122,7 @@ export default function Create({
                         </button>
                         <button
                             type="submit"
-                            className="btn bg-gray-800 text-white rounded-xl "
+                            className="btn bg-gray-800 text-white rounded-xl"
                         >
                             Confirm
                         </button>

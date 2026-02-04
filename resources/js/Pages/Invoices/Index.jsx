@@ -4,19 +4,23 @@ import SearchIt from "../components/SearchIt";
 import { router, usePage } from "@inertiajs/react";
 import useDebounce from "../hooks/useDebounce";
 import Pagination from "../components/Pagination";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Trash2, UserRoundPen } from "lucide-react";
 import Create from "./Create";
 import DeleteInvoiceModal from "./elements/DeleteInvoiceModal";
 import { motion } from "framer-motion";
 import Edit from "./Edit";
 import Breadcrumbs from "../components/Breadcrumbs";
+import UpdateInvoiceModal from "./elements/UpdateInvoiceModal";
+import Show from "./Show";
 
 export default function Index({
     invoices,
     hospital,
     searchQuery,
+    editor,
     processingFilter,
     filterCounts,
+    filterTotals,
     breadcrumbs,
 }) {
     const [search, setSearch] = useState(searchQuery || "");
@@ -27,11 +31,12 @@ export default function Index({
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
-    const [isDeleteMode, setIsDeleteMode] = useState(false);
+    const [isSelectMode, setIsSelectMode] = useState(false);
+    const [openUpdateModal, setOpenUpdateModal] = useState(false);
+    const [openHistoryModal, setOpenHistoryModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     const [error, setError] = useState("");
     const { permissions } = usePage().props;
-
     const debouncedSearch = useDebounce(search, 300);
 
     useEffect(() => {
@@ -64,12 +69,12 @@ export default function Index({
     }, [debouncedSearch]);
 
     const processingDays = [
-        { label: "Current", invoices_count: filterCounts.current },
-        { label: "30 days", invoices_count: filterCounts.thirty_days },
-        { label: "31-60 days", invoices_count: filterCounts.sixty_days },
-        { label: "61-90 days", invoices_count: filterCounts.ninety_days },
-        { label: "91-over", invoices_count: filterCounts.over_ninety },
-        { label: "Closed", invoices_count: filterCounts.closed },
+        { label: "Current", invoices_count: filterCounts.current, total_amount: filterTotals.current },
+        { label: "30 days", invoices_count: filterCounts.thirty_days, total_amount: filterTotals.thirty_days },
+        { label: "31-60 days", invoices_count: filterCounts.sixty_days, total_amount: filterTotals.sixty_days },
+        { label: "61-90 days", invoices_count: filterCounts.ninety_days, total_amount: filterTotals.ninety_days },
+        { label: "91-over", invoices_count: filterCounts.over_ninety, total_amount: filterTotals.over_ninety },
+        { label: "Closed", invoices_count: filterCounts.closed, total_amount: filterTotals.closed },
     ];
 
     return (
@@ -80,7 +85,6 @@ export default function Index({
                     <SearchIt
                         search={search}
                         setSearch={setSearch}
-                        name="Invoice No."
                     />
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">
@@ -98,15 +102,11 @@ export default function Index({
                                     onClick={() => {
                                         setActive(day.label);
                                         setSelectedIds([]);
-                                        setIsDeleteMode(false);
+                                        setIsSelectMode(false);
                                         router.get(
                                             `/hospitals/${hospital.id}/invoices`,
                                             {
-                                                processing_days:
-                                                    day.label.replace(
-                                                        / /g,
-                                                        "-",
-                                                    ),
+                                                processing_days: day.label.replace(/ /g, "-"),
                                             },
                                             {
                                                 preserveScroll: true,
@@ -124,17 +124,6 @@ export default function Index({
                             ))}
                         </div>
                         <div className="flex gap-2">
-                            {isDeleteMode && permissions.canManageInvoices && (
-                                <button
-                                    className="btn btn-outline rounded-xl"
-                                    onClick={() => setOpenDeleteModal(true)}
-                                >
-                                    <Trash2
-                                        size={18}
-                                        className="cursor-pointer"
-                                    />
-                                </button>
-                            )}
                             {permissions.canManageInvoices && (
                                 <button
                                     className="btn btn-primary rounded-xl"
@@ -142,9 +131,33 @@ export default function Index({
                                         setOpenCreateInvoiceModal(true);
                                     }}
                                 >
-                                    Add Invoice
                                     <Plus size={16} />
+                                    Add Invoice
                                 </button>
+                            )}
+                            {isSelectMode && permissions.canManageInvoices && (
+                                <>
+                                    <button
+                                        className="btn btn-outline border border-gray-300 rounded-xl"
+                                        onClick={() => setOpenUpdateModal(true)}
+                                    >
+                                        <UserRoundPen
+                                            size={18}
+                                            className="cursor-pointer"
+                                        />
+                                        <span>Update</span>
+                                    </button>
+                                    <button
+                                        className="btn btn-outline border border-gray-300 rounded-xl"
+                                        onClick={() => setOpenDeleteModal(true)}
+                                    >
+                                        <Trash2
+                                            size={18}
+                                            className="cursor-pointer"
+                                        />
+                                        <span>Delete</span>
+                                    </button>
+                                </>
                             )}
                         </div>
                     </div>
@@ -154,7 +167,7 @@ export default function Index({
                             <thead>
                                 <tr>
                                     {permissions.canManageInvoices && (
-                                        <th className="w-15">
+                                        <th className="w-[30px]">
                                             <input
                                                 type="checkbox"
                                                 className="checkbox w-5 h-5"
@@ -168,7 +181,7 @@ export default function Index({
                                                         e.target.checked &&
                                                         invoices.data.length > 0
                                                     ) {
-                                                        setIsDeleteMode(true);
+                                                        setIsSelectMode(true);
                                                         setSelectedIds(
                                                             invoices.data.map(
                                                                 (i) => i.id,
@@ -176,19 +189,21 @@ export default function Index({
                                                         );
                                                     } else {
                                                         setSelectedIds([]);
-                                                        setIsDeleteMode(false);
+                                                        setIsSelectMode(false);
                                                     }
                                                 }}
                                             />
                                         </th>
                                     )}
-                                    <th className="w-1/4">Invoice No.</th>
-                                    <th className="w-1/4">Document Date</th>
-                                    <th className="w-1/4">Due Date</th>
-                                    <th className="w-1/4">Amount</th>
-                                    <th className="w-1/4">Processing Days</th>
+                                    <th className="w-[50px]">Invoice No.</th>
+                                    <th className="w-[70px]">Document Date</th>
+                                    <th className="w-[50px]">Due Date</th>
+                                    <th className="w-[80px]">Amount</th>
+                                    <th className="w-[60px]">Processing Days</th>
+                                    <th className="w-[60px]">Status</th>
+                                    <th className="w-[190px]">Description</th>
                                     {permissions.canManageInvoices && (
-                                        <th className="w-20 text-right">
+                                        <th className="w-[20px] text-rights">
                                             Action
                                         </th>
                                     )}
@@ -207,19 +222,16 @@ export default function Index({
                                         }}
                                         key={invoice.id}
                                         className={
-                                            isDeleteMode
+                                            isSelectMode
                                                 ? ""
                                                 : "hover:bg-base-300 cursor-pointer"
                                         }
-                                        onClick={
-                                            isDeleteMode
-                                                ? undefined
-                                                : () => {
-                                                      router.get(
-                                                          `/hospitals/${invoice.hospital.id}/invoices/${invoice.id}/history`,
-                                                      );
-                                                  }
-                                        }
+                                        onClick={() => {
+                                            if(!isSelectMode) {
+                                                setSelectedInvoice(invoice);
+                                                setOpenHistoryModal(true);
+                                            }
+                                        }}
                                     >
                                         {permissions.canManageInvoices && (
                                             <td>
@@ -234,27 +246,12 @@ export default function Index({
                                                     }}
                                                     onChange={(e) => {
                                                         if (e.target.checked) {
-                                                            setSelectedIds([
-                                                                ...selectedIds,
-                                                                invoice.id,
-                                                            ]);
-                                                            setIsDeleteMode(
-                                                                true,
-                                                            );
+                                                            setSelectedIds([...selectedIds, invoice.id]);
+                                                            setIsSelectMode(true);
                                                         } else {
-                                                            const newSelected =
-                                                                selectedIds.filter(
-                                                                    (id) =>
-                                                                        id !==
-                                                                        invoice.id,
-                                                                );
-                                                            setSelectedIds(
-                                                                newSelected,
-                                                            );
-                                                            setIsDeleteMode(
-                                                                newSelected.length >
-                                                                    0,
-                                                            );
+                                                            const newSelected = selectedIds.filter((id) => id !== invoice.id);
+                                                            setSelectedIds(newSelected);
+                                                            setIsSelectMode(newSelected.length > 0);
                                                         }
                                                     }}
                                                 />
@@ -280,6 +277,20 @@ export default function Index({
                                             })}
                                         </td>
                                         <td>{invoice.processing_days}</td>
+                                        <td>
+                                            <span className={`badge badge-md text-sm rounded-full   ${
+                                                invoice.status === "closed"
+                                                    ? "bg-emerald-100 text-emerald-700 border-green-600"
+                                                    : invoice.status === "open"
+                                                    ? "bg-yellow-100 text-yellow-700 border-yellow-600"
+                                                    : invoice.status === "overdue"
+                                                        ? "bg-red-100 text-red-700 border-red-600"
+                                                        : "badge-neutral"
+                                            }`}>
+                                                {invoice.status}
+                                            </span>
+                                        </td>
+                                        <td className="truncate">{invoice.latest_history.description}</td>
                                         {permissions.canManageInvoices && (
                                             <td>
                                                 <div
@@ -291,12 +302,8 @@ export default function Index({
                                                         className="cursor-pointer"
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            setOpenEditInvoiceModal(
-                                                                true,
-                                                            );
-                                                            setSelectedInvoice(
-                                                                invoice,
-                                                            );
+                                                            setOpenEditInvoiceModal(true);
+                                                            setSelectedInvoice(invoice);
                                                         }}
                                                     />
                                                 </div>
@@ -305,6 +312,22 @@ export default function Index({
                                     </motion.tr>
                                 ))}
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td className="text-right text-sm font-semibold">Total Amount: </td>
+                                    <td>
+                                        ₱
+                                        {parseFloat(
+                                            processingDays.find(day => day.label === active)?.total_amount || 0
+                                        ).toLocaleString("en-PH", {
+                                            minimumFractionDigits: 2,
+                                        })}
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </table>
 
                         {openCreateInvoiceModal && (
@@ -337,8 +360,30 @@ export default function Index({
                                 setSuccessMessage={setSuccessMessage}
                                 selectedIds={selectedIds}
                                 setSelectedIds={setSelectedIds}
-                                setIsDeleteMode={setIsDeleteMode}
+                                setIsSelectMode={setIsSelectMode}
                                 setError={setError}
+                            />
+                        )}
+
+                        {openUpdateModal && (
+                            <UpdateInvoiceModal
+                                setOpenUpdateModal={setOpenUpdateModal}
+                                setShowToast={setShowToast}
+                                setSuccessMessage={setSuccessMessage}
+                                setIsSelectMode={setIsSelectMode}
+                                editor={editor}
+                                selectedIds={selectedIds}
+                                setSelectedIds={setSelectedIds}
+                                hospital={hospital}
+                            />
+                        )}
+
+                        {openHistoryModal && (
+                            <Show
+                                history={selectedInvoice.history}
+                                invoice={selectedInvoice}
+                                setSelectedInvoice={setSelectedInvoice}
+                                setOpenHistoryModal={setOpenHistoryModal}
                             />
                         )}
 
