@@ -81,7 +81,6 @@ export default function Index({ users, areas, filters, permissionList }) {
                     <SearchIt
                         search={search}
                         setSearch={setSearch}
-                        name="User"
                     />
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">

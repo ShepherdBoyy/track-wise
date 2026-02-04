@@ -1,13 +1,13 @@
 import { Search } from "lucide-react";
 
-export default function SearchIt({ search, setSearch, name }) {
+export default function SearchIt({ search, setSearch }) {
     return (
         <label className="input flex items-center w-sm gap-2 rounded-xl">
             <input
                 type="search"
                 className=""
                 required
-                placeholder={`Search ${name}`}
+                placeholder="Search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
             />
