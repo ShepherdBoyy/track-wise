@@ -41,13 +41,8 @@ export default function DeleteInvoiceModal({
                                         setSelectedIds([]);
                                         setOpenDeleteModal(false)
                                         setShowToast(true);
-                                        setSuccessMessage(
-                                            "Successfully Deleted"
-                                        );
-                                        setTimeout(
-                                            () => setShowToast(false),
-                                            3000
-                                        );
+                                        setSuccessMessage("Successfully Deleted");
+                                        setTimeout(() => setShowToast(false), 3000);
                                     },
                                     onError: (error) => {
                                         setError(error);
