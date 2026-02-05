@@ -29,19 +29,22 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     const debouncedSearch = useDebounce(search, 300);
 
     useEffect(() => {
-        if (debouncedSearch.trim() !== "") {
-            router.get(
-                "/hospitals",
-                { search: debouncedSearch },
-                { preserveState: true, preserveScroll: true },
-            );
-        } else {
-            router.get(
-                "/hospitals",
-                {},
-                { preserveState: true, preserveScroll: true },
-            );
-        }
+        const params = {
+            search: debouncedSearch.trim(),
+            sort_by: filters.sort_by || undefined,
+            sort_order: filters.sort_order || undefined,
+            selected_areas: filters.areas.length > 0 ? filters.areas : undefined,
+            per_page: filters.per_page || undefined
+        };
+
+        const cleanParams = Object.fromEntries(
+            Object.entries(params).filter(([_, v]) => v !== undefined)
+        );
+
+        router.get("/hospitals", cleanParams, {
+            preserveScroll: true,
+            preserveState: true,
+        })
     }, [debouncedSearch]);
 
     const handleSort = (column) => {
@@ -54,44 +57,72 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
         setSortBy(column);
         setSortOrder(newSortOrder);
 
-        router.get(
-            "/hospitals",
-            {
-                sort_by: column,
-                sort_order: newSortOrder,
-            },
-            { preserveScroll: true, preserveState: true },
+        const params = {
+            search: filters.search || undefined,
+            sort_by: column,
+            sort_order: newSortOrder,
+            selected_areas: filters.areas.length > 0 ? filters.areas : undefined,
+            per_page: filters.per_page || undefined
+        };
+
+        const cleanParams = Object.fromEntries(
+            Object.entries(params).filter(([_, v]) => v !== undefined)
         );
+
+        router.get("/hospitals", cleanParams, {
+            preserveScroll: true,
+            preserveState: true
+        });
     };
 
     const handleClearFilters = () => {
         setSelectedAreas([]);
-        router.get(
-            "/hospitals",
-            {},
-            { preserveScroll: true, preserveState: true }
-        )
+
+        const params = {
+            search: filters.search || undefined,
+            sort_by: filters.sort_by || undefined,
+            sort_order: filters.sort_order || undefined,
+            per_page: filters.per_page || undefined
+        };
+
+        const cleanParams = Object.fromEntries(
+            Object.entries(params).filter(([_, v]) => v !== undefined)
+        );
+
+        router.get("/hospitals", cleanParams, {
+            preserveScroll: true,
+            preserveState: true
+        });
     }
 
     const handleApplyFilters = () => {
-        router.get(
-            "/hospitals",
-            {
-                selected_areas: selectedAreas,
-            },
-            { preserveState: true, preserveScroll: true }
+        const params = {
+            search: filters.search || undefined,
+            sort_by: filters.sort_by,
+            sort_order: filters.sort_order,
+            selected_areas: selectedAreas.length > 0 ? selectedAreas : undefined,
+            per_page: filters.per_page || undefined
+        };
+
+        const cleanParams = Object.fromEntries(
+            Object.entries(params).filter(([_, v]) => v !== undefined)
+        );
+
+        router.get("/hospitals", cleanParams, {
+                preserveState: true,
+                preserveScroll: true
+            }
         )
         setShowFilters(false);
     }
 
     const handleCheckboxChange = (areaId) => {
-        setSelectedAreas((prev) => {
-            if (prev.includes(areaId)) {
-                return prev.filter((id) => id !== areaId);
-            } else {
-                return [...prev, areaId];
-            }
-        })
+        const currentAreas = filters.areas || [];
+        const newAreas = currentAreas.includes(areaId)
+            ? currentAreas.filter((id) => id !== areaId)
+            : [...currentAreas, areaId];
+        
+        setSelectedAreas(newAreas);
     }
 
     return (
@@ -152,7 +183,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                                 <input
                                                     type="checkbox"
                                                     className="checkbox checkbox-md"
-                                                    checked={selectedAreas.includes(area.id)}
+                                                    checked={(filters.areas || []).includes(area.id)}
                                                     onChange={() => handleCheckboxChange(area.id)}
                                                 />
                                                 <span className="text-sm">{area.area_name}</span>
@@ -248,7 +279,19 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                         onClick={() =>
                                             router.get(
                                                 `/hospitals/${hospital.id}/invoices`,
-                                                { processing_days: "Current" },
+                                                {
+                                                    processing_days: "Current",
+                                                    search: filters.search || undefined,
+                                                    per_page: filters.per_page || undefined,
+                                                    sort_by: filters.sort_by || undefined,
+                                                    sort_order: filters.sort_order || undefined,
+                                                    selected_areas: filters.areas || undefined
+                                                },
+                                                { 
+                                                    preserveState: true,
+                                                    preserveScroll: true,
+                                                    only: []
+                                                }
                                             )
                                         }
                                     >

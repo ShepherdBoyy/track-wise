@@ -63,6 +63,8 @@ class HospitalController extends Controller
                 "sort_by" => $sortBy,
                 "sort_order" => $sortOrder,
                 "areas" => $filterAreas,
+                "search" => $searchQuery,
+                "per_page" => $perPage
             ],
             "breadcrumbs" => [
                 ["label" => "Hospitals", "url" => null]

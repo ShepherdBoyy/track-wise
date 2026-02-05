@@ -25,6 +25,13 @@ class InvoiceController extends Controller
         $processingFilter = $request->query("processing_days");
         $perPage = $request->query("per_page", 10);
         $hospital = $hospitalId ? Hospital::withCount("invoices")->find($hospitalId) : null;
+        $queryParams = $request->only([
+            "search",
+            "per_page",
+            "sort_by",
+            "sort_order",
+            "selected_areas",
+        ]);
 
         $countsQuery = Invoice::query()
             ->when($hospitalId, function ($query) use ($hospitalId) {
@@ -144,6 +151,13 @@ class InvoiceController extends Controller
             "91-over" => "91-over",
             "Closed" => "Closed"
         ];
+
+        $filteredParams = array_filter($queryParams, function($value) {
+            return !is_null($value) && $value !== '' && $value !== [];
+        });
+        
+        $queryString = http_build_query($filteredParams);
+        $hospitalsUrl = '/hospitals' . ($queryString ? '?' . $queryString : '');
         
         return Inertia::render("Invoices/Index", [
             "invoices" => $invoices,
@@ -154,7 +168,7 @@ class InvoiceController extends Controller
             "filterCounts" => $filterCounts,
             "filterTotals" => $filterTotals,
             "breadcrumbs" => [
-                ["label" => "Hospitals", "url" => "/hospitals"],
+                ["label" => "Hospitals", "url" => $hospitalsUrl],
                 ["label" => $hospital->hospital_name, "url" => null]
             ]
         ]);
