@@ -18,28 +18,13 @@ class AuthController extends Controller
         return Inertia::render("Authentication/Login");
     }
 
-    public function create()
-    {
-        //
-    }
-
     public function store(AuthRequest $request)
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return redirect()->intended("/home");
-    }
-
-    public function show(string $id)
-    {
-        //
-    }
-
-    public function edit(string $id)
-    {
-        //
+        return redirect()->intended("/updates");
     }
 
     public function update(UpdateProfileRequest $request, string $id)
