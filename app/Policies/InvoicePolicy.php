@@ -28,7 +28,7 @@ class InvoicePolicy
         return $user->hasPermission("manage_invoices");
     }
 
-    public function delete(User $user, Invoice $invoice): bool
+    public function delete(User $user): bool
     {
         return $user->hasPermission("manage_invoices");
     }

@@ -35,7 +35,8 @@ class Invoice extends Model
 
     public function history()
     {
-        return $this->hasMany(InvoiceHistory::class);
+        return $this->hasMany(InvoiceHistory::class)
+            ->orderBy("created_at", "desc");
     }
 
     public function latestHistory()
