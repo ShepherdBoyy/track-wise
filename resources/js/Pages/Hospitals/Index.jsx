@@ -26,15 +26,16 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     const [showFilters, setShowFilters] = useState(false);
     const { permissions } = usePage().props;
 
-    const debouncedSearch = useDebounce(search, 300);
+    const debouncedSearch = useDebounce(search, 500);
 
     useEffect(() => {
         const params = {
-            search: debouncedSearch.trim(),
+            hospital_search: debouncedSearch.trim(),
             sort_by: filters.sort_by || undefined,
             sort_order: filters.sort_order || undefined,
             selected_areas: filters.areas.length > 0 ? filters.areas : undefined,
-            per_page: filters.per_page || undefined
+            per_page: filters.per_page || undefined,
+            page: debouncedSearch.trim() !== (filters.search || "") ? 1 : filters.page || undefined,
         };
 
         const cleanParams = Object.fromEntries(
@@ -47,6 +48,12 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
         })
     }, [debouncedSearch]);
 
+    useEffect(() => {
+        setSearch(filters.search || "");
+        setSortOrder(filters.sort_order || "");
+        setSelectedAreas(filters.areas || []);
+    }, [filters.search, filters.sort_by, filters.sort_order, filters.areas]);
+
     const handleSort = (column) => {
         let newSortOrder = "asc";
 
@@ -58,11 +65,11 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
         setSortOrder(newSortOrder);
 
         const params = {
-            search: filters.search || undefined,
+            hospital_search: filters.search || undefined,
             sort_by: column,
             sort_order: newSortOrder,
             selected_areas: filters.areas.length > 0 ? filters.areas : undefined,
-            per_page: filters.per_page || undefined
+            per_page: filters.per_page || undefined,
         };
 
         const cleanParams = Object.fromEntries(
@@ -79,10 +86,10 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
         setSelectedAreas([]);
 
         const params = {
-            search: filters.search || undefined,
+            hospital_search: filters.search || undefined,
             sort_by: filters.sort_by || undefined,
             sort_order: filters.sort_order || undefined,
-            per_page: filters.per_page || undefined
+            per_page: filters.per_page || undefined,
         };
 
         const cleanParams = Object.fromEntries(
@@ -97,11 +104,11 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
 
     const handleApplyFilters = () => {
         const params = {
-            search: filters.search || undefined,
+            hospital_search: filters.search || undefined,
             sort_by: filters.sort_by,
             sort_order: filters.sort_order,
             selected_areas: selectedAreas.length > 0 ? selectedAreas : undefined,
-            per_page: filters.per_page || undefined
+            per_page: filters.per_page || undefined,
         };
 
         const cleanParams = Object.fromEntries(
@@ -117,12 +124,13 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     }
 
     const handleCheckboxChange = (areaId) => {
-        const currentAreas = filters.areas || [];
-        const newAreas = currentAreas.includes(areaId)
-            ? currentAreas.filter((id) => id !== areaId)
-            : [...currentAreas, areaId];
-        
-        setSelectedAreas(newAreas);
+        setSelectedAreas((prev) => {
+            if (prev.includes(areaId)) {
+                return prev.filter((id) => id !== areaId);
+            } else {
+                return [...prev, areaId];
+            }
+        });
     }
 
     return (
@@ -183,7 +191,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                                 <input
                                                     type="checkbox"
                                                     className="checkbox checkbox-md"
-                                                    checked={(filters.areas || []).includes(area.id)}
+                                                    checked={selectedAreas.includes(area.id)}
                                                     onChange={() => handleCheckboxChange(area.id)}
                                                 />
                                                 <span className="text-sm">{area.area_name}</span>
@@ -216,7 +224,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                 <tr>
                                     <th className="w-[50px]">#</th>
                                     <th
-                                        className="w-[200px] cursor-pointer hover:bg-base-200"
+                                        className="w-[150px] cursor-pointer hover:bg-base-200"
                                         onClick={() => handleSort("area_name")}
                                     >
                                         <div className="flex items-center gap-2">
@@ -249,6 +257,17 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                     <th
                                         className="w-[250px] cursor-pointer hover:bg-base-200"
                                         onClick={() =>
+                                            handleSort("invoices_sum_amount")
+                                        }
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Total Amount of Invoices
+                                            <SortIcon column="invoices_sum_amount" sortOrder={sortOrder} sortBy={sortBy} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="w-[200px] cursor-pointer hover:bg-base-200"
+                                        onClick={() =>
                                             handleSort("invoices_count")
                                         }
                                     >
@@ -276,34 +295,27 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                             duration: 0.2,
                                             delay: index * 0.05,
                                         }}
-                                        onClick={() =>
-                                            router.get(
-                                                `/hospitals/${hospital.id}/invoices`,
-                                                {
-                                                    processing_days: "Current",
-                                                    search: filters.search || undefined,
-                                                    per_page: filters.per_page || undefined,
-                                                    sort_by: filters.sort_by || undefined,
-                                                    sort_order: filters.sort_order || undefined,
-                                                    selected_areas: filters.areas || undefined
-                                                },
-                                                { 
-                                                    preserveState: true,
-                                                    preserveScroll: true,
-                                                    only: []
-                                                }
-                                            )
-                                        }
+                                        onClick={() => router.get(`/hospitals/${hospital.id}/invoices`,
+                                            {
+                                                processing_days: "Current",
+                                                hospital_search: filters.search || undefined,
+                                                per_page: filters.per_page || undefined,
+                                                sort_by: filters.sort_by || undefined,
+                                                sort_order: filters.sort_order || undefined,
+                                                selected_areas: filters.areas || undefined,
+                                                page: filters.page || undefined
+                                            },
+                                            { 
+                                                preserveState: true,
+                                                preserveScroll: true,
+                                            }
+                                        )}
                                     >
-                                        <td>
-                                            {(hospitals.current_page - 1) *
-                                                hospitals.per_page +
-                                                index +
-                                                1}
-                                        </td>
+                                        <td>{(hospitals.current_page - 1) * hospitals.per_page + index + 1}</td>
                                         <td>{hospital.area.area_name}</td>
                                         <td>{hospital.hospital_number}</td>
                                         <td>{hospital.hospital_name}</td>
+                                        <td>₱{parseFloat(hospital.invoices_sum_amount).toLocaleString("en-PH", {minimumFractionDigits: 2})}</td>
                                         <td>{hospital.invoices_count}</td>
                                         {permissions.canManageHospitals && (
                                             <td>

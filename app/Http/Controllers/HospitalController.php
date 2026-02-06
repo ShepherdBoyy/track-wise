@@ -17,18 +17,25 @@ class HospitalController extends Controller
     {
         Gate::authorize("viewAny", Hospital::class);
 
-        $searchQuery = $request->query("search");
+        $searchQuery = $request->query("hospital_search");
         $perPage = $request->query("per_page", 10);
+        $page = $request->query("page", 1);
         $sortBy = $request->query("sort_by", "area_name");
         $sortOrder = $request->query("sort_order", "asc");
         $filterAreas = $request->query("selected_areas", []);
         $user = Auth::user();
 
+        if (is_array($filterAreas)) {
+            $filterAreas = array_map('intval', $filterAreas);
+        }
+
         $userAreas = Gate::allows("viewAll", Hospital::class) 
             ? Area::orderBy("area_name")->get() 
             : $user->areas->sortBy("area_name")->values()->toArray();
 
-        $query = Hospital::withCount("invoices")->with("area");
+        $query = Hospital::withCount("invoices")
+            ->withSum("invoices", "amount")
+            ->with("area");
 
         if (!Gate::allows("viewAll", Hospital::class)) {
             $userAreaIds = $user->areas->pluck("id");
@@ -53,7 +60,7 @@ class HospitalController extends Controller
                     $query->orderBy($sortBy, $sortOrder);
                 }
             })
-            ->paginate($perPage)
+            ->paginate($perPage, ["*"], "page", $page)
             ->withQueryString();
 
         return Inertia::render("Hospitals/Index", [
@@ -64,7 +71,8 @@ class HospitalController extends Controller
                 "sort_order" => $sortOrder,
                 "areas" => $filterAreas,
                 "search" => $searchQuery,
-                "per_page" => $perPage
+                "per_page" => $perPage,
+                "page" => $page
             ],
             "breadcrumbs" => [
                 ["label" => "Hospitals", "url" => null]
