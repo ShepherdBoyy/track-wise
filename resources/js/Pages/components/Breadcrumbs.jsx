@@ -4,7 +4,7 @@ export default function Breadcrumbs({ items }) {
     if (!items || items.length === 0) return null;
 
     return (
-        <div className="breadcrumbs">
+        <div className="breadcrumbs items-center">
             <ul>
                 {items.map((item, index) => {
                     const isLast = index === items.length - 1;

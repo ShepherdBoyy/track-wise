@@ -3,12 +3,15 @@ import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 
 export default function Pagination({ data }) {
     const handlePerPageChange = (perPage) => {
+        const searchParams = new URLSearchParams(window.location.search);
+        const currentPage = parseInt(searchParams.get("page") || 1);
+
         router.get(
             window.location.pathname,
             { 
-                ...Object.fromEntries(new URLSearchParams(window.location.search)),
+                ...Object.fromEntries(searchParams),
                 per_page: perPage,
-                page: 1
+                page: currentPage,
             },
             { 
                 preserveState: true, 
@@ -21,7 +24,6 @@ export default function Pagination({ data }) {
 
     return (
         <div className="flex justify-between items-center mt-4">
-            {/* Rows per page selector */}
             <div className="flex items-center gap-2">
                 <span className="text-sm">Rows per page:</span>
                 <div className="relative">
@@ -42,12 +44,9 @@ export default function Pagination({ data }) {
                 </div>
             </div>
 
-            {/* Page navigation buttons */}
             <div className="join flex gap-2">
                 {data.links.map((link, index) => {
-                    const isPrevious = link.label
-                        .toLowerCase()
-                        .includes("previous");
+                    const isPrevious = link.label.toLowerCase().includes("previous");
                     const isNext = link.label.toLowerCase().includes("next");
 
                     return (
@@ -56,24 +55,15 @@ export default function Pagination({ data }) {
                             disabled={!link.url}
                             onClick={() =>
                                 link.url &&
-                                router.get(
-                                    link.url,
+                                router.get(link.url,
                                     {},
                                     { preserveState: true, preserveScroll: true }
                                 )
                             }
                             className={`
                                 join-item btn btn-sm rounded-xl
-                                ${
-                                    link.active
-                                        ? "bg-neutral-800 text-white"
-                                        : ""
-                                }
-                                ${
-                                    !link.url
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : ""
-                                }
+                                ${link.active ? "bg-neutral-800 text-white" : ""}
+                                ${!link.url ? "opacity-50 cursor-not-allowed": ""}
                             `}
                         >
                             {isPrevious ? (
