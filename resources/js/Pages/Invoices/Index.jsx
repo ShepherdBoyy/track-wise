@@ -4,7 +4,7 @@ import SearchIt from "../components/SearchIt";
 import { router, usePage } from "@inertiajs/react";
 import useDebounce from "../hooks/useDebounce";
 import Pagination from "../components/Pagination";
-import { Pencil, Plus, Trash2, UserRoundPen } from "lucide-react";
+import { ListFilter, Pencil, Plus, Trash2, UserRoundPen, X } from "lucide-react";
 import Create from "./Create";
 import DeleteInvoiceModal from "./elements/DeleteInvoiceModal";
 import { motion } from "framer-motion";
@@ -18,13 +18,9 @@ export default function Index({
     hospital,
     searchQuery,
     editor,
-    processingFilter,
-    filterCounts,
-    filterTotals,
     breadcrumbs,
 }) {
     const [search, setSearch] = useState(searchQuery || "");
-    const [active, setActive] = useState(processingFilter);
     const [openCreateInvoiceModal, setOpenCreateInvoiceModal] = useState(false);
     const [openEditInvoiceModal, setOpenEditInvoiceModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState("");
@@ -35,6 +31,9 @@ export default function Index({
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openHistoryModal, setOpenHistoryModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
+    const [showFilters, setShowFilters] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState("");
+    const [selectedProcessingDays, setSelectedProcessingDays] = useState("");
     const [error, setError] = useState("");
     const { permissions } = usePage().props;
     const debouncedSearch = useDebounce(search, 300);
@@ -45,7 +44,6 @@ export default function Index({
                 `/hospitals/${hospital.id}/invoices`,
                 {
                     search: debouncedSearch,
-                    processing_days: active.replace(/ /g, "-"),
                 },
                 {
                     preserveState: true,
@@ -56,9 +54,7 @@ export default function Index({
         } else {
             router.get(
                 `/hospitals/${hospital.id}/invoices`,
-                {
-                    processing_days: active.replace(/ /g, "-"),
-                },
+                {},
                 {
                     preserveState: true,
                     replace: true,
@@ -68,61 +64,42 @@ export default function Index({
         }
     }, [debouncedSearch]);
 
-    const processingDays = [
-        { label: "Current", invoices_count: filterCounts.current, total_amount: filterTotals.current },
-        { label: "30 days", invoices_count: filterCounts.thirty_days, total_amount: filterTotals.thirty_days },
-        { label: "31-60 days", invoices_count: filterCounts.sixty_days, total_amount: filterTotals.sixty_days },
-        { label: "61-90 days", invoices_count: filterCounts.ninety_days, total_amount: filterTotals.ninety_days },
-        { label: "91-over", invoices_count: filterCounts.over_ninety, total_amount: filterTotals.over_ninety },
-        { label: "Closed", invoices_count: filterCounts.closed, total_amount: filterTotals.closed },
-    ];
+    const handleApplyFilters = () => {
+        router.get(
+            `/hospitals/${hospital.id}/invoices`,
+            {
+                selected_status: selectedStatus,
+                selected_processing_days: selectedProcessingDays
+            },
+            { preserveState: true, preserveScroll: true },
+        );
+        setShowFilters(false);
+    };
 
     return (
         <Master>
             <div className="bg-base-200">
                 <div className="flex items-center gap-2 justify-between pb-4">
                     <Breadcrumbs items={breadcrumbs} />
-                    <SearchIt
-                        search={search}
-                        setSearch={setSearch}
-                    />
+                    <div className="flex justify-content-end gap-2">
+                        <SearchIt
+                            search={search}
+                            setSearch={setSearch}
+                        />
+                        <button
+                            className="btn btn-outline border border-gray-300 rounded-xl"
+                            onClick={() => setShowFilters(!showFilters)}
+                        >
+                            <ListFilter size={16} />
+                            Filters
+                        </button>
+                    </div>
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">
-                    <div className="flex justify-between items-center mb-3">
-                        <div className="tabs tabs-box">
-                            {processingDays.map((day, index) => (
-                                <button
-                                    key={index}
-                                    type="button"
-                                    className={`px-4 border-b-0 rounded-2xl text-black tab gap-2 ${
-                                        active === day.label
-                                            ? "tab-active font-semibold"
-                                            : "hover:bg-white hover:text-black"
-                                    }`}
-                                    onClick={() => {
-                                        setActive(day.label);
-                                        setSelectedIds([]);
-                                        setIsSelectMode(false);
-                                        router.get(
-                                            `/hospitals/${hospital.id}/invoices`,
-                                            {
-                                                processing_days: day.label.replace(/ /g, "-"),
-                                            },
-                                            {
-                                                preserveScroll: true,
-                                                preserveState: true,
-                                                only: ["invoices"],
-                                            },
-                                        );
-                                    }}
-                                >
-                                    {day.label}
-                                    <div className="badge badge-sm bg-blue-200 border-none">
-                                        {day.invoices_count}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
+                    <div className="flex justify-between items-center mb-4">
+                        <span className="text-xl">
+                            Invoices
+                        </span>
                         <div className="flex gap-2">
                             {permissions.canManageInvoices && (
                                 <button
@@ -162,6 +139,67 @@ export default function Index({
                         </div>
                     </div>
 
+                    {showFilters && (
+                        <div className="fixed top-0 right-0 h-full w-90 bg-base-100 shadow-lg pt-6 pb-18 px-6 z-50 transition-transform duration-300">
+                            <div className="flex justify-between mb-6">
+                                <p className="text-xl">Filter Options</p>
+                                <X size={20} onClick={() => setShowFilters(false)} className="cursor-pointer" />
+                            </div>
+                            <div className="flex flex-col justify-between h-full">
+                                <div className="flex flex-col justify-center gap-6">
+                                    <div>
+                                        <label className="label text-md">
+                                            By Status
+                                        </label>
+                                        <select
+                                            className="select w-full rounded-xl"
+                                            value={selectedStatus}
+                                            onChange={(e) => setSelectedStatus(e.target.value)}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="open">Open</option>
+                                            <option value="overdue">Overdue</option>
+                                            <option value="closed">Closed</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="label text-md">
+                                            By Processing Days
+                                        </label>
+                                        <select
+                                            className="select w-full rounded-xl"
+                                            value={selectedProcessingDays}
+                                            onChange={(e) => setSelectedProcessingDays(e.target.value)}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="current">Current</option>
+                                            <option value="thirty-days">30 days</option>
+                                            <option value="sixty-days">31-60 days</option>
+                                            <option value="ninety-days">61-90 days</option>
+                                            <option value="over-ninety">91-over</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-center gap-2 ml-4">
+                                    <button
+                                        className="btn btn-outline rounded-3xl"
+                                        // onClick={handleClearFilters}
+                                    >
+                                        Clear All
+                                    </button>
+                                    <button
+                                        className="btn bg-gray-800 text-white rounded-3xl"
+                                        onClick={handleApplyFilters}
+                                    >
+                                        Apply Filters
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="rounded-box border border-base-content/5 bg-base-100 pt-5">
                         <table className="table table-fixed">
                             <thead>
@@ -177,16 +215,9 @@ export default function Index({
                                                     invoices.data.length > 0
                                                 }
                                                 onChange={(e) => {
-                                                    if (
-                                                        e.target.checked &&
-                                                        invoices.data.length > 0
-                                                    ) {
+                                                    if (e.target.checked && invoices.data.length > 0) {
                                                         setIsSelectMode(true);
-                                                        setSelectedIds(
-                                                            invoices.data.map(
-                                                                (i) => i.id,
-                                                            ),
-                                                        );
+                                                        setSelectedIds(invoices.data.map((i) => i.id));
                                                     } else {
                                                         setSelectedIds([]);
                                                         setIsSelectMode(false);
@@ -196,12 +227,12 @@ export default function Index({
                                         </th>
                                     )}
                                     <th className="w-[50px]">Invoice No.</th>
-                                    <th className="w-[70px]">Document Date</th>
+                                    <th className="w-[60px]">Document Date</th>
                                     <th className="w-[50px]">Due Date</th>
-                                    <th className="w-[80px]">Amount</th>
+                                    <th className="w-[50px]">Amount</th>
                                     <th className="w-[60px]">Processing Days</th>
-                                    <th className="w-[60px]">Status</th>
-                                    <th className="w-[190px]">Description</th>
+                                    <th className="w-[50px]">Status</th>
+                                    <th className="w-[200px]">Remarks</th>
                                     {permissions.canManageInvoices && (
                                         <th className="w-[20px] text-rights">
                                             Action
@@ -290,7 +321,7 @@ export default function Index({
                                                 {invoice.status}
                                             </span>
                                         </td>
-                                        <td className="truncate">{invoice.latest_history.description}</td>
+                                        <td className="truncate">{invoice.latest_history.remarks}</td>
                                         {permissions.canManageInvoices && (
                                             <td>
                                                 <div
@@ -312,22 +343,6 @@ export default function Index({
                                     </motion.tr>
                                 ))}
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td className="text-right text-sm font-semibold">Total Amount: </td>
-                                    <td>
-                                        ₱
-                                        {parseFloat(
-                                            processingDays.find(day => day.label === active)?.total_amount || 0
-                                        ).toLocaleString("en-PH", {
-                                            minimumFractionDigits: 2,
-                                        })}
-                                    </td>
-                                </tr>
-                            </tfoot>
                         </table>
 
                         {openCreateInvoiceModal && (
