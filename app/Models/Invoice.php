@@ -46,14 +46,11 @@ class Invoice extends Model
 
     public function getStatusAttribute()
     {
-        $today = Carbon::today();
-        $dueDate = Carbon::parse($this->due_date)->startOfDay();
-
         if (!empty($this->date_closed)) {
             return "closed";
         }
 
-        return $today->greaterThan($dueDate)
+        return now()->startOfDay()->greaterThan(Carbon::parse($this->due_date)->startOfDay())
             ? "overdue"
             : "open";
     }
