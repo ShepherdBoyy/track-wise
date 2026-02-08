@@ -100,8 +100,21 @@ export default function Index({
                         <span className="text-xl">
                             Invoices
                         </span>
-                        <div className="flex gap-2">
-                            {permissions.canManageInvoices && (
+                        {permissions.canUpdateInvoices && (
+                            <button
+                                className="btn btn-outline border border-gray-300 rounded-xl"
+                                onClick={() => setOpenUpdateModal(true)}
+                                disabled={!isSelectMode}
+                            >
+                                <UserRoundPen
+                                    size={18}
+                                    className="cursor-pointer"
+                                />
+                                <span>Update</span>
+                            </button>
+                        )}
+                        {permissions.canManageInvoices && (
+                            <div className="flex gap-2">
                                 <button
                                     className="btn btn-primary rounded-xl"
                                     onClick={() => {
@@ -111,32 +124,18 @@ export default function Index({
                                     <Plus size={16} />
                                     Add Invoice
                                 </button>
-                            )}
-                            {isSelectMode && permissions.canManageInvoices && (
-                                <>
-                                    <button
-                                        className="btn btn-outline border border-gray-300 rounded-xl"
-                                        onClick={() => setOpenUpdateModal(true)}
-                                    >
-                                        <UserRoundPen
-                                            size={18}
-                                            className="cursor-pointer"
-                                        />
-                                        <span>Update</span>
-                                    </button>
-                                    <button
-                                        className="btn btn-outline border border-gray-300 rounded-xl"
-                                        onClick={() => setOpenDeleteModal(true)}
-                                    >
-                                        <Trash2
-                                            size={18}
-                                            className="cursor-pointer"
-                                        />
-                                        <span>Delete</span>
-                                    </button>
-                                </>
-                            )}
-                        </div>
+                                <button
+                                    className="btn btn-outline border border-gray-300 rounded-xl"
+                                    onClick={() => setOpenDeleteModal(true)}
+                                >
+                                    <Trash2
+                                        size={18}
+                                        className="cursor-pointer"
+                                    />
+                                    <span>Delete</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {showFilters && (
@@ -204,7 +203,7 @@ export default function Index({
                         <table className="table table-fixed">
                             <thead>
                                 <tr>
-                                    {permissions.canManageInvoices && (
+                                    {permissions.canUpdateInvoices && (
                                         <th className="w-[30px]">
                                             <input
                                                 type="checkbox"
@@ -264,7 +263,7 @@ export default function Index({
                                             }
                                         }}
                                     >
-                                        {permissions.canManageInvoices && (
+                                        {permissions.canUpdateInvoices && (
                                             <td>
                                                 <input
                                                     type="checkbox"

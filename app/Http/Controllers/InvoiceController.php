@@ -99,7 +99,7 @@ class InvoiceController extends Controller
 
     public function store(StoreInvoiceRequest $request)
     {
-        Gate::authorize("create", Invoice::class);
+        Gate::authorize("manage", Invoice::class);
 
         $validated = $request->validated();
         $validated['created_by'] = Auth::id();
@@ -131,7 +131,7 @@ class InvoiceController extends Controller
         $invoiceId = $request->invoice_id;
         $invoice = Invoice::findOrFail($invoiceId);
 
-        Gate::authorize("update", $invoice);
+        Gate::authorize("manage", $invoice);
 
         $validated = $request->validated();
 
@@ -142,7 +142,7 @@ class InvoiceController extends Controller
     
     public function destroy(Request $request, $hospital_id)
     {
-        Gate::authorize("delete", Invoice::class);
+        Gate::authorize("manage", Invoice::class);
 
         $validated = $request->validate([
             "ids" => ["required", "array", "min:1"],
