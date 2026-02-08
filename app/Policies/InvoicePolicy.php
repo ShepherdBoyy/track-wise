@@ -18,18 +18,13 @@ class InvoicePolicy
         return $user->hasPermission("view_invoices");
     }
 
-    public function create(User $user): bool
+    public function manage(User $user): bool
     {
         return $user->hasPermission("manage_invoices");
     }
 
-    public function update(User $user, Invoice $invoice): bool
+    public function update(User $user): bool
     {
-        return $user->hasPermission("manage_invoices");
-    }
-
-    public function delete(User $user): bool
-    {
-        return $user->hasPermission("manage_invoices");
+        return $user->hasPermission("update_invoices");
     }
 }

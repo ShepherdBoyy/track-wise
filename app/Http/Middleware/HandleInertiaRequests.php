@@ -29,6 +29,7 @@ class HandleInertiaRequests extends Middleware
                 "canManageHospitals" => $user->hasPermission("manage_hospitals"),
                 "canViewInvoices" => $user->hasPermission("view_invoices"),
                 "canManageInvoices" => $user->hasPermission("manage_invoices"),
+                "canUpdateInvoices" => $user->hasPermission("update_invoices"),
                 "canViewInvoiceHistory" => $user->hasPermission("view_invoice_history"),
                 "canManageInvoiceHistory" => $user->hasPermission("manage_invoice_history"),
                 "canViewImportData" => $user->hasPermission("view_import_data"),
