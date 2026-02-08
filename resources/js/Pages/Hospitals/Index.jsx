@@ -19,7 +19,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     const [hospital, setHospital] = useState("");
     const [showToast, setShowToast] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(filters.search || "");
     const [sortBy, setSortBy] = useState("");
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "asc");
     const [selectedAreas, setSelectedAreas] = useState(filters.areas || []);
@@ -31,9 +31,9 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     useEffect(() => {
         const params = {
             hospital_search: debouncedSearch.trim(),
-            sort_by: filters.sort_by || undefined,
-            sort_order: filters.sort_order || undefined,
-            selected_areas: filters.areas.length > 0 ? filters.areas : undefined,
+            sort_by: sortBy || undefined,
+            sort_order: sortOrder || undefined,
+            selected_areas: selectedAreas.length > 0 ? selectedAreas : undefined,
             per_page: filters.per_page || undefined,
             page: debouncedSearch.trim() !== (filters.search || "") ? 1 : filters.page || undefined,
         };
@@ -46,13 +46,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
             preserveScroll: true,
             preserveState: true,
         })
-    }, [debouncedSearch]);
-
-    useEffect(() => {
-        setSearch(filters.search || "");
-        setSortOrder(filters.sort_order || "");
-        setSelectedAreas(filters.areas || []);
-    }, [filters.search, filters.sort_by, filters.sort_order, filters.areas]);
+    }, [debouncedSearch, sortBy, sortOrder]);
 
     const handleSort = (column) => {
         let newSortOrder = "asc";
@@ -68,7 +62,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
             hospital_search: filters.search || undefined,
             sort_by: column,
             sort_order: newSortOrder,
-            selected_areas: filters.areas.length > 0 ? filters.areas : undefined,
+            selected_areas: selectedAreas.length > 0 ? selectedAreas : undefined,
             per_page: filters.per_page || undefined,
         };
 
