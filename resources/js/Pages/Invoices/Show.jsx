@@ -4,7 +4,7 @@ export default function Show({ invoice, setSelectedInvoice, setOpenHistoryModal 
 
   return (
     <dialog open className="modal">
-        <div className="modal-box max-w-5xl">
+        <div className="modal-box max-w-4xl">
             <div className="p-6 bg-linear-to-br from-primary/10 to-base-200 border-b border-base-300 rounded-t-xl flex justify-between items-center">
                 <span>History</span>
                 <a
@@ -21,8 +21,8 @@ export default function Show({ invoice, setSelectedInvoice, setOpenHistoryModal 
                     <thead>
                         <tr>
                             <th className='w-[120px]'>Updated At</th>
-                            <th className='w-[250px]'>Updated By</th>
-                            <th className='w-[700px]'>Remarks</th>
+                            <th className='w-[200px]'>Updated By</th>
+                            <th className='w-[800px]'>Remarks</th>
                             <th>Status</th>
                         </tr>
                     </thead>

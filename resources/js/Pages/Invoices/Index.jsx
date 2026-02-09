@@ -100,42 +100,44 @@ export default function Index({
                         <span className="text-xl">
                             Invoices
                         </span>
-                        {permissions.canUpdateInvoices && (
-                            <button
-                                className="btn btn-outline border border-gray-300 rounded-xl"
-                                onClick={() => setOpenUpdateModal(true)}
-                                disabled={!isSelectMode}
-                            >
-                                <UserRoundPen
-                                    size={18}
-                                    className="cursor-pointer"
-                                />
-                                <span>Update</span>
-                            </button>
-                        )}
-                        {permissions.canManageInvoices && (
-                            <div className="flex gap-2">
-                                <button
-                                    className="btn btn-primary rounded-xl"
-                                    onClick={() => {
-                                        setOpenCreateInvoiceModal(true);
-                                    }}
-                                >
-                                    <Plus size={16} />
-                                    Add Invoice
-                                </button>
+                        <div className="flex gap-2">
+                            {permissions.canUpdateInvoices && (
                                 <button
                                     className="btn btn-outline border border-gray-300 rounded-xl"
-                                    onClick={() => setOpenDeleteModal(true)}
+                                    onClick={() => setOpenUpdateModal(true)}
+                                    disabled={!isSelectMode}
                                 >
-                                    <Trash2
+                                    <UserRoundPen
                                         size={18}
                                         className="cursor-pointer"
                                     />
-                                    <span>Delete</span>
+                                    <span>Update</span>
                                 </button>
-                            </div>
-                        )}
+                            )}
+                            {permissions.canManageInvoices && (
+                                <>
+                                    <button
+                                        className="btn btn-primary rounded-xl"
+                                        onClick={() => {
+                                            setOpenCreateInvoiceModal(true);
+                                        }}
+                                    >
+                                        <Plus size={16} />
+                                        Add Invoice
+                                    </button>
+                                    <button
+                                        className="btn btn-outline border border-gray-300 rounded-xl"
+                                        onClick={() => setOpenDeleteModal(true)}
+                                    >
+                                        <Trash2
+                                            size={18}
+                                            className="cursor-pointer"
+                                        />
+                                        <span>Delete</span>
+                                    </button>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     {showFilters && (
