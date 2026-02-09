@@ -22,10 +22,9 @@ class InvoiceController extends Controller
 
         $hospitalId = $request->hospital_id;
         $searchQuery = $request->query("search");
-        $filterStatus = $request->query("selected_status");
+        $processingFilter = $request->query("processing_days");
         $perPage = $request->query("per_page", 10);
-        $filterProcessingDays = $request->query("selected_processing_days");
-        $perPage = $request->query("per_page", 10);
+        $page = $request->query("page", 1);
         $hospital = $hospitalId ? Hospital::withCount("invoices")->find($hospitalId) : null;
         $queryParams = $request->only([
             "hospital_search",
@@ -35,9 +34,6 @@ class InvoiceController extends Controller
             "selected_areas",
             "page"
         ]);
-
-        $hasInvoiceFilters = $searchQuery || $filterStatus || $filterProcessingDays;
-        $page = $hasInvoiceFilters ? $request->query("page", 1) : 1;
 
         $invoices = Invoice::query()
             ->with(["hospital", "creator", "latestHistory", "history.updater"])
@@ -60,27 +56,52 @@ class InvoiceController extends Controller
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where("invoice_number", "like", "%{$searchQuery}%");
             })
-            ->when($filterStatus, function ($query) use ($filterStatus) {
-                if ($filterStatus === "closed") {
-                    $query->whereNotnull("date_closed");
-                } else if ($filterStatus === "open") {
-                    $query->whereNull("date_closed")->whereDate("due_date", ">=", now()->toDateString());
-                } else if ($filterStatus === "overdue") {
-                    $query->whereNull("date_closed")->whereDate("due_date", "<", now()->toDateString());
-                }
-            })
-            ->when($filterProcessingDays, function ($query) use ($filterProcessingDays) {
-                match ($filterProcessingDays) {
-                    "current" => $query->having("processing_days", ">", 0)->whereNull("date_closed"),
-                    "thirty-days" => $query->havingBetween("processing_days", [-30, -1])->whereNull("date_closed"),
-                    "sixty-days" => $query->havingBetween("processing_days", [-60, -31])->whereNull("date_closed"),
-                    "ninety-days" => $query->havingBetween("processing_days", [-90, -61])->whereNull("date_closed"),
-                    "over-ninety" => $query->having("processing_days", "<=", -91)->whereNull("date_closed"),
+            ->when(!$searchQuery && $processingFilter, function ($query) use ($processingFilter) {
+                match ($processingFilter) {
+                    "Current" => $query->having("processing_days", ">", 0)->whereNull("date_closed"),
+                    "30-days" => $query->havingBetween("processing_days", [-30, -1])->whereNull("date_closed"),
+                    "31-60-days" => $query->havingBetween("processing_days", [-60, -31])->whereNull("date_closed"),
+                    "61-90-days" => $query->havingBetween("processing_days", [-90, -61])->whereNull("date_closed"),
+                    "91-over" => $query->having("processing_days", "<=", -91)->whereNull("date_closed"),
+                    default => null,
                 };
             })
             ->orderBy("due_date", "desc")
             ->paginate($perPage)
             ->withQueryString();
+        
+        $baseQuery = Invoice::query()
+            ->select("invoices.*")
+            ->addSelect([
+                "processing_days" => function ($query) {
+                    $query->selectRaw("
+                        CASE
+                            WHEN date_closed IS NOT NULL
+                                THEN DATEDIFF(due_date, date_closed)
+                            ELSE
+                                DATEDIFF(due_date, CURDATE())
+                        END
+                    ");
+                }
+            ])
+            ->when($hospitalId, fn($q) => $q->where("hospital_id", $hospitalId));
+
+        $processingCounts = [
+            "All" => (clone $baseQuery)->count(),
+            "Current" => (clone $baseQuery)->having("processing_days", ">", 0)->whereNull("date_closed")->count(),
+            "30 days" => (clone $baseQuery)->havingBetween("processing_days", [-30, -1])->whereNull("date_closed")->count(),
+            "31-60 days" => (clone $baseQuery)->havingBetween("processing_days", [-60, -31])->whereNull("date_closed")->count(),
+            "61-90 days" => (clone $baseQuery)->havingBetween("processing_days", [-90, -61])->whereNull("date_closed")->count(),
+            "91-over" => (clone $baseQuery)->having("processing_days", "<=", -91)->whereNull("date_closed")->count(),
+        ];
+
+        $processingLabelMap = [
+            "Current" => "Current",
+            "30-days" => "30 days",
+            "31-60-days" => "31-60 days",
+            "61-90-days" => "61-90 days",
+            "91-over" => "91-over",
+        ];
 
         $filteredParams = array_filter($queryParams, function($value) {
             return !is_null($value) && $value !== '' && $value !== [];
@@ -93,13 +114,15 @@ class InvoiceController extends Controller
             "invoices" => $invoices,
             "hospital" => $hospital,
             "searchQuery" => $searchQuery,
+            "processingFilter" => $processingLabelMap[$processingFilter] ?? "All",
+            "processingCounts" => $processingCounts,
             "editor" => Auth::user()->name,
+            "hospitalFilters" => $filteredParams,
             "filters" => [
-                "selected_status" => $filterStatus,
-                "selected_processing_days" => $filterProcessingDays,
                 "page" => $page,
                 "per_page" => $perPage
             ],
+            "hospitalFilters" => $filteredParams,
             "breadcrumbs" => [
                     ["label" => "Hospitals", "url" => $hospitalsUrl],
                     ["label" => $hospital?->hospital_name, "url" => null]

@@ -19,6 +19,9 @@ export default function Index({
     searchQuery,
     editor,
     breadcrumbs,
+    processingFilter,
+    processingCounts,
+    hospitalFilters,
     filters
 }) {
     const [search, setSearch] = useState(searchQuery || "");
@@ -28,24 +31,26 @@ export default function Index({
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
+    const [active, setActive] = useState(processingFilter);
     const [isSelectMode, setIsSelectMode] = useState(false);
     const [openUpdateModal, setOpenUpdateModal] = useState(false);
     const [openHistoryModal, setOpenHistoryModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
-    const [showFilters, setShowFilters] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState(filters.selected_status || "");
-    const [selectedProcessingDays, setSelectedProcessingDays] = useState(filters.selected_processing_days || "");
     const [error, setError] = useState("");
     const { permissions } = usePage().props;
     const debouncedSearch = useDebounce(search, 300);
     
+    const processingDays = [
+        { label: "All", count: processingCounts?.["All"] || 0 },
+        { label: "Current", count: processingCounts?.["Current"] || 0 },
+        { label: "30 days", count: processingCounts?.["30 days"] || 0 },
+        { label: "31-60 days", count: processingCounts?.["31-60 days"] || 0 },
+        { label: "61-90 days", count: processingCounts?.["61-90 days"] || 0 },
+        { label: "91-over", count: processingCounts?.["91-over"] || 0 },
+    ];
+    
     useEffect(() => {
-        const currentUrl = new URL(window.location.href);
-        const allParams = {};
-
-        currentUrl.searchParams.forEach((value, key) => {
-            allParams[key] = value;
-        })
+        const allParams = { ...hospitalFilters };
 
         if (debouncedSearch.trim() !== "") {
             allParams.search = debouncedSearch;
@@ -65,59 +70,22 @@ export default function Index({
         );
     }, [debouncedSearch]);
 
-    const handleApplyFilters = () => {
-        const currentUrl = new URL(window.location.href);
-        const allParams = {};
+    const handleTabClick = (dayLabel) => {
+        setActive(dayLabel);
+        setSelectedIds([]);
+        setIsSelectMode(false);
 
-        currentUrl.searchParams.forEach((value, key) => {
-            allParams[key] = value;
-        })
+        const params = { ...hospitalFilters, page: 1 };
 
-        if (selectedStatus) {
-            allParams.selected_status = selectedStatus;
-        } else {
-            delete allParams.selected_status;
+        if (dayLabel !== "All") {
+            params.processing_days = dayLabel.replace(/ /g, "-");
         }
-
-        if (selectedProcessingDays) {
-            allParams.selected_processing_days = selectedProcessingDays;
-        } else {
-            delete allParams.selected_processing_days;
-        }
-
-        allParams.page = 1;
 
         router.get(
             `/hospitals/${hospital.id}/invoices`,
-            allParams,
-            { preserveState: true, preserveScroll: true },
+            params,
+            { preserveScroll: true, preserveState: true },
         );
-        setShowFilters(false);
-    };
-
-    const handleClearFilters = () => {
-        setSelectedStatus("");
-        setSelectedProcessingDays("");
-
-        const currentUrl = new URL(window.location.href);
-        const allParams = {};
-
-        currentUrl.searchParams.forEach((value, key) => {
-            allParams[key] = value;
-        })
-
-        delete allParams.selected_status;
-        delete allParams.selected_processing_days;
-
-        allParams.page = 1;
-
-        router.get(
-            `/hospitals/${hospital.id}/invoices`,
-            allParams,
-            { preserveState: true, preserveScroll: true },
-        );
-
-        setShowFilters(false);
     }
 
     return (
@@ -125,25 +93,32 @@ export default function Index({
             <div className="bg-base-200">
                 <div className="flex items-center gap-2 justify-between pb-4">
                     <Breadcrumbs items={breadcrumbs} />
-                    <div className="flex justify-content-end gap-2">
-                        <SearchIt
-                            search={search}
-                            setSearch={setSearch}
-                        />
-                        <button
-                            className="btn btn-outline border border-gray-300 rounded-xl"
-                            onClick={() => setShowFilters(!showFilters)}
-                        >
-                            <ListFilter size={16} />
-                            Filters
-                        </button>
-                    </div>
+                    <SearchIt
+                        search={search}
+                        setSearch={setSearch}
+                    />
                 </div>
                 <div className="p-6 bg-white rounded-xl shadow-lg">
                     <div className="flex justify-between items-center mb-4">
-                        <span className="text-xl">
-                            Invoices
-                        </span>
+                        <div className="tabs tabs-box">
+                            {processingDays.map((day, index) => (
+                                <button
+                                    key={index}
+                                    type="button"
+                                    className={`px-4 border-b-0 rounded-2xl text-black tab gap-2 ${
+                                        active === day.label
+                                            ? "tab-active font-semibold"
+                                            : "hover:bg-white hover:text-black"
+                                    }`}
+                                    onClick={() => handleTabClick(day.label)}
+                                >
+                                    {day.label}
+                                    <div className="badge badge-sm bg-blue-200 border-none">
+                                        {day.count}
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
                         <div className="flex gap-2">
                             {permissions.canUpdateInvoices && (
                                 <button
@@ -183,67 +158,6 @@ export default function Index({
                             )}
                         </div>
                     </div>
-
-                    {showFilters && (
-                        <div className="fixed top-0 right-0 h-full w-90 bg-base-100 shadow-lg pt-6 pb-18 px-6 z-50 transition-transform duration-300">
-                            <div className="flex justify-between mb-6">
-                                <p className="text-xl">Filter Options</p>
-                                <X size={20} onClick={() => setShowFilters(false)} className="cursor-pointer" />
-                            </div>
-                            <div className="flex flex-col justify-between h-full">
-                                <div className="flex flex-col justify-center gap-6">
-                                    <div>
-                                        <label className="label text-md">
-                                            By Status
-                                        </label>
-                                        <select
-                                            className="select w-full rounded-xl"
-                                            value={selectedStatus}
-                                            onChange={(e) => setSelectedStatus(e.target.value)}
-                                        >
-                                            <option value="">Select</option>
-                                            <option value="open">Open</option>
-                                            <option value="overdue">Overdue</option>
-                                            <option value="closed">Closed</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="label text-md">
-                                            By Processing Days
-                                        </label>
-                                        <select
-                                            className="select w-full rounded-xl"
-                                            value={selectedProcessingDays}
-                                            onChange={(e) => setSelectedProcessingDays(e.target.value)}
-                                        >
-                                            <option value="">Select</option>
-                                            <option value="current">Current</option>
-                                            <option value="thirty-days">30 days</option>
-                                            <option value="sixty-days">31-60 days</option>
-                                            <option value="ninety-days">61-90 days</option>
-                                            <option value="over-ninety">91-over</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-center gap-2 ml-4">
-                                    <button
-                                        className="btn btn-outline rounded-3xl"
-                                        onClick={handleClearFilters}
-                                    >
-                                        Clear All
-                                    </button>
-                                    <button
-                                        className="btn bg-gray-800 text-white rounded-3xl"
-                                        onClick={handleApplyFilters}
-                                    >
-                                        Apply Filters
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
                     <div className="rounded-box border border-base-content/5 bg-base-100 pt-5">
                         <table className="table table-fixed">
