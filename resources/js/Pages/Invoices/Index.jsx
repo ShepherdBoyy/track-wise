@@ -19,6 +19,7 @@ export default function Index({
     searchQuery,
     editor,
     breadcrumbs,
+    filters
 }) {
     const [search, setSearch] = useState(searchQuery || "");
     const [openCreateInvoiceModal, setOpenCreateInvoiceModal] = useState(false);
@@ -32,49 +33,92 @@ export default function Index({
     const [openHistoryModal, setOpenHistoryModal] = useState(false);
     const [selectedIds, setSelectedIds] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState("");
-    const [selectedProcessingDays, setSelectedProcessingDays] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState(filters.selected_status || "");
+    const [selectedProcessingDays, setSelectedProcessingDays] = useState(filters.selected_processing_days || "");
     const [error, setError] = useState("");
     const { permissions } = usePage().props;
     const debouncedSearch = useDebounce(search, 300);
-
+    
     useEffect(() => {
+        const currentUrl = new URL(window.location.href);
+        const allParams = {};
+
+        currentUrl.searchParams.forEach((value, key) => {
+            allParams[key] = value;
+        })
+
         if (debouncedSearch.trim() !== "") {
-            router.get(
-                `/hospitals/${hospital.id}/invoices`,
-                {
-                    search: debouncedSearch,
-                },
-                {
-                    preserveState: true,
-                    replace: true,
-                    only: ["invoices"],
-                },
-            );
+            allParams.search = debouncedSearch;
+            allParams.page = 1;
         } else {
-            router.get(
-                `/hospitals/${hospital.id}/invoices`,
-                {},
-                {
-                    preserveState: true,
-                    replace: true,
-                    only: ["invoices"],
-                },
-            );
+            delete allParams.search;
         }
+
+        router.get(
+            `/hospitals/${hospital.id}/invoices`,
+            allParams,
+            {
+                preserveState: true,
+                replace: true,
+                only: ["invoices"],
+            },
+        );
     }, [debouncedSearch]);
 
     const handleApplyFilters = () => {
+        const currentUrl = new URL(window.location.href);
+        const allParams = {};
+
+        currentUrl.searchParams.forEach((value, key) => {
+            allParams[key] = value;
+        })
+
+        if (selectedStatus) {
+            allParams.selected_status = selectedStatus;
+        } else {
+            delete allParams.selected_status;
+        }
+
+        if (selectedProcessingDays) {
+            allParams.selected_processing_days = selectedProcessingDays;
+        } else {
+            delete allParams.selected_processing_days;
+        }
+
+        allParams.page = 1;
+
         router.get(
             `/hospitals/${hospital.id}/invoices`,
-            {
-                selected_status: selectedStatus,
-                selected_processing_days: selectedProcessingDays
-            },
+            allParams,
             { preserveState: true, preserveScroll: true },
         );
         setShowFilters(false);
     };
+
+    const handleClearFilters = () => {
+        setSelectedStatus("");
+        setSelectedProcessingDays("");
+
+        const currentUrl = new URL(window.location.href);
+        const allParams = {};
+
+        currentUrl.searchParams.forEach((value, key) => {
+            allParams[key] = value;
+        })
+
+        delete allParams.selected_status;
+        delete allParams.selected_processing_days;
+
+        allParams.page = 1;
+
+        router.get(
+            `/hospitals/${hospital.id}/invoices`,
+            allParams,
+            { preserveState: true, preserveScroll: true },
+        );
+
+        setShowFilters(false);
+    }
 
     return (
         <Master>
@@ -186,7 +230,7 @@ export default function Index({
                                 <div className="flex justify-center gap-2 ml-4">
                                     <button
                                         className="btn btn-outline rounded-3xl"
-                                        // onClick={handleClearFilters}
+                                        onClick={handleClearFilters}
                                     >
                                         Clear All
                                     </button>

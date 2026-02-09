@@ -23,6 +23,7 @@ class InvoiceController extends Controller
         $hospitalId = $request->hospital_id;
         $searchQuery = $request->query("search");
         $filterStatus = $request->query("selected_status");
+        $perPage = $request->query("per_page", 10);
         $filterProcessingDays = $request->query("selected_processing_days");
         $perPage = $request->query("per_page", 10);
         $hospital = $hospitalId ? Hospital::withCount("invoices")->find($hospitalId) : null;
@@ -34,6 +35,9 @@ class InvoiceController extends Controller
             "selected_areas",
             "page"
         ]);
+
+        $hasInvoiceFilters = $searchQuery || $filterStatus || $filterProcessingDays;
+        $page = $hasInvoiceFilters ? $request->query("page", 1) : 1;
 
         $invoices = Invoice::query()
             ->with(["hospital", "creator", "latestHistory", "history.updater"])
@@ -89,8 +93,14 @@ class InvoiceController extends Controller
             "invoices" => $invoices,
             "hospital" => $hospital,
             "searchQuery" => $searchQuery,
-                "editor" => Auth::user()->name,
-                "breadcrumbs" => [
+            "editor" => Auth::user()->name,
+            "filters" => [
+                "selected_status" => $filterStatus,
+                "selected_processing_days" => $filterProcessingDays,
+                "page" => $page,
+                "per_page" => $perPage
+            ],
+            "breadcrumbs" => [
                     ["label" => "Hospitals", "url" => $hospitalsUrl],
                     ["label" => $hospital?->hospital_name, "url" => null]
                 ]
