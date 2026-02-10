@@ -31,7 +31,7 @@ class InvoiceController extends Controller
             "per_page",
             "sort_by",
             "sort_order",
-            "selected_areas",
+            "selected_area",
             "page"
         ]);
 

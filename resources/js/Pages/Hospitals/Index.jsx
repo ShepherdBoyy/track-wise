@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import Breadcrumbs from "../components/Breadcrumbs";
 import SortIcon from "../components/SortIcon";
 
-export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
+export default function Index({ hospitals, userAreas, filters, breadcrumbs, processingDaysTotals }) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -20,11 +20,13 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     const [showToast, setShowToast] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [search, setSearch] = useState(filters.search || "");
-    const [sortBy, setSortBy] = useState("");
+    const [sortBy, setSortBy] = useState(filters.sort_by || "");
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "asc");
-    const [selectedAreas, setSelectedAreas] = useState(filters.areas || []);
+    const [selectedArea, setSelectedArea] = useState(filters.area || "");
     const [showFilters, setShowFilters] = useState(false);
     const { permissions } = usePage().props;
+
+    console.log(processingDaysTotals);
 
     const debouncedSearch = useDebounce(search, 500);
 
@@ -33,7 +35,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
             hospital_search: debouncedSearch.trim(),
             sort_by: sortBy || undefined,
             sort_order: sortOrder || undefined,
-            selected_areas: selectedAreas.length > 0 ? selectedAreas : undefined,
+            selected_area: selectedArea || undefined,
             per_page: filters.per_page || undefined,
             page: debouncedSearch.trim() !== (filters.search || "") ? 1 : filters.page || undefined,
         };
@@ -63,7 +65,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
             hospital_search: filters.search || undefined,
             sort_by: column,
             sort_order: newSortOrder,
-            selected_areas: selectedAreas.length > 0 ? selectedAreas : undefined,
+            selected_area: selectedArea || undefined,
             per_page: filters.per_page || undefined,
         };
 
@@ -78,7 +80,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
     };
 
     const handleClearFilters = () => {
-        setSelectedAreas([]);
+        setSelectedArea("");
 
         const params = {
             hospital_search: filters.search || undefined,
@@ -97,12 +99,19 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
         });
     }
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat("en-PH", {
+            style: "currency",
+            currency: "PHP",
+        }).format(amount || 0);
+    }
+
     const handleApplyFilters = () => {
         const params = {
             hospital_search: filters.search || undefined,
             sort_by: filters.sort_by,
             sort_order: filters.sort_order,
-            selected_areas: selectedAreas.length > 0 ? selectedAreas : undefined,
+            selected_area: selectedArea || undefined,
             per_page: filters.per_page || undefined,
         };
 
@@ -116,16 +125,6 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
             }
         )
         setShowFilters(false);
-    }
-
-    const handleCheckboxChange = (areaId) => {
-        setSelectedAreas((prev) => {
-            if (prev.includes(areaId)) {
-                return prev.filter((id) => id !== areaId);
-            } else {
-                return [...prev, areaId];
-            }
-        });
     }
 
     return (
@@ -178,16 +177,28 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                         By Area
                                     </label>
                                     <div className="space-y-4 mt-4">
+                                        <label className="flex items-center gap-3 cursor-pointer hover:bg-base-200 p-2 rounded-lg">
+                                            <input
+                                                type="radio"
+                                                className="radio"
+                                                name="selected_area"
+                                                value=""
+                                                checked={selectedArea === ""}
+                                                onChange={() => setSelectedArea("")}
+                                            />
+                                            <span className="text-sm font-medium">All Areas</span>
+                                        </label>
                                         {userAreas.map((area) => (
                                             <label 
                                                 key={area.id} 
                                                 className="flex items-center gap-3 cursor-pointer hover:bg-base-200 p-2 rounded-lg"
                                             >
                                                 <input
-                                                    type="checkbox"
-                                                    className="checkbox checkbox-md"
-                                                    checked={selectedAreas.includes(area.id)}
-                                                    onChange={() => handleCheckboxChange(area.id)}
+                                                    type="radio"
+                                                    className="radio"
+                                                    name="selected_area"
+                                                    checked={selectedArea === area.id}
+                                                    onChange={() => setSelectedArea(area.id)}
                                                 />
                                                 <span className="text-sm">{area.area_name}</span>
                                             </label>
@@ -214,7 +225,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                     )}
 
                     <div className="rounded-box border border-base-content/5 bg-base-100 pt-5">
-                        <table className="table table-fixed ">
+                        <table className="table table-fixed">
                             <thead>
                                 <tr>
                                     <th className="w-[50px]">#</th>
@@ -250,6 +261,17 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                         </div>
                                     </th>
                                     <th
+                                        className="w-[230px] cursor-pointer hover:bg-base-200"
+                                        onClick={() =>
+                                            handleSort("invoices_count")
+                                        }
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Number of Invoices
+                                            <SortIcon column="invoices_count" sortOrder={sortOrder} sortBy={sortBy} />
+                                        </div>
+                                    </th>
+                                    <th
                                         className="w-[250px] cursor-pointer hover:bg-base-200"
                                         onClick={() =>
                                             handleSort("invoices_sum_amount")
@@ -258,17 +280,6 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                         <div className="flex items-center gap-2">
                                             Total Amount of Invoices
                                             <SortIcon column="invoices_sum_amount" sortOrder={sortOrder} sortBy={sortBy} />
-                                        </div>
-                                    </th>
-                                    <th
-                                        className="w-[200px] cursor-pointer hover:bg-base-200"
-                                        onClick={() =>
-                                            handleSort("invoices_count")
-                                        }
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            Number of Invoices
-                                            <SortIcon column="invoices_count" sortOrder={sortOrder} sortBy={sortBy} />
                                         </div>
                                     </th>
                                     {permissions.canManageHospitals && (
@@ -296,7 +307,7 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                                 per_page: filters.per_page || undefined,
                                                 sort_by: filters.sort_by || undefined,
                                                 sort_order: filters.sort_order || undefined,
-                                                selected_areas: filters.areas || undefined,
+                                                selected_area: filters.area || undefined,
                                             },
                                             { 
                                                 preserveState: true,
@@ -308,8 +319,8 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                         <td>{hospital.area.area_name}</td>
                                         <td>{hospital.hospital_number}</td>
                                         <td>{hospital.hospital_name}</td>
-                                        <td>₱{parseFloat(hospital.invoices_sum_amount).toLocaleString("en-PH", {minimumFractionDigits: 2})}</td>
                                         <td>{hospital.invoices_count}</td>
+                                        <td>₱{parseFloat(hospital.invoices_sum_amount).toLocaleString("en-PH", {minimumFractionDigits: 2})}</td>
                                         {permissions.canManageHospitals && (
                                             <td>
                                                 <div className="flex gap-3 items-center justify-end">
@@ -354,6 +365,33 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs }) {
                                         )}
                                     </motion.tr>
                                 ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className="mt-6">
+                        <table className="table table-fixed">
+                            <thead>
+                                <tr>
+                                    <th className="w-[80px] text-right">Totals:</th>
+                                    <th className="w-1/6 text-center">{formatCurrency(processingDaysTotals.overall.current)}</th>
+                                    <th className="ww-1/6 text-center">{formatCurrency(processingDaysTotals.overall.thirty_days)}</th>
+                                    <th className="ww-1/6 text-center">{formatCurrency(processingDaysTotals.overall.sixty_days)}</th>
+                                    <th className="ww-1/6 text-center">{formatCurrency(processingDaysTotals.overall.ninety_days)}</th>
+                                    <th className="ww-1/6 text-center">{formatCurrency(processingDaysTotals.overall.over_ninety)}</th>
+                                    <th className="ww-1/6 text-center">{formatCurrency(processingDaysTotals.overall.total)}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td className="text-center">Current</td>
+                                    <td className="text-center">1-30 Days</td>
+                                    <td className="text-center">31-60 Days</td>
+                                    <td className="text-center">61-90 Days</td>
+                                    <td className="text-center">91-over</td>
+                                    <td className="text-center">Grand Total</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

@@ -8,6 +8,7 @@ use App\Models\Area;
 use App\Models\Hospital;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 
@@ -22,15 +23,11 @@ class HospitalController extends Controller
         $page = $request->query("page", 1);
         $sortBy = $request->query("sort_by", "area_name");
         $sortOrder = $request->query("sort_order", "asc");
-        $filterAreas = $request->query("selected_areas", []);
+        $filterArea = intval($request->query("selected_area"));
         $user = Auth::user();
 
-        if (is_array($filterAreas)) {
-            $filterAreas = array_map('intval', $filterAreas);
-        }
-
         $userAreas = Gate::allows("viewAll", Hospital::class) 
-            ? Area::orderBy("area_name")->get() 
+            ? Area::orderBy("area_name")->get()
             : $user->areas->sortBy("area_name")->values()->toArray();
 
         $query = Hospital::withCount("invoices")
@@ -41,7 +38,7 @@ class HospitalController extends Controller
             $userAreaIds = $user->areas->pluck("id");
             $query->whereIn("area_id", $userAreaIds);
         }
-            
+
         $hospitals = $query
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where(function ($q) use ($searchQuery) {
@@ -49,8 +46,8 @@ class HospitalController extends Controller
                         ->orWhere("hospital_number", "like", "%{$searchQuery}%");
                 });
             })
-            ->when(!empty($filterAreas), function ($query) use ($filterAreas) {
-                $query->whereIn("area_id", $filterAreas);
+            ->when(!empty($filterArea), function ($query) use ($filterArea) {
+                $query->where("area_id", $filterArea);
             })
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
                 if ($sortBy === "area_name") {
@@ -63,13 +60,16 @@ class HospitalController extends Controller
             ->paginate($perPage, ["*"], "page", $page)
             ->withQueryString();
 
+        $processingDaysTotals = $this->getProcessingDaysTotals($filterArea, $user);
+
         return Inertia::render("Hospitals/Index", [
             "hospitals" => $hospitals,
             "userAreas" => $userAreas,
+            "processingDaysTotals" => $processingDaysTotals,
             "filters" => [
                 "sort_by" => $sortBy,
                 "sort_order" => $sortOrder,
-                "areas" => $filterAreas,
+                "area" => $filterArea,
                 "search" => $searchQuery,
                 "per_page" => $perPage,
                 "page" => $page
@@ -78,6 +78,70 @@ class HospitalController extends Controller
                 ["label" => "Hospitals", "url" => null]
             ]
         ]);
+    }
+
+    public function getProcessingDaysTotals($filterArea, $user)
+    {
+        $baseQuery = DB::table("invoices")
+            ->join("hospitals", "invoices.hospital_id", "=", "hospitals.id")
+            ->join("areas", "hospitals.area_id", "=", "areas.id")
+            ->whereNull("invoices.date_closed");
+        
+        if (!Gate::allows("viewAll", Hospital::class)) {
+            $userAreaIds = $user->areas->pluck("id");
+            $baseQuery->whereIn("hospitals.area_id", $userAreaIds);
+        }
+
+        if ($filterArea) {
+            $baseQuery->where("hospitals.area_id", $filterArea);
+        }
+
+        $results = $baseQuery->selectRaw("
+            areas.id as area_id,
+            areas.area_name,
+            SUM(CASE
+                WHEN DATEDIFF(invoices.due_date, CURDATE()) > 0
+                THEN invoices.amount
+                ELSE 0
+            END) as current,
+            SUM(CASE
+                WHEN DATEDIFF(invoices.due_date, CURDATE()) BETWEEN -30 AND -1
+                THEN invoices.amount
+                ELSE 0
+            END) as thirty_days,
+            SUM(CASE
+                WHEN DATEDIFF(invoices.due_date, CURDATE()) BETWEEN -60 AND -31
+                THEN invoices.amount
+                ELSE 0
+            END) as sixty_days,
+            SUM(CASE
+                WHEN DATEDIFF(invoices.due_date, CURDATE()) BETWEEN -90 AND -61
+                THEN invoices.amount
+                ELSE 0
+            END) as ninety_days,
+            SUM(CASE
+                WHEN DATEDIFF(invoices.due_date, CURDATE()) <= -91
+                THEN invoices.amount
+                ELSE 0
+            END) as over_ninety,
+            SUM(invoices.amount) as total
+        ")
+        ->groupBy("areas.id", "areas.area_name")
+        ->orderBy("areas.area_name")
+        ->get();
+
+        $overallTotals = [
+            "current" => (float) $results->sum("current"),
+            "thirty_days" => (float) $results->sum("thirty_days"),
+            "sixty_days" => (float) $results->sum("sixty_days"),
+            "ninety_days" => (float) $results->sum("ninety_days"),
+            "over_ninety" => (float) $results->sum("over_ninety"),
+            "total" => (float) $results->sum("total")
+        ];
+
+        return [
+            "overall" => $overallTotals
+        ];
     }
 
     public function store(StoreHospitalRequest $request)
