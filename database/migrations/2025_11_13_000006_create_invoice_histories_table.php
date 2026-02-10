@@ -18,7 +18,6 @@ return new class extends Migration
             $table->longText("remarks");
             $table->string("status");
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

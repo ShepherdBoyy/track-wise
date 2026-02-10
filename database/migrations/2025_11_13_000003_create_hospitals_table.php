@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('hospitals', function (Blueprint $table) {
             $table->id();
-            $table->string('hospital_number')->unique();
+            $table->string('hospital_number');
             $table->string('hospital_name');
             $table->foreignId("area_id")->constrained("areas")->onDelete("cascade");
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 

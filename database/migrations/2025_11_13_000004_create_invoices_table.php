@@ -21,7 +21,6 @@ return new class extends Migration
             $table->dateTime('date_closed')->nullable();
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
