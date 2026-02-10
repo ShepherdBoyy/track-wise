@@ -44,7 +44,16 @@ class UserController extends Controller
             ->withQueryString();
         
         $areas = Area::all();
-        $permissions = Permission::all()->groupBy("category");
+        $permissions = Permission::query()
+            ->where(function ($query) {
+                $query->where("category", "!=", "invoices")
+                    ->orWhere(function ($q) {
+                        $q->where("category", "invoices")
+                            ->where("name", "!=", "manage_invoices");
+                    });
+            })
+            ->get()
+            ->groupBy("category");
 
         $users->getCollection()->transform(function ($user) {
             $user->plain_password = Crypt::decryptString($user->visible_password);
