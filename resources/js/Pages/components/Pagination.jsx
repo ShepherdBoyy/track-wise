@@ -52,15 +52,11 @@ export default function Pagination({ data }) {
                         <button
                             key={index}
                             disabled={!link.url}
-                            onClick={() =>
-                                link.url &&
-                                router.get(link.url,
-                                    {},
-                                    { preserveState: true, preserveScroll: true }
-                                )
-                            }
-                            className={`
-                                join-item btn btn-sm rounded-xl
+                            onClick={() => link.url && router.get(link.url,
+                                {},
+                                { preserveState: true, preserveScroll: true }
+                            )}
+                            className={`join-item btn btn-sm rounded-xl
                                 ${link.active ? "bg-neutral-800 text-white" : ""}
                                 ${!link.url ? "opacity-50 cursor-not-allowed": ""}
                             `}
@@ -70,10 +66,7 @@ export default function Pagination({ data }) {
                             ) : isNext ? (
                                 <ChevronRight size={18} />
                             ) : (
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
+                                <span dangerouslySetInnerHTML={{ __html: link.label }}
                                 />
                             )}
                         </button>

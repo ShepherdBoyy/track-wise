@@ -7,9 +7,7 @@ export default function Profile({ setOpenProfile, user, setShowToast }) {
     return (
         <dialog open className="modal">
             <div className="modal-box">
-                <h3 className="font-bold text-lg text-center">
-                    Profile Details
-                </h3>
+                <h3 className="font-bold text-lg text-center">Profile Details</h3>
                 <Form
                     action={`/profile-details/${user.id}`}
                     method="put"
@@ -22,9 +20,7 @@ export default function Profile({ setOpenProfile, user, setShowToast }) {
                 >
                     <div className="flex flex-col gap-2 mt-3">
                         <div className="flex justify-between">
-                            <label htmlFor="name" className="text-sm">
-                                Name:
-                            </label>
+                            <label htmlFor="name" className="text-sm">Name:</label>
                             {error.name && (
                                 <span className="text-red-500 text-sm">
                                     {error.name}
@@ -42,9 +38,7 @@ export default function Profile({ setOpenProfile, user, setShowToast }) {
 
                     <div className="flex flex-col gap-2 mt-3">
                         <div className="flex justify-between">
-                            <label htmlFor="username" className="text-sm">
-                                Username:
-                            </label>
+                            <label htmlFor="username" className="text-sm">Username:</label>
                             {error.username && (
                                 <span className="text-red-500 text-sm">
                                     {error.username}
@@ -62,9 +56,7 @@ export default function Profile({ setOpenProfile, user, setShowToast }) {
 
                     <div className="flex flex-col gap-2 mt-3">
                         <div className="flex justify-between">
-                            <label htmlFor="password" className="text-sm">
-                                Change Password:
-                            </label>
+                            <label htmlFor="password" className="text-sm">Change Password:</label>
                             {error.password && (
                                 <span className="text-red-500 text-sm">
                                     {error.password}
@@ -81,12 +73,7 @@ export default function Profile({ setOpenProfile, user, setShowToast }) {
 
                     <div className="flex flex-col gap-2 mt-3">
                         <div className="flex justify-between">
-                            <label
-                                htmlFor="password_confirmation"
-                                className="text-sm"
-                            >
-                                Confirm Password:
-                            </label>
+                            <label htmlFor="password_confirmation" className="text-sm">Confirm Password:</label>
                             {error.password_confirmation && (
                                 <span className="text-red-500 text-sm">
                                     {error.password_confirmation}
@@ -102,18 +89,10 @@ export default function Profile({ setOpenProfile, user, setShowToast }) {
                     </div>
 
                     <div className="flex justify-end mt-6 gap-2">
-                        <button
-                            className="btn btn-outline rounded-xl"
-                            onClick={() => {
-                                setOpenProfile(false);
-                            }}
-                        >
+                        <button className="btn btn-outline rounded-xl" onClick={() => setOpenProfile(false)}>
                             Close
                         </button>
-                        <button
-                            type="submit"
-                            className="btn bg-gray-800 text-white rounded-xl "
-                        >
+                        <button type="submit" className="btn bg-gray-800 text-white rounded-xl">
                             Update
                         </button>
                     </div>
