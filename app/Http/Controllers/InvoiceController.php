@@ -24,7 +24,6 @@ class InvoiceController extends Controller
         $searchQuery = $request->query("search");
         $processingFilter = $request->query("processing_days");
         $perPage = $request->query("per_page", 10);
-        $page = $request->query("page", 1);
         $hospital = $hospitalId ? Hospital::withCount("invoices")->find($hospitalId) : null;
         $queryParams = $request->only([
             "hospital_search",
@@ -35,8 +34,7 @@ class InvoiceController extends Controller
             "page"
         ]);
 
-        $invoices = Invoice::query()
-            ->with(["hospital", "creator", "latestHistory", "history.updater"])
+        $baseQuery = Invoice::query()
             ->select("invoices.*")
             ->addSelect([
                 "processing_days" => function ($query) {
@@ -52,7 +50,10 @@ class InvoiceController extends Controller
             ])
             ->when($hospitalId, function ($query) use ($hospitalId) {
                 $query->where("hospital_id", $hospitalId);
-            })
+            });
+
+        $invoices = (clone $baseQuery)
+            ->with(["hospital", "creator", "latestHistory", "history.updater"])
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where("invoice_number", "like", "%{$searchQuery}%");
             })
@@ -69,22 +70,6 @@ class InvoiceController extends Controller
             ->orderBy("due_date", "desc")
             ->paginate($perPage)
             ->withQueryString();
-        
-        $baseQuery = Invoice::query()
-            ->select("invoices.*")
-            ->addSelect([
-                "processing_days" => function ($query) {
-                    $query->selectRaw("
-                        CASE
-                            WHEN date_closed IS NOT NULL
-                                THEN DATEDIFF(due_date, date_closed)
-                            ELSE
-                                DATEDIFF(due_date, CURDATE())
-                        END
-                    ");
-                }
-            ])
-            ->when($hospitalId, fn($q) => $q->where("hospital_id", $hospitalId));
 
         $processingCounts = [
             "All" => (clone $baseQuery)->count(),
@@ -117,11 +102,6 @@ class InvoiceController extends Controller
             "processingFilter" => $processingLabelMap[$processingFilter] ?? "All",
             "processingCounts" => $processingCounts,
             "editor" => Auth::user()->name,
-            "hospitalFilters" => $filteredParams,
-            "filters" => [
-                "page" => $page,
-                "per_page" => $perPage
-            ],
             "hospitalFilters" => $filteredParams,
             "breadcrumbs" => [
                     ["label" => "Hospitals", "url" => $hospitalsUrl],
@@ -231,7 +211,7 @@ class InvoiceController extends Controller
         return back()->with("success", true);
     }
 
-    public function viewHistory(Request $request)
+    public function viewPdf(Request $request)
     {
         $invoiceId = $request->invoice_id;
 
