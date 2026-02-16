@@ -1,30 +1,13 @@
 import { Form } from "@inertiajs/react";
 import { useState } from "react";
+import { usePermissions } from "./elements/usePermissions";
 
 export default function Create({ setOpenCreateModal, setShowToast, setSuccessMessage, areas, permissionList }) {
     const [error, setError] = useState("");
     const [username, setUsername] = useState("");
-    const [selectedPermissions, setSelectedPermissions] = useState([]);
     const [selectedAreas, setSelectedAreas] = useState([]);
-    const MUTUALLY_EXCLUSIVE_PERMISSIONS = [1, 2]; // ids of the hospitals permission
-
-    const handlePermissionChange = (permissionId) => {
-        if (MUTUALLY_EXCLUSIVE_PERMISSIONS.includes(permissionId)) {
-            setSelectedPermissions(prev => {
-                if (prev.includes(permissionId)) {
-                    return prev.filter(id => id !== permissionId);
-                } else {
-                    return [...prev.filter(id => !MUTUALLY_EXCLUSIVE_PERMISSIONS.includes(id)), permissionId];
-                }
-            });
-        } else {
-            setSelectedPermissions(prev =>
-                prev.includes(permissionId)
-                    ? prev.filter(id => id !== permissionId)
-                    : [...prev, permissionId]
-            );
-        }
-    };
+    
+    const { selectedPermissions, allActivePermissions, isAutoChecked, handlePermissionChange } = usePermissions();
 
     const handleAreaChange = (areaId) => {
         setSelectedAreas((prev) => {
@@ -127,15 +110,19 @@ export default function Create({ setOpenCreateModal, setShowToast, setSuccessMes
                                     <div key={category}>
                                         <h4 className="capitalize mb-2 text-sm">{category.replace("_", " ")}</h4>
                                         <div className="space-y-2">
-                                            {permissions.map((permission) => (
+                                            {permissions.map((permission) => {
+                                                const auto = isAutoChecked(permission.id);
+                                                const isChecked = allActivePermissions.includes(permission.id);
+
+                                                return (
                                                     <label key={permission.id} className="flex items-center gap-2 cursor-pointer p-2 rounded-lg hover:bg-base-200">
                                                         <input
                                                             type="checkbox"
                                                             className="toggle toggle-xs"
-                                                            onChange={() => handlePermissionChange(permission.id)}
-                                                            checked={selectedPermissions.includes(permission.id)}
+                                                            onChange={() => !auto && handlePermissionChange(permission.id)}
+                                                            checked={isChecked}
                                                         />
-                                                        {selectedPermissions.includes(permission.id) && (
+                                                        {isChecked && (
                                                             <input
                                                                 type="hidden"
                                                                 name="permissions[]"
@@ -144,8 +131,8 @@ export default function Create({ setOpenCreateModal, setShowToast, setSuccessMes
                                                         )}
                                                         <span className="text-sm">{permission.display_name}</span>
                                                     </label>
-                                                ),
-                                            )}
+                                                )
+                                            })}
                                         </div>
                                     </div>
                                 ))}
