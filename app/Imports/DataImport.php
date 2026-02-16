@@ -20,6 +20,15 @@ class DataImport implements ToCollection, WithHeadingRow
 {
     public function collection(Collection $rows)
     {
+        $rows = $rows->map(function ($row) {
+            return $row->map(function ($value) {
+                if (is_string($value)) {
+                    return preg_replace("/\s+/", " ", trim($value));
+                }
+                return $value;
+            });
+        });
+
         $areaNames = $rows->pluck("area")->unique()->toArray();
         $customerNos = $rows->pluck("customer_no")->unique()->toArray();
         $newInvoiceNumbers = $rows->pluck("invoice_no")->unique()->toArray();
