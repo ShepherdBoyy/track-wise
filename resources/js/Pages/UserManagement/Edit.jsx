@@ -6,14 +6,24 @@ export default function Edit({ setOpenEditModal, selectedUser, setShowToast, set
     const [selectedPermissions, setSelectedPermissions] = useState(selectedUser.permission_ids || []);
     const [selectedAreas, setSelectedAreas] = useState(selectedUser.area_ids || []);
 
+    const MUTUALLY_EXCLUSIVE_PERMISSIONS = [1, 2]; // ids of the hospitals permissions
+
     const handlePermissionChange = (permissionId) => {
-        setSelectedPermissions((prev) => {
-            if (prev.includes(permissionId)) {
-                return prev.filter((id) => id !== permissionId);
-            } else {
-                return [...prev, permissionId];
-            }
-        });
+        if (MUTUALLY_EXCLUSIVE_PERMISSIONS.includes(permissionId)) {
+            setSelectedPermissions(prev => {
+                if (prev.includes(permissionId)) {
+                    return prev.filter(id => id !== permissionId);
+                } else {
+                    return [...prev.filter(id => !MUTUALLY_EXCLUSIVE_PERMISSIONS.includes(id)), permissionId];
+                }
+            });
+        } else {
+            setSelectedPermissions(prev =>
+                prev.includes(permissionId)
+                    ? prev.filter(id => id !== permissionId)
+                    : [...prev, permissionId]
+            );
+        }
     };
 
     const handleAreaChange = (areaId) => {
