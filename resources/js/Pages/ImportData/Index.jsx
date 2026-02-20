@@ -4,8 +4,9 @@ import { router, usePage } from "@inertiajs/react";
 import { useState, useRef, useEffect } from "react";
 import ExcelFormat from "./elements/ExcelFormat";
 import ImportErrors from "./elements/ImportErrors";
+import ImportHistory from "./elements/ImportHistory";
 
-export default function Index() {
+export default function Index({ importHistory }) {
     const [dragActive, setDragActive] = useState(false);
     const [fileName, setFileName] = useState("");
     const [file, setFile] = useState(null);
@@ -109,6 +110,11 @@ export default function Index() {
                 <div className="flex items-center justify-between pb-4">
                     <span className="text-2xl">Import New Data</span>
                 </div>
+
+                {importErrors.length > 0 && (
+                    <ImportErrors import_errors={import_errors} />
+                )}
+
                 <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6">
                     <div className="flex flex-col lg:flex-row gap-5">
                         <ExcelFormat />
@@ -195,9 +201,7 @@ export default function Index() {
                     </div>
                 </div>
 
-                {importErrors.length > 0 && (
-                    <ImportErrors import_errors={import_errors} />
-                )}
+                <ImportHistory importHistory={importHistory} />
             </div>
         </Master>
     );
