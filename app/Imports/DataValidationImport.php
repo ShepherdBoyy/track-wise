@@ -14,9 +14,16 @@ class DataValidationImport implements ToCollection, WithHeadingRow, WithValidati
 {
     use SkipsFailures;
 
+    private int $rowCount = 0;
+
     public function collection(Collection $rows)
     {
+        $this->rowCount = $rows->count();
+    }
 
+    public function getRowCount()
+    {
+        return $this->rowCount;
     }
 
     public function prepareForValidation($data, $index)
