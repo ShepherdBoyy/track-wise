@@ -4,7 +4,7 @@ import SearchIt from "../components/SearchIt";
 import { router, usePage } from "@inertiajs/react";
 import useDebounce from "../hooks/useDebounce";
 import Pagination from "../components/Pagination";
-import { Plus, Trash2, UserRoundPen } from "lucide-react";
+import { PhilippinePeso, Plus, Trash2, UserRoundPen } from "lucide-react";
 import Create from "./Create";
 import DeleteInvoiceModal from "./elements/DeleteInvoiceModal";
 import Breadcrumbs from "../components/Breadcrumbs";
@@ -33,7 +33,7 @@ export default function Index({
     const [error, setError] = useState("");
     const { permissions } = usePage().props;
     const debouncedSearch = useDebounce(search, 300);
-    
+
     useEffect(() => {
         const allParams = { ...hospitalFilters };
 
@@ -73,6 +73,15 @@ export default function Index({
         );
     }
 
+    const statItems = [
+        { label: "All Total", key: "All" },
+        { label: "Current Total", key: "Current" },
+        { label: "30 days Total", key: "30 days" },
+        { label: "31-60 days Total", key: "31-60 days" },
+        { label: "61-90 days Total", key: "61-90 days" },
+        { label: "91 over Total", key: "91 over" }
+    ]
+
     return (
         <Master>
             <div className="bg-base-200">
@@ -80,6 +89,25 @@ export default function Index({
                     <Breadcrumbs items={breadcrumbs} />
                     <SearchIt search={search} setSearch={setSearch} />
                 </div>
+
+                <div className="flex justify-evenly mb-6">
+                    {statItems.map(({ label, key }) => (
+                        <div className="stats shadow bg-white">
+                            <div className="stat">
+                                <div className="stat-title">{label}</div>
+                                <div className="stat-value flex gap-2 items-center justify-center">
+                                    <PhilippinePeso />
+                                    {Intl.NumberFormat("en-PH", {
+                                        style: "decimal",
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 2,
+                                    }).format(processingCounts[key].total_amount || 0)}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
                 <div className="p-4 md:p-6 bg-white rounded-xl shadow-lg">
                     <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 mb-4">
                         <div className="tabs tabs-box w-full lg:w-auto">
@@ -133,7 +161,6 @@ export default function Index({
                         invoices={invoices}
                         setShowToast={setShowToast}
                         setSuccessMessage={setSuccessMessage}
-                        processingCounts={processingCounts}
                         active={active}
                     />
 

@@ -13,7 +13,6 @@ export default function InvoicesTable({
     invoices, 
     setShowToast,
     setSuccessMessage,
-    processingCounts,
     active
 }) {
     const [selectedInvoice, setSelectedInvoice] = useState("");
@@ -132,15 +131,6 @@ export default function InvoicesTable({
                     </motion.tr>
                 ))}
             </tbody>
-            <tfoot>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td className="text-right">Total:</td>
-                    <td>₱{parseFloat(processingCounts[active].total_amount).toLocaleString("en-PH", {minimumFractionDigits: 2})}</td>
-                </tr>
-            </tfoot>
         </table>
 
         {openEditInvoiceModal && (
