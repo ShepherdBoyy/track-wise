@@ -15,7 +15,7 @@ export default function ImportErrors({ import_errors }) {
     };
 
   return (
-    <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6 mt-4">
+    <div className="p-6 bg-white rounded-xl shadow-lg flex flex-col gap-6 mb-4">
         <div className="flex gap-2">
             <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={25} />
             <div className="flex-1">
