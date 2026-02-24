@@ -132,6 +132,7 @@ class HospitalController extends Controller
 
         // Total amount of invoice per processing days
         $overallTotals = [
+            "area_name" => $filterArea ? $results->first()->area_name : "All areas",
             "current" => (float) $results->sum("current"),
             "thirty_days" => (float) $results->sum("thirty_days"),
             "sixty_days" => (float) $results->sum("sixty_days"),
@@ -141,7 +142,7 @@ class HospitalController extends Controller
         ];
 
         return [
-            "overall" => $overallTotals
+            "overall" => $overallTotals,
         ];
     }
 

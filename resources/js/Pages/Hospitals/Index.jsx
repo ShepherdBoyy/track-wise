@@ -1,6 +1,6 @@
 import { router, usePage } from "@inertiajs/react";
 import Master from "../components/Master";
-import { CirclePlus, ListFilter } from "lucide-react";
+import { CirclePlus, ListFilter, PhilippinePeso } from "lucide-react";
 import { useEffect, useState } from "react";
 import Create from "./Create";
 import Pagination from "../components/Pagination";
@@ -44,6 +44,15 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
         })
     }, [debouncedSearch, sortBy, sortOrder]);
 
+    const statItems = [
+        { label: "Current", key: "current", style: "bg-emerald-100" },
+        { label: "1-30 days", key: "thirty_days", style: "bg-sky-100" },
+        { label: "31-60 days", key: "sixty_days", style: "bg-amber-100" },
+        { label: "61-90 days", key: "ninety_days", style: "bg-orange-200" },
+        { label: "91 over", key: "over_ninety", style: "bg-rose-300" },
+        { label: "Grand Total", key: "total", style: "bg-slate-100" },
+    ]
+
     return (
         <Master>
             <div className="bg-base-200">
@@ -57,6 +66,25 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
                         </button>
                     </div>
                 </div>
+
+                <div className="flex justify-evenly gap-4 mb-6">
+                    {statItems.map(({ label, key, style }) => (
+                        <div className={`stats shadow flex-1 ${style}`}>
+                            <div className="stat">
+                                <div className="stat-title mb-6 text-md">{label}</div>
+                                <div className="stat-value flex gap-2 items-center text-xl">
+                                    <PhilippinePeso />
+                                    {Intl.NumberFormat("en-PH", {
+                                        style: "decimal",
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 2,
+                                    }).format(processingDaysTotals.overall[key] || 0)}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
                 <div className="p-4 md:p-6 bg-white rounded-xl shadow-lg">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
                         <span className="text-xl">List of Hospitals with their invoices</span>
@@ -82,8 +110,6 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
                         userAreas={userAreas}
                         selectedArea={selectedArea}
                     />
-
-                    <Totals processingDaysTotals={processingDaysTotals} />
 
                     <Pagination data={hospitals} />
 
