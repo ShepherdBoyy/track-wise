@@ -123,7 +123,7 @@ export default function HospitalsTable({
                         <td>{hospital.hospital_number}</td>
                         <td>{hospital.hospital_name}</td>
                         <td>{hospital.invoices_count}</td>
-                        <td>₱{parseFloat(hospital.invoices_sum_amount).toLocaleString("en-PH", {minimumFractionDigits: 2})}</td>
+                        <td>₱{parseFloat(hospital.invoices_sum_amount).toLocaleString("en-PH", {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
                         {permissions.canManageHospitals && (
                             <td>
                                 <div className="flex gap-3 items-center justify-end">
