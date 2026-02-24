@@ -74,12 +74,12 @@ export default function Index({
     }
 
     const statItems = [
-        { label: "All Total", key: "All" },
-        { label: "Current Total", key: "Current" },
-        { label: "30 days Total", key: "30 days" },
-        { label: "31-60 days Total", key: "31-60 days" },
-        { label: "61-90 days Total", key: "61-90 days" },
-        { label: "91 over Total", key: "91 over" }
+        { label: "Current Total", key: "Current", style: "bg-emerald-100" },
+        { label: "30 days Total", key: "30 days", style: "bg-sky-100" },
+        { label: "31-60 days Total", key: "31-60 days", style: "bg-amber-100" },
+        { label: "61-90 days Total", key: "61-90 days", style: "bg-orange-200" },
+        { label: "91 over Total", key: "91 over", style: "bg-rose-300" },
+        { label: "All Total", key: "All", style: "bg-slate-100" },
     ]
 
     return (
@@ -90,12 +90,12 @@ export default function Index({
                     <SearchIt search={search} setSearch={setSearch} />
                 </div>
 
-                <div className="flex justify-evenly mb-6">
-                    {statItems.map(({ label, key }) => (
-                        <div className="stats shadow bg-white">
+                <div className="flex justify-evenly gap-4 mb-6">
+                    {statItems.map(({ label, key, style }) => (
+                        <div className={`stats shadow flex-1 ${style}`}>
                             <div className="stat">
-                                <div className="stat-title">{label}</div>
-                                <div className="stat-value flex gap-2 items-center justify-center">
+                                <div className="stat-title mb-6 text-md">{label}</div>
+                                <div className="stat-value flex gap-2 items-center text-2xl">
                                     <PhilippinePeso />
                                     {Intl.NumberFormat("en-PH", {
                                         style: "decimal",
