@@ -97,7 +97,7 @@ export default function InvoicesTable({
                         <td>{invoice.invoice_number}</td>
                         <td>{new Date(invoice.document_date).toLocaleDateString()}</td>
                         <td>{new Date(invoice.due_date).toLocaleDateString()}</td>
-                        <td>₱{parseFloat(invoice.amount).toLocaleString("en-PH", {minimumFractionDigits: 2})}</td>
+                        <td>₱{parseFloat(invoice.amount).toLocaleString("en-PH", {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
                         <td>{invoice.processing_days}</td>
                         <td>
                             <span className={`badge badge-md text-sm rounded-full   ${
