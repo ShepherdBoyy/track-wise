@@ -5,6 +5,7 @@ import {
     ArrowRightLeft,
     CircleUserRound,
     TrendingUp,
+    House,
     // House
 } from "lucide-react";
 
@@ -12,13 +13,13 @@ export default function Sidebar() {
     const { url, props } = usePage();
 
     const navItems = [
-        // {
-        //     id: "home",
-        //     label: "Home",
-        //     href: "/",
-        //     icon: House,
-        //     canView: true,
-        // },
+        {
+            id: "home",
+            label: "Home",
+            href: "/",
+            icon: House,
+            canView: true,
+        },
         {
             id: "updates",
             label: "Updates",
