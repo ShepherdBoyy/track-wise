@@ -7,9 +7,24 @@ import {
     TrendingUp,
 } from "lucide-react";
 import Master from "../components/Master";
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Legend,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis
+} from "recharts";
 import { Link, router } from "@inertiajs/react";
 import { useState } from "react";
+import SortIcon from "../components/SortIcon";
 
 export default function Index({
     kpi,
@@ -19,8 +34,42 @@ export default function Index({
     monthlyOutstanding,
     invoiceVolume
 }) {
-    console.log(monthlyOutstanding);
     const [selectedYear, setSelectedYear] = useState(monthlyOutstanding.currentYear);
+    const [sortBy, setSortBy] = useState("");
+    const [sortOrder, setSortOrder] = useState("desc");
+
+    const sortedHospitals = [...topHospitals].sort((a, b) => {
+        let comparison = 0;
+
+        switch(sortBy) {
+            case "rank":
+                comparison = a.rank - b.rank;
+                break;
+            case "name":
+                comparison = a.hospital_name.localeCompare(b.hospital_name);
+                break;
+            case "area":
+                comparison = a.area_name.localeCompare(b.area_name);
+                break;
+            case "outstanding":
+                comparison = a.outstanding_amount - b.outstanding_amount;
+                break;
+            case "invoices":
+                comparison = a.invoice_count - b.invoice_count;
+                break;
+        }
+
+        return sortOrder === "asc" ? comparison : -comparison;
+    });
+
+    const handleSort = (column) => {
+        if (sortBy === column) {
+            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        } else {
+            setSortBy(column);
+            setSortOrder("desc");
+        }
+    }
 
     const handleYearChange = (year) => {
         setSelectedYear(year);
@@ -46,7 +95,10 @@ export default function Index({
                                     minimumFractionDigits: 0,
                                     maximumFractionDigits: 2,
                                   }).format(entry.value || 0)
-                                : entry.value.toLocaleString()
+                                : Intl.NumberFormat("en-PH", {
+                                    useGrouping: true,
+                                }).format(entry.value || 0)
+
                             }
                         </p>
                     ))}
@@ -89,6 +141,19 @@ export default function Index({
         }
         return null;
     };
+
+    const VolumeTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload;
+            return (
+                <div className="bg-base-100 p-4 rounded-lg shadow-xl border border-base-300">
+                    <p className="font-semibold mb-2">{data.month}</p>
+                    <p className="text-sm">{data.count.toLocaleString()}</p>
+                </div>
+            );
+        }
+        return null;
+    }
 
   return (
     <Master>
@@ -259,88 +324,6 @@ export default function Index({
                 </div>
             </div>
 
-            <div className="card bg-base-100 shadow-xl">
-                <div className="card-body">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="card-title">Top 10 Hospital by Outstanding</h2>
-                        <Link href="/hospitals" className="btn btn-sm btn-ghost tooltip" data-tip="View All Hospitals">
-                            <ExternalLink size={18} />
-                        </Link>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <table className="table table-zebra">
-                            <thead>
-                                <tr>
-                                    <th className="w-16">Rank</th>
-                                    <th>Hospital</th>
-                                    <th>Area</th>
-                                    <th className="text-right">Outstanding</th>
-                                    <th className="text-center">Invoices</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {topHospitals.map((hospital) => (
-                                    <tr
-                                        key={hospital.id}
-                                        className="hover:bg-base-300 cursor-pointer transition-colors"
-                                        onClick={() => router.get(`/hospitals/${hospital.id}/invoices`)}
-                                    >
-                                        <td className="font-bold text-center text-lg">
-                                            {(() => {
-                                                switch(hospital.rank) {
-                                                    case 1: return '🥇';
-                                                    case 2: return '🥈';
-                                                    case 3: return '🥉';
-                                                    default: return hospital.rank;
-                                                }
-                                            })()}
-                                        </td>
-                                        <td>
-                                            <div className="flex items-center gap-3">
-                                                <div className="avatar avatar-placeholder">
-                                                    <div className="bg-neutral text-neutral-content w-8 rounded-full">
-                                                        <span className="text-xs">
-                                                            {hospital.hospital_name
-                                                                .split(" ")
-                                                                .slice(0, 2)
-                                                                .map(word => word[0])
-                                                                .join("")
-                                                                .toUpperCase()
-                                                            }
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div className="font-semibold">{hospital.hospital_name}</div>
-                                                    <div className="text-xs opacity-50">{hospital.hospital_number}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="badge badge-sm" style={{ backgroundColor: hospital.area_color }}>
-                                                {hospital.area_name}
-                                            </div>
-                                        </td>
-                                        <td className="text-right font-semibold">
-                                            {Intl.NumberFormat("en-PH", {
-                                                style: "currency",
-                                                currency: "PHP",
-                                                minimumFractionDigits: 0,
-                                                maximumFractionDigits: 2,
-                                            }).format(hospital.outstanding_amount)}
-                                        </td>
-                                        <td className="text-center">
-                                            <div className="badge badge-neutral badge-sm">{hospital.invoice_count}</div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="card bg-base-100 shadow-xl">
                     <div className="card-body">
@@ -379,14 +362,171 @@ export default function Index({
                                 <Line
                                     type="monotone"
                                     dataKey="amount"
-                                    stroke="#8b5cf6"
+                                    stroke="#55548F"
                                     strokeWidth={3}
                                     activeDot={{ r: 6 }}
-                                    fill="url(#colorOutstanding)"
                                     connectNulls
                                 />
                             </LineChart>
                         </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="card bg-base-100 shadow-xl">
+                    <div className="card-body">
+                        <h2 className="card-title mb-4">Invoice Volume (Last 6 Months)</h2>
+
+                        <ResponsiveContainer width="100%" height={300}>
+                            <AreaChart
+                                data={invoiceVolume}
+                                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                            >
+                                <defs>
+                                    <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#B9E69E" stopOpacity={0.8}/>
+                                        <stop offset="95%" stopColor="#B9E69E" stopOpacity={0.1}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" opacity={0.5} />
+                                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                                <YAxis tick={{ fontSize: 12 }} />
+                                <Tooltip content={<VolumeTooltip />} />
+                                <Area
+                                    type="monotone"
+                                    dataKey="count"
+                                    stroke="#55548F"
+                                    strokeWidth={2}
+                                    fill="url(#colorVolume)"
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card bg-base-100 shadow-xl">
+                <div className="card-body">
+                    <div className="flex justify-between items-center mb-2">
+                        <h2 className="card-title">Top 10 Hospital by Outstanding</h2>
+                        <Link href="/hospitals" className="btn btn-sm btn-ghost tooltip" data-tip="View All Hospitals">
+                            <ExternalLink size={18} />
+                        </Link>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="table table-zebra table-sm">
+                            <thead>
+                                <tr className="text-xs">
+                                    <th
+                                        className="w-20 cursor-pointer hover:bg-base-200"
+                                        onClick={() => handleSort("rank")}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Rank
+                                            <SortIcon column="rank" sortOrder={sortOrder} sortBy={sortBy} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="cursor-pointer hover:bg-base-200"
+                                        onClick={() => handleSort("name")}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Hospital
+                                            <SortIcon column="name" sortOrder={sortOrder} sortBy={sortBy} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="cursor-pointer hover:bg-base-200"
+                                        onClick={() => handleSort("area")}
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            Area
+                                            <SortIcon column="area" sortOrder={sortOrder} sortBy={sortBy} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="cursor-pointer hover:bg-base-200"
+                                        onClick={() => handleSort("outstanding")}
+                                    >
+                                        <div className="flex items-center justify-end gap-2">
+                                            Outstanding
+                                            <SortIcon column="outstanding" sortOrder={sortOrder} sortBy={sortBy} />
+                                        </div>
+                                    </th>
+                                    <th
+                                        className="cursor-pointer hover:bg-base-200"
+                                        onClick={() => handleSort("invoices")}
+                                    >
+                                        <div className="flex items-center justify-center gap-2">
+                                            Invoices
+                                            <SortIcon column="invoices" sortOrder={sortOrder} sortBy={sortBy} />
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {sortedHospitals.map((hospital) => (
+                                    <tr
+                                        key={hospital.id}
+                                        className="hover:bg-base-300 cursor-pointer transition-colors"
+                                        onClick={() => router.get(`/hospitals/${hospital.id}/invoices`)}
+                                    >
+                                        <td className="font-bold text-center">
+                                            {(() => {
+                                                switch(hospital.rank) {
+                                                    case 1: return <span className="text-base">🥇</span>;
+                                                    case 2: return <span className="text-base">🥈</span>;
+                                                    case 3: return <span className="text-base">🥉</span>;
+                                                    default: return <span className="text-xs">{hospital.rank}</span>;
+                                                }
+                                            })()}
+                                        </td>
+                                        <td>
+                                            <div className="flex items-center gap-2">
+                                                <div className="avatar avatar-placeholder">
+                                                    <div className="bg-neutral text-neutral-content w-7 h-7 rounded-full">
+                                                        <span className="text-xs">
+                                                            {hospital.hospital_name
+                                                                .split(" ")
+                                                                .slice(0, 2)
+                                                                .map(word => word[0])
+                                                                .join("")
+                                                                .toUpperCase()
+                                                            }
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="font-medium text-sm truncate">{hospital.hospital_name}</div>
+                                                    <div className="text-[10px] opacity-50">{hospital.hospital_number}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div className="badge badge-sm" style={{ backgroundColor: hospital.area_color }}>
+                                                {hospital.area_name}
+                                            </div>
+                                        </td>
+                                        <td className="text-right font-semibold text-sm">
+                                            <span className="hidden sm:inline">
+                                                {Intl.NumberFormat("en-PH", {
+                                                    style: "currency",
+                                                    currency: "PHP",
+                                                    minimumFractionDigits: 0,
+                                                    maximumFractionDigits: 2,
+                                                }).format(hospital.outstanding_amount)}
+                                            </span>
+                                            <span className="sm:hidden">
+                                                ₱{(hospital.outstanding_amount / 1000000).toFixed(1)}M
+                                            </span>
+                                        </td>
+                                        <td className="text-center">
+                                            <div className="badge badge-neutral badge-sm">{hospital.invoice_count}</div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
