@@ -83,6 +83,11 @@ class HomeController extends Controller
         ]);
     }
 
+    public function profile()
+    {
+        return Inertia::render("Home/Profile");
+    }
+
     private function getAgingBreakdown($baseQuery)
     {
         $subQuery = (clone $baseQuery)
