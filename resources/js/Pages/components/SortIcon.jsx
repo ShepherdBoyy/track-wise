@@ -6,8 +6,8 @@ export default function SortIcon({ column, sortOrder, sortBy }) {
     }
 
     return sortOrder === "asc" ? (
-        <ArrowUp size={16} className="mb-1" />
+        <ArrowUp size={14} className="mb-1" />
     ) : (
-        <ArrowDown size={16} className="mb-1" />
+        <ArrowDown size={14} className="mb-1" />
     );
 }
