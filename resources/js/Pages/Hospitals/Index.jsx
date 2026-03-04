@@ -45,12 +45,12 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
     }, [debouncedSearch, sortBy, sortOrder]);
 
     const statItems = [
-        { label: "Current", key: "current", style: "bg-emerald-100" },
-        { label: "1-30 days", key: "thirty_days", style: "bg-sky-100" },
-        { label: "31-60 days", key: "sixty_days", style: "bg-amber-100" },
-        { label: "61-90 days", key: "ninety_days", style: "bg-orange-200" },
-        { label: "91 over", key: "over_ninety", style: "bg-rose-300" },
-        { label: "Grand Total", key: "total", style: "bg-slate-100" },
+        { label: "Current", key: "current", bgColor: "bg-base-100", borderColor: "border-emerald-500" },
+        { label: "1-30 days", key: "thirty_days", bgColor: "bg-base-100", borderColor: "border-teal-500" },
+        { label: "31-60 days", key: "sixty_days", bgColor: "bg-base-100", borderColor: "border-cyan-500" },
+        { label: "61-90 days", key: "ninety_days", bgColor: "bg-base-100", borderColor: "border-sky-500" },
+        { label: "91 over", key: "over_ninety", bgColor: "bg-base-100", borderColor: "border-blue-600" },
+        { label: "Grand Total", key: "total", bgColor: "bg-base-100", borderColor: "border-slate-600" },
     ]
 
     return (
@@ -67,20 +67,15 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
                     </div>
                 </div>
 
-                <div className="flex justify-evenly gap-4 mb-6">
-                    {statItems.map(({ label, key, style }) => (
-                        <div className={`stats shadow flex-1 ${style}`} key={label}>
-                            <div className="stat">
-                                <div className="stat-title mb-6 text-md">{label}</div>
-                                <div className="stat-value flex gap-2 items-center text-xl">
-                                    <PhilippinePeso />
-                                    {Intl.NumberFormat("en-PH", {
-                                        style: "decimal",
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 2,
-                                    }).format(processingDaysTotals.overall[key] || 0)}
-                                </div>
-                            </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+                    {statItems.map(({ label, key, bgColor, borderColor }) => (
+                        <div key={label} className={`${bgColor} rounded-lg p-4 border-l-4 ${borderColor} shadow-md`}>
+                            <h3 className="text-[12px] font-semibold upperase tracking-wide opacity-60 mb-1.5">{label}</h3>
+                            <span className="text-2xl font-medium">₱{" "}{Intl.NumberFormat("en-PH", {
+                                style: "decimal",
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 2,
+                            }).format(processingDaysTotals.overall[key] || 0)}</span>
                         </div>
                     ))}
                 </div>
