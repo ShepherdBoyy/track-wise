@@ -29,6 +29,7 @@ class HandleInertiaRequests extends Middleware
                         : null),
             ],
             "permissions" => $user ? [
+                "canAccessHospitals" => $user->hasAnyPermission(["view_all_hospitals", "view_area_hospitals"]),
                 "canViewAllHospitals" => $user->hasPermission("view_all_hospitals"),
                 "canViewAreaHospitals" => $user->hasPermission("view_area_hospitals"),
                 "canManageHospitals" => $user->hasPermission("manage_hospitals"),
