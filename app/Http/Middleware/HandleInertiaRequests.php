@@ -25,7 +25,7 @@ class HandleInertiaRequests extends Middleware
                 "userAreas" => $user?->hasPermission("view_all_hospitals")
                     ? "All areas"
                     : ($user?->hasPermission("view_area_hospitals")
-                        ? $user->areas->pluck("area_name")
+                        ? implode(", ", $user->areas->pluck("area_name")->toArray())
                         : null),
             ],
             "permissions" => $user ? [
