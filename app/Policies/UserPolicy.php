@@ -22,7 +22,7 @@ class UserPolicy
         return $user->hasPermission("manage_users");
     }
 
-    public function update(User $user, User $model): bool
+    public function update(User $user): bool
     {
         return $user->hasPermission("manage_users");
     }
