@@ -97,7 +97,7 @@ class UserController extends Controller
     {
         $user = User::findOrfail($id);
 
-        Gate::authorize("update", $user);
+        Gate::authorize("update", User::class);
 
         $validated = $request->validated();
 
@@ -118,6 +118,29 @@ class UserController extends Controller
             $user->areas()->sync($validated["areas"]);
         }
 
+        return back()->with("success", true);
+    }
+
+    public function bulkChangePassword(Request $request)
+    {
+        Gate::authorize("update", User::class);
+
+        $validated = $request->validate([
+            "ids" => ["required", "array", "min:1"],
+            "ids.*" => ["integer", "exists:users,id"],
+            "newPassword" => ["required", "string", "min:8"]
+        ]);
+
+        $users = User::whereIn("id", $validated["ids"])->get();
+        $plainPassword = $validated["newPassword"];
+
+        foreach ($users as $user) {
+            $user->update([
+                "password" => Hash::make($plainPassword),
+                "visible_password" => Crypt::encryptString($plainPassword)
+            ]);
+        }
+        
         return back()->with("success", true);
     }
 

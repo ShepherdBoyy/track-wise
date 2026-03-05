@@ -7,12 +7,15 @@ import Create from "./Create";
 import useDebounce from "../hooks/useDebounce";
 import { router, usePage } from "@inertiajs/react";
 import UsersTable from "./elements/UsersTable";
+import ChangePasswordModal from "./elements/ChangePasswordModal";
 
 export default function Index({ users, areas, filters, permissionList }) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
+    const [openChangePasswordModal, setChangePasswordModal] = useState(false);
     const [successMesage, setSuccessMessage] = useState("");
     const [showToast, setShowToast] = useState(false);
     const [search, setSearch] = useState("");
+    const [selectedIds, setSelectedIds] = useState([]);
     const { permissions } = usePage().props;
 
     const debouncedSearch = useDebounce(search, 300);
@@ -51,16 +54,25 @@ export default function Index({ users, areas, filters, permissionList }) {
 
                         <div className="flex gap-2">
                             {permissions.canManageUsers && (
-                                <button
-                                    className="btn btn-primary rounded-xl flex"
-                                    onClick={() => setOpenCreateModal(true)}
-                                >
-                                    <CirclePlus size={18} />
-                                    Add User
-                                </button>
+                                <>
+                                    <button
+                                        className="btn btn-outline border border-gray-300 rounded-xl"
+                                        disabled={selectedIds.length < 2}
+                                        onClick={() => setChangePasswordModal(true)}
+                                    >
+                                        Change Password
+                                    </button>
+                                    <button
+                                        className="btn btn-primary rounded-xl flex"
+                                        onClick={() => setOpenCreateModal(true)}
+                                    >
+                                        <CirclePlus size={18} />
+                                        Add User
+                                    </button>
+                                </>
                             )}
                         </div>
-                    </div>
+                    </div>  
 
                     <UsersTable
                         filters={filters}
@@ -69,6 +81,8 @@ export default function Index({ users, areas, filters, permissionList }) {
                         setSuccessMessage={setSuccessMessage}
                         setShowToast={setShowToast}
                         areas={areas}
+                        selectedIds={selectedIds}
+                        setSelectedIds={setSelectedIds}
                     />
 
                     <Pagination data={users} />
@@ -80,6 +94,16 @@ export default function Index({ users, areas, filters, permissionList }) {
                             setSuccessMessage={setSuccessMessage}
                             areas={areas}
                             permissionList={permissionList}
+                        />
+                    )}
+
+                    {openChangePasswordModal && (
+                        <ChangePasswordModal 
+                            setChangePasswordModal={setChangePasswordModal}
+                            selectedIds={selectedIds}
+                            setSelectedIds={setSelectedIds}
+                            setShowToast={setShowToast}
+                            setSuccessMessage={setSuccessMessage}
                         />
                     )}
 
