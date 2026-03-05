@@ -76,10 +76,14 @@ export default function KpiCards({ kpi }) {
                       </p>
                       <div className="flex gap-2 mt-2">
                           <div className="badge badge-info badge-sm">
-                              {kpi.openCount.toLocaleString()} open
+                              {Intl.NumberFormat("en-PH", {
+                                useGrouping: true,
+                              }).format(kpi.openCount || 0)} open
                           </div>
                           <div className="badge bg-rose-300 badge-sm">
-                              {kpi.overdueCount.toLocaleString()} overdue
+                            {Intl.NumberFormat("en-PH", {
+                                useGrouping: true,
+                            }).format(kpi.overdueCount || 0)} overdue
                           </div>
                       </div>
                   </div>
