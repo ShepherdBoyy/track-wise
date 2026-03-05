@@ -23,10 +23,10 @@ class HandleInertiaRequests extends Middleware
                 "user" => $request->user(),
                 "userInitials" => $request->user() ? $request->user()->initials : "",
                 "userAreas" => $user?->hasPermission("view_all_hospitals")
-                    ? "All areas"
+                    ? ["All areas"]
                     : ($user?->hasPermission("view_area_hospitals")
-                        ? implode(", ", $user->areas->pluck("area_name")->toArray())
-                        : null),
+                        ? $user->areas->pluck("area_name")->values()->toArray()
+                        : []),
             ],
             "permissions" => $user ? [
                 "canAccessHospitals" => $user->hasAnyPermission(["view_all_hospitals", "view_area_hospitals"]),
