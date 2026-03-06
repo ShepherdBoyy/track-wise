@@ -18,8 +18,12 @@ export default function Breadcrumbs({ items }) {
                     return (
                         <li key={index} className="min-w-0">
                             {isLast || !item.url ? (
-                                <span className="text-lg sm:text-2xl no-underline cursor-default truncate block">
-                                    {item.label}
+                                <span className={`no-underline cursor-default truncate block ${
+                                    item.label.length > 50 ? "sm:text-lg" : "text-lg sm:text-2xl"
+                                }`}>
+                                    {item.label === "Hospitals"
+                                        ? item.label
+                                        : `${item.label} (${item.code})`}
                                 </span>
                             ) : (
                                 <Link

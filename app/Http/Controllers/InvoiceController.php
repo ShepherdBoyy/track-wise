@@ -100,7 +100,7 @@ class InvoiceController extends Controller
             "hospitalFilters" => $filteredParams,
             "breadcrumbs" => [
                     ["label" => "Hospitals", "url" => $hospitalsUrl],
-                    ["label" => $hospital?->hospital_name, "url" => null]
+                    ["label" => $hospital?->hospital_name, "code" => $hospital->hospital_number , "url" => null]
                 ]
             ]);
     }
