@@ -18,8 +18,6 @@ export default function Index({ importHistory }) {
     const { import_errors, success, permissions } = usePage().props;
     const importErrors = import_errors || [];
 
-    console.log(importErrors);
-
     const handleDrag = (e) => {
         e.preventDefault();
         e.stopPropagation();
