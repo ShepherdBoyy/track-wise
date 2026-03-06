@@ -11,7 +11,13 @@ import Filters from "./elements/Filters";
 import HospitalsTable from "./elements/HospitalsTable";
 import Totals from "./elements/Totals";
 
-export default function Index({ hospitals, userAreas, filters, breadcrumbs, processingDaysTotals }) {
+export default function Index({
+    hospitals,
+    userAreas,
+    filters,
+    breadcrumbs,
+    processingDaysTotals,
+}) {
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
@@ -30,28 +36,61 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
             sort_order: sortOrder || undefined,
             selected_area: selectedArea || undefined,
             per_page: filters.per_page || undefined,
-            page: debouncedSearch.trim() !== (filters.search || "") ? 1 : filters.page || undefined,
+            page:
+                debouncedSearch.trim() !== (filters.search || "")
+                    ? 1
+                    : filters.page || undefined,
         };
 
         const cleanParams = Object.fromEntries(
-            Object.entries(params).filter(([_, v]) => v !== undefined)
+            Object.entries(params).filter(([_, v]) => v !== undefined),
         );
 
         router.get("/hospitals", cleanParams, {
             preserveScroll: true,
             preserveState: true,
-            replace: true
-        })
+            replace: true,
+        });
     }, [debouncedSearch, sortBy, sortOrder]);
 
     const statItems = [
-        { label: "Current", key: "current", bgColor: "bg-base-100", borderColor: "border-emerald-500" },
-        { label: "1-30 days", key: "thirty_days", bgColor: "bg-base-100", borderColor: "border-teal-500" },
-        { label: "31-60 days", key: "sixty_days", bgColor: "bg-base-100", borderColor: "border-cyan-500" },
-        { label: "61-90 days", key: "ninety_days", bgColor: "bg-base-100", borderColor: "border-sky-500" },
-        { label: "91 over", key: "over_ninety", bgColor: "bg-base-100", borderColor: "border-blue-600" },
-        { label: "Grand Total", key: "total", bgColor: "bg-base-100", borderColor: "border-slate-600" },
-    ]
+        {
+            label: "Current",
+            key: "current",
+            bgColor: "bg-base-100",
+            borderColor: "border-emerald-500",
+        },
+        {
+            label: "1-30 days",
+            key: "thirty_days",
+            bgColor: "bg-base-100",
+            borderColor: "border-teal-500",
+        },
+        {
+            label: "31-60 days",
+            key: "sixty_days",
+            bgColor: "bg-base-100",
+            borderColor: "border-cyan-500",
+        },
+        {
+            label: "61-90 days",
+            key: "ninety_days",
+            bgColor: "bg-base-100",
+            borderColor: "border-sky-500",
+        },
+        {
+            label: "91 over",
+            key: "over_ninety",
+            bgColor: "bg-base-100",
+            borderColor: "border-blue-600",
+        },
+        {
+            label: "Grand Total",
+            key: "total",
+            bgColor: "bg-base-100",
+            borderColor: "border-slate-600",
+        },
+    ];
 
     return (
         <Master>
@@ -60,7 +99,10 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
                     <Breadcrumbs items={breadcrumbs} />
                     <div className="flex justify-content-end gap-2 w-full sm:w-auto">
                         <SearchIt search={search} setSearch={setSearch} />
-                        <button className="btn btn-outline border border-gray-300 rounded-xl" onClick={() => setShowFilters(!showFilters)}>
+                        <button
+                            className="btn btn-outline border font-normal border-gray-300 rounded-full"
+                            onClick={() => setShowFilters(!showFilters)}
+                        >
                             <ListFilter size={16} />
                             Filters
                         </button>
@@ -69,23 +111,38 @@ export default function Index({ hospitals, userAreas, filters, breadcrumbs, proc
 
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
                     {statItems.map(({ label, key, bgColor, borderColor }) => (
-                        <div key={label} className={`${bgColor} rounded-lg p-4 border-l-4 ${borderColor} shadow-md`}>
-                            <h3 className="text-[12px] font-semibold upperase tracking-wide opacity-60 mb-1.5">{label}</h3>
-                            <span className="text-2xl font-medium">₱{" "}{Intl.NumberFormat("en-PH", {
-                                style: "decimal",
-                                minimumFractionDigits: 0,
-                                maximumFractionDigits: 2,
-                            }).format(processingDaysTotals.overall[key] || 0)}</span>
+                        <div
+                            key={label}
+                            className={`${bgColor} rounded-lg p-4 border-l-4 ${borderColor} shadow-md`}
+                        >
+                            <h3 className="text-[12px] font-semibold upperase tracking-wide opacity-60 mb-1.5">
+                                {label}
+                            </h3>
+                            <span className="text-2xl font-medium">
+                                ₱{" "}
+                                {Intl.NumberFormat("en-PH", {
+                                    style: "decimal",
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: 2,
+                                }).format(
+                                    processingDaysTotals.overall[key] || 0,
+                                )}
+                            </span>
                         </div>
                     ))}
                 </div>
 
                 <div className="p-4 md:p-6 bg-white rounded-xl shadow-lg">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-                        <span className="text-xl">List of Hospitals with their invoices</span>
+                        <span className="text-xl">
+                            List of Hospitals with their invoices
+                        </span>
                         <div className="flex gap-2">
                             {permissions.canManageHospitals && (
-                                <button className="btn btn-primary rounded-xl flex w-full sm:w-auto" onClick={() => setOpenCreateModal(true)}>
+                                <button
+                                    className="btn btn-primary rounded-xl flex w-full sm:w-auto"
+                                    onClick={() => setOpenCreateModal(true)}
+                                >
                                     <CirclePlus size={18} />
                                     Add Hospital
                                 </button>

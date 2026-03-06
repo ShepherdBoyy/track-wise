@@ -11,7 +11,7 @@ import UpdatesTable from "./elements/UpdatesTable";
 export default function Index({ latestUpdates, filters, userAreas, users }) {
     const [search, setSearch] = useState(filters.search || "");
     const [showFilters, setShowFilters] = useState(false);
-    
+
     const debouncedSearch = useDebounce(search, 300);
 
     useEffect(() => {
@@ -35,10 +35,7 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
             <div className="bg-base-200">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                     <span className="text-2xl">Summary</span>
-                    <SearchIt
-                        search={search}
-                        setSearch={setSearch}
-                    />
+                    <SearchIt search={search} setSearch={setSearch} />
                 </div>
                 <div className="p-4 md:p-6 bg-white rounded-xl shadow-lg">
                     <div className="flex justify-between items-center mb-4">
@@ -47,7 +44,7 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                         </div>
 
                         <button
-                            className="btn btn-outline border border-gray-300 rounded-3xl"
+                            className="btn btn-outline border font-normal border-gray-300 rounded-full"
                             onClick={() => setShowFilters(!showFilters)}
                         >
                             <ListFilter size={16} />
