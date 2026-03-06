@@ -101,7 +101,7 @@ export default function Profile({}) {
                                         </div>
 
                                         <input
-                                            className={`input input-md ${!editing ? "p-0 bg-transparent text-black" : ""}`}
+                                            className={`input input-md ${!editing ? "p-0 bg-transparent border-none text-black cursor-default" : ""}`}
                                             defaultValue={user.name}
                                             name="name"
                                             disabled={!editing}
@@ -121,7 +121,7 @@ export default function Profile({}) {
                                         </div>
 
                                         <input
-                                            className={`input input-md ${!editing ? "p-0 bg-transparent text-black" : ""}`}
+                                            className={`input input-md ${!editing ? "p-0 bg-transparent text-black border-none cursor-default" : ""}`}
                                             defaultValue={user.username}
                                             name="username"
                                             disabled={!editing}
