@@ -48,6 +48,7 @@ Route::middleware(["auth"])->group(function () {
         ->group(function () {
                 Route::get("/", [UserController::class, "index"]);
                 Route::post("/store", [UserController::class, "store"]);
+                Route::post("/change-password", [UserController::class, "bulkChangePassword"]);
                 Route::put("/{user_id}/update", [UserController::class, "update"]);
                 Route::delete("/{user_id}/delete", [UserController::class, "destroy"]);
     });

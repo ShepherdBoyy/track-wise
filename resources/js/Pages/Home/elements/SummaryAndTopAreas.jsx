@@ -7,7 +7,6 @@ export default function SummaryAndTopAreas({ agingBreakdown, topAreas }) {
             const data = payload[0].payload;
             return (
                 <div className="bg-base-100 p-4 rounded-lg shadow-xl border border-base-300">
-                    <p className="font-semibold mb-2">{data.category}</p>
                     {payload.map((entry, index) => (
                         <p key={index} className="text-sm">
                             <span className="font-medium">{entry.name}:</span>{' '}

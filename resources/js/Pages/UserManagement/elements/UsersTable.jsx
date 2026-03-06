@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
-export default function UsersTable({ filters, users, permissionList, setShowToast, setSuccessMessage, areas }) {
+export default function UsersTable({ filters, users, permissionList, setShowToast, setSuccessMessage, areas, selectedIds, setSelectedIds }) {
     const [sortBy, setSortBy] = useState(filters.sort_by || null);
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
     const [openViewModal, setOpenViewModal] = useState(false);
@@ -41,6 +41,20 @@ export default function UsersTable({ filters, users, permissionList, setShowToas
         <table className="table w-full">
             <thead>
                 <tr>
+                    <th className="w-[50px]">
+                        <input
+                            type="checkbox"
+                            className="checkbox w-5 h-5"
+                            checked={selectedIds.length === users.data.length && users.data.length > 0}
+                            onChange={(e) => {
+                                if (e.target.checked && users.data.length > 0) {
+                                    setSelectedIds(users.data.map((i) => i.id));
+                                } else {
+                                    setSelectedIds([]);
+                                }
+                            }}
+                        />
+                    </th>
                     <th className="w-[100px]">#</th>
                     <th
                         className="cursor-pointer hover:bg-base-200"
@@ -94,12 +108,30 @@ export default function UsersTable({ filters, users, permissionList, setShowToas
                             exit={{ opacity: 0 }}
                             transition={{ duration: 0.2, delay: index * 0.05 }}
                             key={user.id}
-                            className="hover:bg-base-300 cursor-pointer"
+                            className={selectedIds.length < 1 ? `hover:bg-base-300 cursor-pointer` : ""}
                             onClick={() => {
-                                setOpenViewModal(true);
-                                setSelectedUser(user);
+                                if (selectedIds.length < 1) {
+                                    setOpenViewModal(true);
+                                    setSelectedUser(user);
+                                }
                             }}
                         >
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    className="checkbox w-5 h-5"
+                                    checked={selectedIds.includes(user.id)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={(e) => {
+                                        if (e.target.checked) {
+                                            setSelectedIds([...selectedIds, user.id]);
+                                        } else {
+                                            const newSelected = selectedIds.filter((id) => id !== user.id);
+                                            setSelectedIds(newSelected);
+                                        }
+                                    }}
+                                />
+                            </td>
                             <td>{(users.current_page - 1) * users.per_page + index + 1}</td>
                             <td>{user.name}</td>
                             <td>{area}</td>

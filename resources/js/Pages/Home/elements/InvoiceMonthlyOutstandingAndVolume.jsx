@@ -1,3 +1,4 @@
+import { router } from '@inertiajs/react';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react'
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
@@ -18,8 +19,7 @@ export default function InvoiceMonthlyOutstandingAndVolume({ monthlyOutstanding,
             const data = payload[0].payload;
             return (
                 <div className="bg-base-100 p-4 rounded-lg shadow-xl border border-base-300">
-                    <p className="font-semibold mb-2">{data.month}</p>
-                    <p className="text-sm">
+                    <p className="text-sm">Amount:{" "} 
                         {Intl.NumberFormat("en-PH", {
                             style: "currency",
                             currency: "PHP",
@@ -38,8 +38,7 @@ export default function InvoiceMonthlyOutstandingAndVolume({ monthlyOutstanding,
             const data = payload[0].payload;
             return (
                 <div className="bg-base-100 p-4 rounded-lg shadow-xl border border-base-300">
-                    <p className="font-semibold mb-2">{data.month}</p>
-                    <p className="text-sm">{data.count.toLocaleString()}</p>
+                    <p className="text-sm">Count: {data.count.toLocaleString()}</p>
                 </div>
             );
         }

@@ -8,6 +8,7 @@ import {
     House,
     // House
 } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Sidebar() {
     const { url, props } = usePage();
@@ -51,6 +52,16 @@ export default function Sidebar() {
     ];
 
     const visibleNavItems = navItems.filter((item) => item.canView);
+    const cleanUrl = url.split("?")[0]
+    const isProfilePage = cleanUrl === "/profile";
+
+    useEffect(() => {
+        if (!isProfilePage) {
+            localStorage.setItem("last-active-tab", cleanUrl);
+        }
+    }, [cleanUrl, isProfilePage]);
+
+    const lastActiveTab = localStorage.getItem("last-active-tab") || "/";
 
     return (
         <div className="drawer-side z-40 overflow-visible">
@@ -66,8 +77,9 @@ export default function Sidebar() {
 
                     {visibleNavItems.length > 0 ? (
                         visibleNavItems.map((item) => {
-                            const cleanUrl = url.split("?")[0];
-                            const isActive = item.href === "/" ? cleanUrl === "/" : url.startsWith(item.href);
+                            const isActive = isProfilePage
+                                ? (item.href === "/" ? lastActiveTab === "/" : lastActiveTab.startsWith(item.href))
+                                : (item.href === "/" ? cleanUrl === "/" : url.startsWith(item.href));
                             const Icon = item.icon;
 
                             return (

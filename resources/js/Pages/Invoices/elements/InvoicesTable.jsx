@@ -13,7 +13,6 @@ export default function InvoicesTable({
     invoices, 
     setShowToast,
     setSuccessMessage,
-    active
 }) {
     const [selectedInvoice, setSelectedInvoice] = useState("");
     const [openEditInvoiceModal, setOpenEditInvoiceModal] = useState(false);
