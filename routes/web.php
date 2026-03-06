@@ -18,7 +18,12 @@ Route::middleware(["guest"])->group(function () {
 
 Route::middleware(["auth"])->group(function () {
     Route::get('/', [HomeController::class, "index"]);
-    Route::get("/profile", [HomeController::class, "profile"]);
+
+    Route::prefix("profile")
+        ->group(function () {
+            Route::get("/", [HomeController::class, "profile"]);
+            Route::put("/edit/{user_id}", [AuthController::class, "update"]);
+        });
 
     Route::get("/updates", [UpdatesController::class, "index"]);
 
@@ -60,8 +65,6 @@ Route::middleware(["auth"])->group(function () {
                 Route::get("/download-template", [ImportDataController::class, "downloadTemplate"]);
                 Route::post("/store", [ImportDataController::class, "store"]);
     });
-
-    Route::put("/profile-details/{user_id}", [AuthController::class, "update"]);
 
     Route::post("/logout", [AuthController::class, "destroy"]);
 });
