@@ -1,4 +1,4 @@
-import { usePage } from "@inertiajs/react";
+import { Form, usePage } from "@inertiajs/react";
 import { Pencil } from "lucide-react";
 import Master from "../components/Master";
 import { useState } from "react";
@@ -9,11 +9,19 @@ export default function Profile({}) {
     const { user, userInitials, userAreas } = usePage().props.auth;
 
     const [editing, setEditing] = useState(false);
-    console.log(usePage().props.auth);
+    const [error, setError] = useState("");
+    const [showToast, setShowToast] = useState(false);
 
     return (
         <Master>
             <div className="space-y-6 mx-auto max-w-6xl py-6">
+                {showToast && (
+                    <div className="toast toast-top toast-center">
+                        <div className="alert alert-info">
+                            <span>Profile Updated Successfully</span>
+                        </div>
+                    </div>
+                )}
                 <div className="">
                     <span className="text-2xl">Profile Settings</span>
                 </div>
@@ -47,7 +55,7 @@ export default function Profile({}) {
                                 <div>
                                     <button
                                         onClick={() => setEditing(true)}
-                                        className="btn font-medium flex items-center gap-2 border rounded-full  "
+                                        className="btn font-medium flex items-center gap-2 border rounded-full"
                                     >
                                         Edit Profile
                                         <Pencil size={18} strokeWidth="1.7" />
@@ -59,7 +67,19 @@ export default function Profile({}) {
                 </div>
 
                 {/* Card 2 */}
-                <form className="space-y-6">
+                <Form
+                    className="space-y-6"
+                    action={`/profile/edit/${user.id}`}
+                    method="put"
+                    onError={(error) => setError(error)}
+                    resetOnSuccess={["password", "password_confirmation"]}
+                    onSuccess={() => {
+                        setShowToast(true);
+                        setTimeout(() => setShowToast(false), 3000);
+                        setEditing(false);
+                        setError("");
+                    }}
+                >
                     <div>
                         <div className="card bg-base-100 ">
                             <div className="card-body space-y-8 p-8">
@@ -69,24 +89,42 @@ export default function Profile({}) {
 
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="flex flex-col gap-2">
-                                        <label className="text-md text-gray-400">
-                                            Name:
-                                        </label>
+                                        <div className="flex justify-between">
+                                            <label className="text-md text-gray-400">
+                                                Name:
+                                            </label>
+                                            {error.name && (
+                                                <span className="text-red-500 text-sm">
+                                                    {error.name}
+                                                </span>
+                                            )}
+                                        </div>
 
                                         <input
-                                            className="input input-md"
+                                            className={`input input-md ${!editing ? "p-0 bg-transparent text-black" : ""}`}
                                             defaultValue={user.name}
+                                            name="name"
+                                            disabled={!editing}
                                         />
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <label className="text-md text-gray-400">
-                                            Username:
-                                        </label>
+                                        <div className="flex justify-between">
+                                            <label className="text-md text-gray-400">
+                                                Username:
+                                            </label>
+                                            {error.username && (
+                                                <span className="text-red-500 text-sm">
+                                                    {error.username}
+                                                </span>
+                                            )}
+                                        </div>
 
                                         <input
-                                            className="input input-md"
+                                            className={`input input-md ${!editing ? "p-0 bg-transparent text-black" : ""}`}
                                             defaultValue={user.username}
+                                            name="username"
+                                            disabled={!editing}
                                         />
                                     </div>
 
@@ -120,19 +158,45 @@ export default function Profile({}) {
 
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="flex flex-col gap-2">
-                                        <label className="text-md text-gray-400">
-                                            New password:
-                                        </label>
+                                        <div className="flex justify-between">
+                                            <label className="text-md text-gray-400">
+                                                New password:
+                                            </label>
+                                            {error.password && (
+                                                <span className="text-red-500 text-sm">
+                                                    {error.password}
+                                                </span>
+                                            )}
+                                        </div>
 
-                                        <input className="input input-md" />
+                                        <input
+                                            type="password"
+                                            className="input input-md"
+                                            name="password"
+                                            readOnly={!editing}
+                                            placeholder={`${editing ? "Type here" : ""}`}
+                                        />
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <label className="text-md text-gray-400">
-                                            Confirm new password:
-                                        </label>
+                                        <div className="flex justify-between">
+                                            <label className="text-md text-gray-400">
+                                                Confirm new password:
+                                            </label>
+                                            {error.password_confirmation && (
+                                                <span className="text-red-500 text-sm">
+                                                    {error.password_confirmation}
+                                                </span>
+                                            )}
+                                        </div>
 
-                                        <input className="input input-md" />
+                                        <input
+                                            type="password"
+                                            className="input input-md"
+                                            name="password_confirmation"
+                                            readOnly={!editing}
+                                            placeholder={`${editing ? "Type here" : ""}`}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -166,7 +230,7 @@ export default function Profile({}) {
                             )}
                         </AnimatePresence>
                     </div>
-                </form>
+                </Form>
             </div>
         </Master>
     );
