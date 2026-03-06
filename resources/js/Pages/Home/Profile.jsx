@@ -13,11 +13,12 @@ export default function Profile({}) {
 
     return (
         <Master>
-            <div className="space-y-6 mx-auto max-w-6xl py-10">
+            <div className="space-y-6 mx-auto max-w-6xl py-6">
                 <div className="">
                     <span className="text-2xl">Profile Settings</span>
                 </div>
 
+                {/* Card 1 */}
                 <div>
                     <div className="card bg-base-100">
                         <div className="card-body space-y-8 p-8">
@@ -57,28 +58,25 @@ export default function Profile({}) {
                     </div>
                 </div>
 
-                <div>
-                    <div className="card bg-base-100 ">
-                        <div className="card-body space-y-8 p-8">
-                            <span className="text-lg">Account Information</span>
-                            <form>
+                {/* Card 2 */}
+                <form className="space-y-6">
+                    <div>
+                        <div className="card bg-base-100 ">
+                            <div className="card-body space-y-8 p-8">
+                                <span className="text-lg">
+                                    Account Information
+                                </span>
+
                                 <div className="grid grid-cols-2 gap-8">
                                     <div className="flex flex-col gap-2">
                                         <label className="text-md text-gray-400">
                                             Name:
                                         </label>
 
-                                        {editing ? (
-                                            <input
-                                                className="input input-md"
-                                                defaultValue={user.name}
-                                                name="name"
-                                            />
-                                        ) : (
-                                            <p className="text-lg">
-                                                {user.name}
-                                            </p>
-                                        )}
+                                        <input
+                                            className="input input-md"
+                                            defaultValue={user.name}
+                                        />
                                     </div>
 
                                     <div className="flex flex-col gap-2">
@@ -86,17 +84,10 @@ export default function Profile({}) {
                                             Username:
                                         </label>
 
-                                        {editing ? (
-                                            <input
-                                                className="input input-md"
-                                                defaultValue={user.username}
-                                                name="name"
-                                            />
-                                        ) : (
-                                            <p className="text-lg">
-                                                {user.username}
-                                            </p>
-                                        )}
+                                        <input
+                                            className="input input-md"
+                                            defaultValue={user.username}
+                                        />
                                     </div>
 
                                     <div className="flex flex-col gap-2">
@@ -115,48 +106,67 @@ export default function Profile({}) {
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-md text-gray-400">
-                                            Password:
-                                        </label>
-
-                                        <p className="text-lg"></p>
-                                    </div>
                                 </div>
-                                <AnimatePresence>
-                                    {editing && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            transition={{
-                                                duration: 0.25,
-                                                ease: "easeOut",
-                                            }}
-                                            className="flex justify-end gap-3 mt-6"
-                                        >
-                                            <button
-                                                type="submit"
-                                                className="btn btn-primary rounded-lg font-normal"
-                                            >
-                                                Save Changes
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn btn-ghost font-normal"
-                                                onClick={() =>
-                                                    setEditing(false)
-                                                }
-                                            >
-                                                Cancel
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </form>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    {/* Card 3 */}
+                    <div>
+                        <div className="card bg-base-100">
+                            <div className="card-body space-y-8 p-8">
+                                <span className="text-lg">
+                                    Password Settings
+                                </span>
+
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-md text-gray-400">
+                                            New password:
+                                        </label>
+
+                                        <input className="input input-md" />
+                                    </div>
+
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-md text-gray-400">
+                                            Confirm new password:
+                                        </label>
+
+                                        <input className="input input-md" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <AnimatePresence>
+                            {editing && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    transition={{
+                                        duration: 0.25,
+                                        ease: "easeOut",
+                                    }}
+                                    className="flex justify-end gap-3 mt-8"
+                                >
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary rounded-lg font-normal"
+                                    >
+                                        Save Changes
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-ghost font-normal"
+                                        onClick={() => setEditing(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </form>
             </div>
         </Master>
     );
