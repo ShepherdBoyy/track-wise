@@ -24,7 +24,7 @@ import { Area,
     XAxis,
     YAxis
 } from "recharts";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { useState } from "react";
 import SortIcon from "../components/SortIcon";
 import KpiCards from "./elements/KpiCards"
@@ -40,13 +40,21 @@ export default function Index({
     monthlyOutstanding,
     invoiceVolume
 }) {
-    
+    const { user } = usePage().props.auth;
+
+    const today = new Date();
+    const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
   return (
     <Master>
         <div className="bg-base-200 space-y-6">
-            <div className="mb-4">
-                <span className="text-2xl">Dashboard</span>
+            <div className="flex flex-col py-6 gap-2">
+                <span className="text-md font-medium opacity-70" >{today.toLocaleDateString(undefined, options)}</span>
+                <span className="text-5xl font-normal">
+                    Welcome Back, {user.name.trim().split(" ").length > 1
+                        ? user.name.trim().split(" ")[0]
+                        : user.name}!
+                    </span>
             </div>
 
             <KpiCards kpi={kpi} />
