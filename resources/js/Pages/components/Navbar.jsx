@@ -1,24 +1,11 @@
 import { Link, usePage } from "@inertiajs/react";
-import Profile from "./Profile";
-import { useState } from "react";
 import { Menu, ChevronsUpDown, User, LogOut } from "lucide-react";
 
 export default function Navbar() {
     const { user, userInitials } = usePage().props.auth;
 
-    const [openProfile, setOpenProfile] = useState(false);
-    const [showToast, setShowToast] = useState(false);
-
     return (
         <div className="navbar bg-base-100 px-2 sm:px-4 border-b border-gray-200">
-            {showToast && (
-                <div className="toast toast-top toast-center">
-                    <div className="alert alert-info">
-                        <span>Profile Updated Successfully</span>
-                    </div>
-                </div>
-            )}
-
             <div className="flex-none lg:hidden">
                 <label
                     htmlFor="my-drawer-4"
@@ -62,7 +49,6 @@ export default function Navbar() {
                         />
                     </div>
 
-                    {/* Dropdown */}
                     <ul
                         tabIndex={0}
                         className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-2 w-52 p-2 shadow space-y-1"
@@ -75,12 +61,6 @@ export default function Navbar() {
                                 />
                                 Profile
                             </Link>
-                            {/* <a
-                                onClick={() => setOpenProfile(true)}
-                                className="text-sm"
-                            >
-                                Profile
-                            </a> */}
                         </li>
 
                         <li>
@@ -100,14 +80,6 @@ export default function Navbar() {
                     </ul>
                 </div>
             </div>
-
-            {openProfile && (
-                <Profile
-                    setOpenProfile={setOpenProfile}
-                    user={user}
-                    setShowToast={setShowToast}
-                />
-            )}
         </div>
     );
 }
