@@ -5,7 +5,9 @@ import { useState } from "react";
 export default function Filters({ setShowFilters, userAreas, users, filters }) {
     const [selectedArea, setSelectedArea] = useState(filters.area || "");
     const [selectedStatus, setSelectedStatus] = useState(filters.status || "");
-    const [selectedUser, setSelectedUser] = useState(filters.users || "");
+    const [selectedUser, setSelectedUser] = useState(filters.user || "");
+
+    console.log(filters.per_page);
 
     const handleClearFilters = () => {
         setSelectedArea("");
@@ -25,7 +27,8 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
             {
                 selected_area: selectedArea,
                 selected_status: selectedStatus,
-                selected_user: selectedUser
+                selected_user: selectedUser,
+                per_page: filters.per_page
             },
             { preserveState: true, preserveScroll: true },
         );
