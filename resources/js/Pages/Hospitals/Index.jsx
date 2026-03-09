@@ -9,7 +9,6 @@ import useDebounce from "../hooks/useDebounce";
 import Breadcrumbs from "../components/Breadcrumbs";
 import Filters from "./elements/Filters";
 import HospitalsTable from "./elements/HospitalsTable";
-import Totals from "./elements/Totals";
 
 export default function Index({
     hospitals,

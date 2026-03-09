@@ -111,6 +111,7 @@ export default function HospitalsTable({
                                 sort_by: filters.sort_by || undefined,
                                 sort_order: filters.sort_order || undefined,
                                 selected_area: filters.area || undefined,
+                                page: filters.page || undefined
                             },
                             { 
                                 preserveState: true,
