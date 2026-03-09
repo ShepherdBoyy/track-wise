@@ -25,6 +25,9 @@ export default function UpdatesTable({ filters, latestUpdates }) {
             {
                 sort_by: column,
                 sort_order: newSortOrder,
+                selected_area: filters.area || undefined,
+                selected_status: filters.status || undefined,
+                selected_user: filters.user || undefined,
             },
             { preserveState: true, preserveScroll: true },
         )

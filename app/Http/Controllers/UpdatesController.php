@@ -158,9 +158,10 @@ class UpdatesController extends Controller
                 "search" => $searchQuery,
                 "area" => $filterArea,
                 "status" => $filterStatus,
-                "users" => $filterUser,
+                "user" => $filterUser,
                 "sort_order" => $sortOrder,
                 "sort_by" => $sortBy,
+                "per_page" => $perPage
             ]
         ]);
     }
