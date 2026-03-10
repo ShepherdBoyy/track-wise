@@ -68,10 +68,12 @@ class User extends Authenticatable
     {
         $words = explode(" ", trim($this->name));
 
-        if (count($words) >= 2) {
-            return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0 ,1));
+        if (count($words) >= 3) {
+            return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1) . substr($words[2], 0, 1));
+        } else if (count($words) == 2) {
+            return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+        } else {
+            return strtoupper(substr($words[0], 0, 3));
         }
-
-        return strtoupper(substr($words[0], 0, 2));
     }
 }
