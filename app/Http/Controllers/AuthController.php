@@ -33,10 +33,12 @@ class AuthController extends Controller
 
         $validated = $request->validated();
 
-        if (array_key_exists("password", $validated)) {
-            $plainPassword = $validated["password"];
-            $validated["password"] = Hash::make($plainPassword);
-            $validated["visible_password"] = Crypt::encryptString($plainPassword);
+        if (!empty($validated['password'])) {
+            $plainPassword = $validated['password'];
+            $validated['password'] = Hash::make($plainPassword);
+            $validated['visible_password'] = Crypt::encryptString($plainPassword);
+        } else {
+            unset($validated['password']);
         }
 
         $user->fill($validated);
