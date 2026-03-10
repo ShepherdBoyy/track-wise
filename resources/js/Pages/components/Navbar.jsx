@@ -25,8 +25,8 @@ export default function Navbar() {
                     >
                         <div className="flex items-center">
                             <div className="avatar avatar-placeholder sm:mr-3">
-                                <div className="bg-neutral text-neutral-content w-11 rounded-full flex items-center justify-center">
-                                    <span className="text-md">
+                                <div className="bg-neutral text-white w-11 rounded-full flex items-center justify-center">
+                                    <span className={`${userInitials.length > 2 ? "text-sm" : "text-md"}`}>
                                         {userInitials}
                                     </span>
                                 </div>
