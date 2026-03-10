@@ -36,7 +36,7 @@ export default function Profile({}) {
                                 <div className="flex items-center gap-3">
                                     <div className="avatar avatar-placeholder">
                                         <div className="bg-neutral text-neutral-content w-14 rounded-full">
-                                            <span className="text-lg">
+                                            <span className={`${userInitials.length > 2 ? "text-md" : "text-lg"}`}>
                                                 {userInitials}
                                             </span>
                                         </div>
