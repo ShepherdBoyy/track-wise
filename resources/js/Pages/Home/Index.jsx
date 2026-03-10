@@ -1,32 +1,5 @@
-import {
-    CalendarX2,
-    ChevronDown,
-    DollarSign,
-    ExternalLink,
-    FileText,
-    Minus,
-    TrendingDown,
-    TrendingUp,
-} from "lucide-react";
 import Master from "../components/Master";
-import { Area,
-    AreaChart,
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis
-} from "recharts";
-import { Link, router, usePage } from "@inertiajs/react";
-import { useState } from "react";
-import SortIcon from "../components/SortIcon";
+import { usePage } from "@inertiajs/react";
 import KpiCards from "./elements/KpiCards"
 import SummaryAndTopAreas from "./elements/SummaryAndTopAreas";
 import InvoiceMonthlyOutstandingAndVolume from "./elements/InvoiceMonthlyOutstandingAndVolume";
