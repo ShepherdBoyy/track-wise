@@ -1,4 +1,3 @@
-import React from 'react'
 import { Bar, BarChart, CartesianGrid, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 export default function SummaryAndTopAreas({ agingBreakdown, topAreas }) {
