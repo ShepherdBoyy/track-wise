@@ -17,6 +17,7 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $baseQuery = Invoice::query();
+        $currentYear = $request->input('year', date('Y'));
 
         if (!Gate::allows("viewAll", Hospital::class)) {
             $userAreaIds = $user->areas->pluck("id");
@@ -24,20 +25,41 @@ class HomeController extends Controller
                 $query->whereIn("area_id", $userAreaIds);
             });
         }
-        
+
+        return Inertia::render("Home/Index", [
+            "kpi" => $this->getKpi($baseQuery),
+            "agingBreakdown" => $this->getAgingBreakdown($baseQuery),
+            "topAreas" => $this->getTopAreas($baseQuery),
+            "topHospitals" => $this->getTopHospitals($baseQuery),
+            "monthlyOutstanding" => [
+                "data" => $this->getMonthlyOutstanding($baseQuery, $currentYear),
+                "availableYears" => $this->getAvailableYears($baseQuery),
+                "currentYear" => $currentYear
+            ],
+            "invoiceVolume" => $this->getInvoiceVolume($baseQuery)
+        ]);
+    }
+
+    public function profile()
+    {
+        return Inertia::render("Home/Profile");
+    }
+
+    private function getKpi($baseQuery)
+    {
         $totalOutstanding = (clone $baseQuery)
             ->whereNull("date_closed")
             ->sum("amount");
-        
+
         $totalOverdue = (clone $baseQuery)
             ->whereNull("date_closed")
             ->whereRaw("CURDATE() > due_date")
             ->sum("amount");
-        
+
         $overduePercentage = $totalOutstanding > 0
             ? round(($totalOverdue / $totalOutstanding) * 100, 1)
             : 0;
-
+        
         $invoiceCounts = (clone $baseQuery)
             ->whereNull("date_closed")
             ->selectRaw("
@@ -51,41 +73,15 @@ class HomeController extends Controller
             ? $totalOutstanding / $invoiceCounts->total_count
             : 0;
         
-        $agingBreakdown = $this->getAgingBreakdown($baseQuery);
-        $topAreas = $this->getTopAreas($baseQuery);
-
-        $topHospitals = $this->getTopHospitals($baseQuery);
-
-        $availableYears = $this->getAvailableYears($baseQuery);
-        $currentYear = $request->input('year', date('Y'));
-        $monthlyOutstanding = $this->getMonthlyOutstanding($baseQuery, $currentYear);
-        $invoiceVolume = $this->getInvoiceVolume($baseQuery);
-
-        return Inertia::render("Home/Index", [
-            "kpi" => [
-                "totalOutstanding" => $totalOutstanding,
-                "totalOverdue" => $totalOverdue,
-                "overduePercentage" => $overduePercentage,
-                "openCount" => $invoiceCounts->open_count ?? 0,
-                "overdueCount" => $invoiceCounts->overdue_count ?? 0,
-                "totalCount" => $invoiceCounts->total_count ?? 0,
-                "avgInvoiceAmount" => round($avgInvoiceAmount, 2),
-            ],
-            "agingBreakdown" => $agingBreakdown,
-            "topAreas" => $topAreas,
-            "topHospitals" => $topHospitals,
-            "monthlyOutstanding" => [
-                "data" => $monthlyOutstanding,
-                "availableYears" => $availableYears,
-                "currentYear" => $currentYear
-            ],
-            "invoiceVolume" => $invoiceVolume
-        ]);
-    }
-
-    public function profile()
-    {
-        return Inertia::render("Home/Profile");
+        return [
+            "totalOutstanding" => $totalOutstanding,
+            "totalOverdue" => $totalOverdue,
+            "overduePercentage" => $overduePercentage,
+            "openCount" => $invoiceCounts->open_count ?? 0,
+            "overdueCount" => $invoiceCounts->overdue_count ?? 0,
+            "totalCount" => $invoiceCounts->total_count ?? 0,
+            "avgInvoiceAmount" => round($avgInvoiceAmount, 2),
+        ];
     }
 
     private function getAgingBreakdown($baseQuery)
@@ -149,15 +145,16 @@ class HomeController extends Controller
 
     private function getTopAreas($baseQuery)
     {
-        $invoiceIds = (clone $baseQuery)
+        $invoiceSubQuery = (clone $baseQuery)
             ->whereNull("date_closed")
-            ->pluck("id");
+            ->select("id", "hospital_id");
 
         $areaQuery = Area::select("areas.id", "areas.area_name")
             ->selectRaw("COUNT(DISTINCT invoices.id) as invoice_count")
             ->join("hospitals", "hospitals.area_id", "=", "areas.id")
-            ->join("invoices", "invoices.hospital_id", "=", "hospitals.id")
-            ->whereIn("invoices.id", $invoiceIds)
+            ->joinSub($invoiceSubQuery, "invoices", function($join) {
+                $join->on("invoices.hospital_id", "=", "hospitals.id");
+            })
             ->groupBy("areas.id", "areas.area_name")
             ->having("invoice_count", ">", 0)
             ->orderByDesc("invoice_count")
@@ -180,11 +177,66 @@ class HomeController extends Controller
         })->toArray();
     }
 
+    private function getAvailableYears($baseQuery)
+    {
+        return (clone $baseQuery)
+            ->selectRaw("DISTINCT YEAR(document_date) as year")
+            ->orderByDesc("year")
+            ->pluck("year")
+            ->toArray();
+    }
+
+    private function getMonthlyOutstanding($baseQuery, $year)
+    {
+        $results = (clone $baseQuery)
+            ->whereYear("document_date", $year)
+            ->whereNull("date_closed")
+            ->selectRaw("MONTH(document_date) as month_number, SUM(amount) as amount")
+            ->groupByRaw("MONTH(document_date)")
+            ->pluck("amount", "month_number");
+
+        for ($month = 1; $month <= 12; $month++) {
+            $startDate = "{$year}-" . str_pad($month, 2, "0", STR_PAD_LEFT) . "-01";
+            $months[] = [
+                "month" => date("M", strtotime($startDate)),
+                "month_number" => $month,
+                "amount" => $results[$month] ?? 0 
+            ];
+        }
+
+        return $months;
+    }
+
+    private function getInvoiceVolume($baseQuery)
+    {
+        $sixMonthsAgo = now()->subMonths(6)->startOfMonth();
+
+        $results = (clone $baseQuery)
+            ->selectRaw("
+                DATE_FORMAT(document_date, '%b') as month,
+                MONTH(document_date) as month_number,
+                YEAR(document_date) as year,
+                COUNT(*) as count
+            ")
+            ->where("document_date", ">=", $sixMonthsAgo)
+            ->groupBy("year", "month_number", "month")
+            ->orderBy("year")
+            ->orderBy("month_number")
+            ->get();
+
+        return $results->map(function($item) {
+            return [
+                "month" => $item->month,
+                "count" => $item->count
+            ];
+        })->toArray();
+    }
+
     private function getTopHospitals($baseQuery)
     {
-        $invoiceIds = (clone $baseQuery)
+        $invoiceSubQuery = (clone $baseQuery)
             ->whereNull("date_closed")
-            ->pluck("id");
+            ->select("id", "hospital_id", "amount");
         
         $hospitals = Hospital::select(
                 "hospitals.id",
@@ -198,8 +250,9 @@ class HomeController extends Controller
                 SUM(invoices.amount) as outstanding_amount,
                 COUNT(invoices.id) as invoice_count
             ")
-            ->join("invoices", "hospitals.id", "=", "invoices.hospital_id")
-            ->whereIn("invoices.id", $invoiceIds)
+            ->joinSub($invoiceSubQuery, "invoices", function($join) {
+                $join->on("invoices.hospital_id", "=", "hospitals.id");
+            })
             ->groupBy("hospitals.id", "hospitals.hospital_name", "hospitals.hospital_number", "areas.area_name", "areas.id")
             ->orderByDesc("outstanding_amount")
             ->take(10)
@@ -232,62 +285,6 @@ class HomeController extends Controller
                 "area_color" => $colorMap[$hospital->area_name] ?? "#6b7280",
                 "outstanding_amount" => $hospital->outstanding_amount,
                 "invoice_count" => $hospital->invoice_count,
-            ];
-        })->toArray();
-    }
-
-    private function getAvailableYears($baseQuery)
-    {
-        return (clone $baseQuery)
-            ->selectRaw("DISTINCT YEAR(document_date) as year")
-            ->orderByDesc("year")
-            ->pluck("year")
-            ->toArray();
-    }
-
-    private function getMonthlyOutstanding($baseQuery, $year)
-    {
-        $months = [];
-        for ($month = 1; $month <= 12; $month++) {
-            $startDate = "{$year}-" . str_pad($month, 2, "0", STR_PAD_LEFT) . "-01";
-            $endDate = date("Y-m-t", strtotime($startDate));
-
-            $outstanding = (clone $baseQuery)
-                ->whereBetween("document_date", [$startDate, $endDate])
-                ->whereNull("date_closed")
-                ->sum("amount");
-
-            $months[] = [
-                "month" => date("M", strtotime($startDate)),
-                "month_number" => $month,
-                "amount" => $outstanding
-            ];
-        }
-
-        return $months;
-    }
-
-    private function getInvoiceVolume($baseQuery)
-    {
-        $sixMonthsAgo = now()->subMonths(6)->startOfMonth();
-
-        $results = (clone $baseQuery)
-            ->selectRaw("
-                DATE_FORMAT(document_date, '%b') as month,
-                MONTH(document_date) as month_number,
-                YEAR(document_date) as year,
-                COUNT(*) as count
-            ")
-            ->where("document_date", ">=", $sixMonthsAgo)
-            ->groupBy("year", "month_number", "month")
-            ->orderBy("year")
-            ->orderBy("month_number")
-            ->get();
-
-        return $results->map(function($item) {
-            return [
-                "month" => $item->month,
-                "count" => $item->count
             ];
         })->toArray();
     }
