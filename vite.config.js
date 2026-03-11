@@ -10,6 +10,30 @@ export default defineConfig({
             refresh: true,
         }),
         tailwindcss(),
-        react()
+        react(),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                manualChunks(id) {
+                    if (!id.includes('node_modules')) return
+
+                    if (id.includes('recharts') || id.includes('d3-') || id.includes('victory-vendor')) {
+                        return 'recharts-vendor'
+                    }
+
+                    if (
+                        id.includes('react-dom') ||
+                        id.includes('react/') ||
+                        id.includes('@inertiajs') ||
+                        id.includes('scheduler')
+                    ) {
+                        return 'react-vendor'
+                    }
+
+                    return 'vendor'
+                }
+            }
+        }
+    }
 });
