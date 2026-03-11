@@ -17,7 +17,7 @@ export default function Navbar() {
 
             <div className="flex-1"></div>
             <div className="flex-none">
-                <div className="dropdown dropdown-end w-75 ">
+                <div className="dropdown dropdown-end w-75">
                     <div
                         tabIndex={0}
                         role="button"
