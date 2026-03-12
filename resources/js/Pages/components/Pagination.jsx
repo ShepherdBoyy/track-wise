@@ -1,7 +1,7 @@
 import { router } from "@inertiajs/react";
 import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 
-export default function Pagination({ data }) {
+export default function Pagination({ data, creditTerm, creditLimit }) {
     const handlePerPageChange = (perPage) => {
         const searchParams = new URLSearchParams(window.location.search);
 
@@ -63,6 +63,22 @@ export default function Pagination({ data }) {
                     />
                 </div>
             </div>
+
+            {(creditTerm || creditLimit) && (
+                <div className="hidden sm:flex items-center gap-3 order-3 sm:order-2">
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-xs uppercase tracking-tight text-gray-500">Credit Term</span>
+                        <span className="text-sm font-bold  bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-md">{creditTerm}</span>
+                    </div>
+                    <span className="text-gray-300">|</span>
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-xs uppercase tracking-tight text-gray-500">Credit Limit</span>
+                        <span className="text-sm font-bold  bg-gray-100 border border-gray-200 px-2 py-0.5 rounded-md">
+                            ₱ {Intl.NumberFormat("en-PH").format(creditLimit)}
+                        </span>
+                    </div>
+                </div>
+            )}
 
             <div className="flex items-center gap-1 order-1 sm:order-2">
                 <button

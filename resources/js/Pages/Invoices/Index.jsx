@@ -91,7 +91,7 @@ export default function Index({
 
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
                     {statItems.map(({ label, key, style }) => (
-                        <div className={`stats shadow-md flex-1 ${style}`}>
+                        <div className={`stats shadow-md flex-1 ${style}`} key={label}>
                             <div className="stat">
                                 <div className="text-[12px] font-semibold uppercase tracking-wide opacity-60 mb-6">{label}</div>
                                 <div className="stat-value flex gap-2 items-center text-2xl">
@@ -163,7 +163,11 @@ export default function Index({
                         active={active}
                     />
 
-                    <Pagination data={invoices} />
+                    <Pagination
+                        data={invoices}
+                        creditTerm={hospital.credit_term}
+                        creditLimit={hospital.credit_limit}
+                    />
 
                     {openCreateInvoiceModal && (
                         <Create
