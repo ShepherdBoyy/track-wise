@@ -82,6 +82,48 @@ export default function Edit({ setOpenEditModal, hospital, setShowToast, setSucc
                         />
                     </div>
 
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="flex flex-col gap-1 mt-8">
+                            <div className="flex justify-between">
+                                <label htmlFor="credit_terms" className="text-sm">
+                                    Credit Terms
+                                </label>
+                                {error.credit_terms && (
+                                    <span className="text-red-500 text-sm">
+                                        {error.credit_terms}
+                                    </span>
+                                )}
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Type here"
+                                className="input w-full"
+                                name="credit_terms"
+                                defaultValue={hospital.credit_terms}
+                            />
+                        </div>
+
+                        <div className="flex flex-col gap-1 mt-8">
+                            <div className="flex justify-between">
+                                <label htmlFor="credit_limit" className="text-sm">
+                                    Credit Limit
+                                </label>
+                                {error.credit_limit && (
+                                    <span className="text-red-500 text-sm">
+                                        {error.credit_limit}
+                                    </span>
+                                )}
+                            </div>
+                            <input
+                                type="number"
+                                placeholder="Type here"
+                                className="input w-full"
+                                name="credit_limit"
+                                defaultValue={hospital.credit_limit}
+                            />
+                        </div>
+                    </div>
+
                     <div className="flex justify-end mt-6 gap-2">
                         <button className="btn btn-outline rounded-xl" onClick={() => setOpenEditModal(false)}>
                             Cancel
