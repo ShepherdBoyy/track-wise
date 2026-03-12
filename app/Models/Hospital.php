@@ -9,7 +9,9 @@ class Hospital extends Model
     protected $fillable = [
         'hospital_name',
         'hospital_number',
-        'area_id'
+        'area_id',
+        "credit_term",
+        "credit_limit"
     ];
 
     public function invoices()
