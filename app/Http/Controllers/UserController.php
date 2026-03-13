@@ -8,6 +8,7 @@ use App\Models\Area;
 use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
@@ -21,12 +22,14 @@ class UserController extends Controller
 
         $searchQuery = $request->query("search");
         $perPage = $request->query("per_page", 10);
-        $sortBy = $request->query("sort_by");
+        $sortBy = $request->query("sort_by", "name");
         $sortOrder = $request->query("sort_order", "asc");
 
         $users = User::query()
             ->with(["permissions", "areas"])
-            ->where("username", "!=", "developer")
+            ->when(Auth::user()->username != "developer", function ($query) {
+                $query->where("username", "!=", "developer");
+            })
             ->when($searchQuery, function ($query) use ($searchQuery) {
                 $query->where("name", "like", "%{$searchQuery}%");
             })

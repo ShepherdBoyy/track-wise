@@ -8,7 +8,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export default function UsersTable({ filters, users, permissionList, setShowToast, setSuccessMessage, areas, selectedIds, setSelectedIds }) {
-    const [sortBy, setSortBy] = useState(filters.sort_by || null);
+    const [sortBy, setSortBy] = useState("");
     const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
     const [openViewModal, setOpenViewModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
