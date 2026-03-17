@@ -56,7 +56,15 @@ class InvoiceController extends Controller
         $invoices = (clone $baseQuery)
             ->with(["hospital", "creator", "latestHistory", "history.updater"])
             ->when($searchQuery, function ($query) use ($searchQuery) {
-                $query->where("invoice_number", "like", "%{$searchQuery}%");
+                $normalizedAmount = str_replace(",", "", $searchQuery);
+
+                $query->where(function ($q) use ($searchQuery, $normalizedAmount) {
+                    $q->where("invoice_number", "like", "%{$searchQuery}%");
+
+                    if (is_numeric($normalizedAmount)) {
+                        $q->orWhereRaw("CAST(amount AS CHAR) LIKE ?", ["%{$normalizedAmount}%"]);
+                    }
+                });
             })
             ->when(!$searchQuery && $processingFilter, function ($query) use ($processingFilter) {
                 match ($processingFilter) {

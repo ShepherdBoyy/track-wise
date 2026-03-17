@@ -41,9 +41,20 @@ class HospitalController extends Controller
 
         $hospitals = $query
             ->when($searchQuery, function ($query) use ($searchQuery) {
-                $query->where(function ($q) use ($searchQuery) {
+                $normalizedAmount = str_replace(",", "", $searchQuery);
+
+                $query->where(function ($q) use ($searchQuery, $normalizedAmount) {
                     $q->where("hospital_name", "like", "%{$searchQuery}%")
                         ->orWhere("hospital_number", "like", "%{$searchQuery}%");
+                    
+                    if (is_numeric($normalizedAmount)) {
+                        $q->orWhereIn("hospitals.id", function ($sub) use ($normalizedAmount) {
+                            $sub->select("hospital_id")
+                                ->from("invoices")
+                                ->groupBy("hospital_id")
+                                ->havingRaw("CAST(SUM(amount) AS CHAR) LIKE ?", ["%{$normalizedAmount}%"]);
+                        });
+                    }
                 });
             })
             ->when(!empty($filterArea), function ($query) use ($filterArea) {

@@ -73,8 +73,14 @@ class UpdatesController extends Controller
                 "updater"
             ])
             ->when($searchQuery, function ($query) use ($searchQuery) {
-                $query->whereHas("invoice", function ($q) use($searchQuery) {
+                $normalizedAmount = str_replace(",", "", $searchQuery);
+
+                $query->whereHas("invoice", function ($q) use($searchQuery, $normalizedAmount) {
                     $q->where("invoice_number", "like", "%{$searchQuery}%");
+
+                    if (is_numeric($normalizedAmount)) {
+                        $q->orWhereRaw("CAST(amount as CHAR) LIKE ?", ["%{$normalizedAmount}%"]);
+                    }
                 })
                 ->orWhereHas("invoice.hospital", function ($q) use ($searchQuery) {
                     $q->where("hospital_name", "like", "%{$searchQuery}%")
