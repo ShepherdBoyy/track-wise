@@ -78,7 +78,7 @@ class DataImport implements ToCollection, WithHeadingRow
                         "hospital_number" => $hospitalNumber,
                         "hospital_name" => $row["customer_name"],
                         "area_id" => $areas[$row["area"]],
-                        "credit_term" => $row["credit_term"],
+                        "credit_term" => $row["credit_terms"],
                         "credit_limit" => $row["credit_limit"],
                         "created_at" => now(),
                         "updated_at" => now()
