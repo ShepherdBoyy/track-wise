@@ -71,6 +71,8 @@ class DataImport implements ToCollection, WithHeadingRow
                     $hospitalsToUpdate[$hospitalNumber] = [
                         "hospital_name" => $row["customer_name"],
                         "area_id" => $areas[$row["area"]],
+                        "credit_term" => $row["credit_terms"],
+                        "credit_limit" => $row["credit_limit"],
                         "updated_at" => now(),
                     ];
                 } else {
