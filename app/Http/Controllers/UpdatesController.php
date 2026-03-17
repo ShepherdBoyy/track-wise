@@ -149,6 +149,15 @@ class UpdatesController extends Controller
                         );
                         break;
 
+                    case "amount":
+                        $query->orderBy(
+                            Invoice::select("amount")
+                                ->whereColumn("invoices.id", "invoice_histories.invoice_id")
+                                ->limit(1),
+                            $sortOrder
+                        );
+                        break;
+
                     default:
                         $query->orderBy("invoice_histories.updated_at", $sortOrder);
                 }

@@ -50,6 +50,12 @@ export default function UpdatesTable({ filters, latestUpdates }) {
                             <SortIcon column="hospital_name" sortOrder={sortOrder} sortBy={sortBy} />
                         </div>
                     </th>
+                    <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSort("amount")}>
+                        <div className="flex items-center gap-2">
+                            Amount
+                            <SortIcon column="amount" sortOrder={sortOrder} sortBy={sortBy} />
+                        </div>
+                    </th>
                     <th>Remarks</th>
                     <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSort("updated_by")}>
                         <div className="flex items-center gap-2">
@@ -63,7 +69,6 @@ export default function UpdatesTable({ filters, latestUpdates }) {
                             <SortIcon column="processing_days" sortOrder={sortOrder} sortBy={sortBy} />
                         </div>
                     </th>
-                    <th>Status</th>
                 </tr>
             </thead>
 
@@ -97,27 +102,10 @@ export default function UpdatesTable({ filters, latestUpdates }) {
                                 {update.invoice.hospital.hospital_name}
                             </span>
                         </td>
+                        <td>₱{parseFloat(update.invoice.amount).toLocaleString("en-PH", {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
                         <td>{update.remarks}</td>
                         <td>{update.updater.name}</td>
                         <td>{update.invoice.processing_days}</td>
-                        <td>
-                            <span
-                                className={`badge badge-md text-sm rounded-full ${
-                                    update.status ===
-                                    "closed"
-                                        ? "bg-emerald-100 text-emerald-700 border-green-600"
-                                        : update.status ===
-                                            "open"
-                                            ? "bg-yellow-100 text-yellow-700 border-yellow-600"
-                                            : update.status ===
-                                                "overdue"
-                                            ? "bg-red-100 text-red-700 border-red-600"
-                                            : "badge-neutral"
-                                }`}
-                            >
-                                {update.status}
-                            </span>
-                        </td>
                     </motion.tr>
                 ))}
             </tbody>
