@@ -25,6 +25,8 @@ class UpdatesController extends Controller
         $perPage = $request->query("per_page", 10);
         $sortBy = $request->query("sort_by", "updated_at");
         $sortOrder = $request->query("sort_order", "desc");
+        $minAmount = $request->query("min_amount");
+        $maxAmount = $request->query("max_amount");
 
         $userAreas = Gate::allows("viewAll", Hospital::class) ? Area::all() : $user->areas;
 

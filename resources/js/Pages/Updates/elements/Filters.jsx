@@ -2,17 +2,27 @@ import { router } from "@inertiajs/react";
 import { X } from "lucide-react";
 import { useState } from "react";
 
+const AMOUNT_STEPS = [null, 0, 250000, 500000, 750000, 1000000];
+const AMOUNT_LABELS = ["<₱0", "₱0", "₱250K", "₱500K", "₱750K", "₱1M+"];
+
 export default function Filters({ setShowFilters, userAreas, users, filters }) {
     const [selectedArea, setSelectedArea] = useState(filters.area || "");
     const [selectedStatus, setSelectedStatus] = useState(filters.status || "");
     const [selectedUser, setSelectedUser] = useState(filters.user || "");
-
-    console.log(filters.per_page);
+    const [minAmountIndex, setMinAmountIndex] = useState(filters.min_amount === "negative"
+        ? 0
+        : filters.min_amount
+        ? AMOUNT_STEPS.indexOf(Number(filters.min_amount))
+        : 0
+    );
+    const [maxAmountIndex, setMaxAmountIndex] = useState(filters.max_amount ? AMOUNT_STEPS.indexOf(Number(filters.max_amount)) : 5);
 
     const handleClearFilters = () => {
         setSelectedArea("");
         setSelectedStatus("");
         setSelectedUser("");
+        setMinAmountIndex(0);
+        setMaxAmountIndex(5);
 
         router.get(
             "/updates",
@@ -28,7 +38,9 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                 selected_area: selectedArea,
                 selected_status: selectedStatus,
                 selected_user: selectedUser,
-                per_page: filters.per_page
+                per_page: filters.per_page,
+                min_amount: minAmountIndex === 0 ? "negative" : AMOUNT_STEPS[minAmountIndex],
+                max_amount:maxAmountIndex === 5 ? null : AMOUNT_STEPS[maxAmountIndex]
             },
             { preserveState: true, preserveScroll: true },
         );
@@ -83,6 +95,60 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                             <option key={user.id} value={user.id}>{user.name}</option>
                         ))}
                     </select>
+                </div>
+
+                <div>
+                    <label className="label text-md">By Amount</label>
+
+                    <div className="mb-3">
+                        <p className="text-sm text-gray-500 mb-1">Min Amount</p>
+                        <input
+                            type="range"
+                            min={0}
+                            max={5}
+                            value={minAmountIndex}
+                            step={1}
+                            className="range range-sm"
+                            onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setMinAmountIndex(val);
+                                if (val > maxAmountIndex) setMaxAmountIndex(val);
+                            }}
+                        />
+                        <div className="flex justify-between px-2.5 mt-1 text-xs text-gray-400">
+                            {AMOUNT_LABELS.map((_, i) => <span key={i}>|</span>)}
+                        </div>
+                        <div className="flex justify-between px-2.5 mt-1 text-xs">
+                            {AMOUNT_LABELS.map((label, i) => <span key={i}>{label}</span>)}
+                        </div>
+                    </div>
+
+                    <div>
+                        <p className="text-sm text-gray-500 mb-1">Max Amount</p>
+                        <input
+                            type="range"
+                            min={0}
+                            max={5}
+                            value={maxAmountIndex}
+                            step={1}
+                            className="range range-sm"
+                            onChange={(e) => {
+                                const val = Number(e.target.value);
+                                setMaxAmountIndex(val);
+                                if (val < minAmountIndex) setMaxAmountIndex(val);
+                            }}
+                        />
+                        <div className="flex justify-between px-2.5 mt-1 text-xs text-gray-400">
+                            {AMOUNT_LABELS.map((_, i) => <span key={i}>|</span>)}
+                        </div>
+                        <div className="flex justify-between px-2.5 mt-1 text-xs">
+                            {AMOUNT_LABELS.map((label, i) => <span key={i}>{label}</span>)}
+                        </div>
+                    </div>
+
+                    <p className="text-sm text-center mt-3 text-gray-600 bg-base-200 rounded-lg py-1">
+                        {AMOUNT_LABELS[minAmountIndex]} - {maxAmountIndex === 4 ? "₱1M+" : AMOUNT_LABELS[maxAmountIndex]}
+                    </p>
                 </div>
             </div>
 
