@@ -17,7 +17,7 @@ class StoreHospitalRequest extends FormRequest
             "hospital_number" => "required|string|max:100|unique:hospitals,hospital_number",
             "hospital_name" => "required|string|max:150|regex:/^[A-Za-z](?:[A-Za-z\s\.\'\-,]*[A-Za-z])?$/",
             "area_id" => "required|integer",
-            "credit_terms" => "required|string|max:100",
+            "credit_term" => "required|string|max:100",
             "credit_limit" => "required|numeric"
         ];
     }

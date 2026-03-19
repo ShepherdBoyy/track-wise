@@ -91,12 +91,12 @@ export default function Create({ setOpenCreateModal, setShowToast, setSuccessMes
                     <div className="grid grid-cols-2 gap-2">
                         <div className="flex flex-col gap-1 mt-8">
                             <div className="flex justify-between">
-                                <label htmlFor="credit_terms" className="text-sm">
+                                <label htmlFor="credit_term" className="text-sm">
                                     Credit Terms
                                 </label>
-                                {error.credit_terms && (
+                                {error.credit_term && (
                                     <span className="text-red-500 text-sm">
-                                        {error.credit_terms}
+                                        {error.credit_term}
                                     </span>
                                 )}
                             </div>
@@ -104,7 +104,7 @@ export default function Create({ setOpenCreateModal, setShowToast, setSuccessMes
                                 type="text"
                                 placeholder="Type here"
                                 className="input w-full"
-                                name="credit_terms"
+                                name="credit_term"
                             />
                         </div>
 

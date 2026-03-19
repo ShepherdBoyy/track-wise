@@ -25,7 +25,7 @@ class UpdateHospitalRequest extends FormRequest
             "hospital_number" => "sometimes|string|max:100",
             "hospital_name" => "sometimes|string|max:150",
             "area_id" => "sometimes|integer",
-            "credit_terms" => "required|string|max:100",
+            "credit_term" => "required|string|max:100",
             "credit_limit" => "required|numeric"
         ];
     }
