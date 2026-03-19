@@ -20,7 +20,6 @@ class HospitalController extends Controller
 
         $searchQuery = $request->query("hospital_search");
         $perPage = $request->query("per_page", 10);
-        $page = $request->query("page", 1);
         $sortBy = $request->query("sort_by", "area_name");
         $sortOrder = $request->query("sort_order", "asc");
         $filterArea = intval($request->query("selected_area"));
@@ -68,7 +67,7 @@ class HospitalController extends Controller
                     $query->orderBy($sortBy, $sortOrder);
                 }
             })
-            ->paginate($perPage, ["*"], "page", $page)
+            ->paginate($perPage)
             ->withQueryString();
 
         $processingDaysTotals = $this->getProcessingDaysTotals($filterArea, $user);
@@ -83,7 +82,6 @@ class HospitalController extends Controller
                 "area" => $filterArea,
                 "search" => $searchQuery,
                 "per_page" => $perPage,
-                "page" => $page
             ],
             "breadcrumbs" => [
                 ["label" => "Hospitals", "url" => null]

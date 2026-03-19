@@ -32,7 +32,6 @@ class InvoiceController extends Controller
             "sort_by",
             "sort_order",
             "selected_area",
-            "page"
         ]);
 
         $baseQuery = Invoice::query()
