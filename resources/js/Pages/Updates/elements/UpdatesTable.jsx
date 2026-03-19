@@ -28,6 +28,9 @@ export default function UpdatesTable({ filters, latestUpdates }) {
                 selected_area: filters.area || undefined,
                 selected_status: filters.status || undefined,
                 selected_user: filters.user || undefined,
+                min_amount: filters.min_amount || undefined,
+                max_amount: filters.max_amount || undefined,
+                search: filters.search || undefined,
             },
             { preserveState: true, preserveScroll: true },
         )

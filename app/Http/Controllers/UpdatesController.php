@@ -105,6 +105,16 @@ class UpdatesController extends Controller
             ->when($filterStatus, function ($query) use ($filterStatus) {
                 $query->where("status", $filterStatus);
             })
+            ->when($minAmount !== null && $minAmount !== "negative", function ($query) use ($minAmount) {
+                $query->whereHas("invoice", function ($q) use ($minAmount) {
+                    $q->where("amount", ">=", $minAmount);
+                });
+            })
+            ->when($maxAmount !== null, function ($query) use ($maxAmount) {
+                $query->whereHas("invoice", function ($q) use ($maxAmount) {
+                    $q->where("amount", "<=", $maxAmount);
+                });
+            })
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
                 switch ($sortBy) {
                     case "hospital_name":
@@ -178,7 +188,9 @@ class UpdatesController extends Controller
                 "user" => $filterUser,
                 "sort_order" => $sortOrder,
                 "sort_by" => $sortBy,
-                "per_page" => $perPage
+                "per_page" => $perPage,
+                "min_amount" => $minAmount,
+                "max_amount" => $maxAmount
             ]
         ]);
     }
