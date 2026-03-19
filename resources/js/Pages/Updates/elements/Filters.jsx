@@ -31,20 +31,18 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
         );
     };
 
-    const handleApplyFilters = () => {
-        router.get(
-            "/updates",
-            {
-                selected_area: selectedArea,
-                selected_status: selectedStatus,
-                selected_user: selectedUser,
-                per_page: filters.per_page,
-                min_amount: minAmountIndex === 0 ? "negative" : AMOUNT_STEPS[minAmountIndex],
-                max_amount:maxAmountIndex === 5 ? null : AMOUNT_STEPS[maxAmountIndex]
-            },
-            { preserveState: true, preserveScroll: true },
-        );
-        setShowFilters(false);
+    const applyFilters = (overrides = {}) => {
+        const current = {
+            selected_area: selectedArea,
+            selected_status: selectedStatus,
+            selected_user: selectedUser,
+            per_page: filters.per_page,
+            min_amount: minAmountIndex === 0 ? "negative" : AMOUNT_STEPS[minAmountIndex],
+            max_amount: maxAmountIndex === 5 ? null : AMOUNT_STEPS[maxAmountIndex],
+            ...overrides,
+        };
+
+        router.get("/updates", current, { preserveState: true, preserveScroll: true });
     };
 
   return (
@@ -60,7 +58,11 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                     <select
                         className="select w-full rounded-xl"
                         value={selectedArea}
-                        onChange={(e) => setSelectedArea(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedArea(e.target.value);
+                            applyFilters({ selected_area: e.target.value });
+                            setShowFilters(false);
+                        }}
                     >
                         <option value="">Select</option>
                         {userAreas.map((area) => (
@@ -74,7 +76,11 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                     <select
                         className="select w-full rounded-xl"
                         value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedStatus(e.target.value);
+                            applyFilters({ selected_status: e.target.value });
+                            setShowFilters(false);
+                        }}
                     >
                         <option value="">Select</option>
                         <option value="open">Open</option>
@@ -88,7 +94,11 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                     <select
                         className="select w-full rounded-xl"
                         value={selectedUser}
-                        onChange={(e) => setSelectedUser(e.target.value)}
+                        onChange={(e) => {
+                            setSelectedUser(e.target.value);
+                            applyFilters({ selected_user: e.target.value });
+                            setShowFilters(false);
+                        }}
                     >
                         <option value="">Select</option>
                         {users.map((user) => (
@@ -108,11 +118,17 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                             max={5}
                             value={minAmountIndex}
                             step={1}
-                            className="range range-sm"
+                            className="range range-xs"
                             onChange={(e) => {
                                 const val = Number(e.target.value);
-                                setMinAmountIndex(val);
-                                if (val > maxAmountIndex) setMaxAmountIndex(val);
+                                const newMin = val;
+                                const newMax = val > maxAmountIndex ? val : maxAmountIndex;
+                                setMinAmountIndex(newMin);
+                                setMaxAmountIndex(newMax);
+                                applyFilters({
+                                    min_amount: newMin === 0 ? "negative" : AMOUNT_STEPS[newMin],
+                                    max_amount: newMax === 5 ? null : AMOUNT_STEPS[newMax]
+                                });
                             }}
                         />
                         <div className="flex justify-between px-2.5 mt-1 text-xs text-gray-400">
@@ -131,11 +147,17 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                             max={5}
                             value={maxAmountIndex}
                             step={1}
-                            className="range range-sm"
+                            className="range range-xs"
                             onChange={(e) => {
                                 const val = Number(e.target.value);
-                                setMaxAmountIndex(val);
-                                if (val < minAmountIndex) setMaxAmountIndex(val);
+                                const newMax = val;
+                                const newMin = val < minAmountIndex ? val : minAmountIndex;
+                                setMaxAmountIndex(newMax);
+                                setMinAmountIndex(newMin);
+                                applyFilters({
+                                    min_amount: newMin === 0 ? "negative" : AMOUNT_STEPS[newMin],
+                                    max_amount: newMax === 5 ? null : AMOUNT_STEPS[newMax],
+                                });
                             }}
                         />
                         <div className="flex justify-between px-2.5 mt-1 text-xs text-gray-400">
@@ -147,17 +169,14 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                     </div>
 
                     <p className="text-sm text-center mt-3 text-gray-600 bg-base-200 rounded-lg py-1">
-                        {AMOUNT_LABELS[minAmountIndex]} - {maxAmountIndex === 4 ? "₱1M+" : AMOUNT_LABELS[maxAmountIndex]}
+                        {AMOUNT_LABELS[minAmountIndex]} - {AMOUNT_LABELS[maxAmountIndex]}
                     </p>
                 </div>
             </div>
 
             <div className="flex justify-center gap-2">
-                <button className="btn btn-outline rounded-3xl flex-1" onClick={handleClearFilters}>
-                    Clear All
-                </button>
-                <button className="btn bg-gray-800 text-white rounded-3xl flex-1" onClick={handleApplyFilters}>
-                    Apply Filters
+                <button className="btn btn-outline rounded-3xl w-full" onClick={handleClearFilters}>
+                    Clear Filters
                 </button>
             </div>
         </div>
