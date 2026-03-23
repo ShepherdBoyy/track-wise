@@ -174,7 +174,7 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                 </div>
             </div>
 
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center">
                 <button className="btn btn-outline rounded-3xl w-full" onClick={handleClearFilters}>
                     Clear Filters
                 </button>

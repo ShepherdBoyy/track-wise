@@ -22,12 +22,14 @@ export default function Filters({ setShowFilters, userAreas, filters, selectedAr
         });
     }
 
-    const handleApplyFilters = () => {
+    const handleAreaChange = (value) => {
+        setSelectedArea(value);
+
         const params = {
             hospital_search: filters.search || undefined,
             sort_by: filters.sort_by,
             sort_order: filters.sort_order,
-            selected_area: selectedArea || undefined,
+            selected_area: value || undefined,
             per_page: filters.per_page || undefined,
         };
 
@@ -62,7 +64,7 @@ export default function Filters({ setShowFilters, userAreas, filters, selectedAr
                             name="selected_area"
                             value=""
                             checked={selectedArea === ""}
-                            onChange={() => setSelectedArea("")}
+                            onChange={() => handleAreaChange("")}
                         />
                         <span className="text-sm font-medium">All Areas</span>
                     </label>
@@ -76,7 +78,7 @@ export default function Filters({ setShowFilters, userAreas, filters, selectedAr
                                 className="radio"
                                 name="selected_area"
                                 checked={selectedArea === area.id}
-                                onChange={() => setSelectedArea(area.id)}
+                                onChange={() => handleAreaChange(area.id)}
                             />
                             <span className="text-sm">{area.area_name}</span>
                         </label>
@@ -84,18 +86,12 @@ export default function Filters({ setShowFilters, userAreas, filters, selectedAr
                 </div>
             </div>
 
-            <div className="flex justify-center gap-2">
+            <div className="flex justify-center">
                 <button
-                    className="btn btn-outline rounded-3xl flex-1"
+                    className="btn btn-outline rounded-3xl w-full"
                     onClick={handleClearFilters}
                 >
-                    Clear All
-                </button>
-                <button
-                    className="btn bg-gray-800 text-white rounded-3xl flex-1"
-                    onClick={handleApplyFilters}
-                >
-                    Apply Filters
+                    Clear Filter
                 </button>
             </div>
         </div>
