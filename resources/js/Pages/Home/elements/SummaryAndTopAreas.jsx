@@ -18,7 +18,7 @@ export default function SummaryAndTopAreas({ agingBreakdown, topAreas }) {
                                     }).format(entry.value || 0)
                                 : Intl.NumberFormat("en-PH", {
                                     useGrouping: true,
-                                }).format(entry.value || 0)
+                                }).format(entry.value || 0) + " invoices"
 
                             }
                         </p>
@@ -80,6 +80,12 @@ export default function SummaryAndTopAreas({ agingBreakdown, topAreas }) {
                             width={35}
                         />
                         <Tooltip content={<AgingTooltip />} cursor={{ fill: 'rgba(0, 0, 0, 0.1)' }} />
+                        <Legend 
+                            verticalAlign="bottom"
+                            iconType="square"
+                            iconSize={12}
+                            wrapperStyle={{ fontSize: 12 }}
+                        />
                         <Bar 
                             yAxisId="left"
                             dataKey="amount" 
