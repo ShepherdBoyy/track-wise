@@ -27,7 +27,7 @@ export default function Index({
                     Welcome Back, {user.name.trim().split(" ").length > 1
                         ? user.name.trim().split(" ")[0]
                         : user.name}!
-                    </span>
+                </span>
             </div>
 
             <KpiCards kpi={kpi} />

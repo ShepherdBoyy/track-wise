@@ -35,14 +35,8 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
             <div className="bg-base-200">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                     <span className="text-2xl">Summary</span>
-                    <SearchIt search={search} setSearch={setSearch} />
-                </div>
-                <div className="p-4 md:p-6 bg-white rounded-xl shadow-lg">
-                    <div className="flex justify-between items-center mb-4">
-                        <div>
-                            <span className="text-xl">Recent Updates</span>
-                        </div>
-
+                    <div className="flex justify-content-end gap-2 w-full sm:w-auto">
+                        <SearchIt search={search} setSearch={setSearch} />
                         <button
                             className="btn btn-outline border font-normal border-gray-300 rounded-full"
                             onClick={() => setShowFilters(!showFilters)}
@@ -51,6 +45,9 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                             Filters
                         </button>
                     </div>
+                </div>
+                <div className="p-4 md:p-6 bg-white rounded-xl shadow-lg">
+                    <span className="text-xl">Recent Updates</span>
 
                     {showFilters && (
                         <Filters
