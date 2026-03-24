@@ -22,14 +22,14 @@ body {
     font-family: "Poppins", sans-serif;
 }
 
-
 @theme {
-    --color-one:#55548F;
-    --color-two:#FFC375;
-    --color-three:#F28F77;
-    --color-four:#53A3BD;
-    --color-five:#B9E69E;
+    --color-one: #55548F;
+    --color-two: #FFC375;
+    --color-three: #F28F77;
+    --color-four: #53A3BD;
+    --color-five: #B9E69E;
 }
+
 :root {
     --font-family-sans: "Poppins", sans-serif;
 }
