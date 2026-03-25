@@ -47,7 +47,14 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                     </div>
                 </div>
                 <div className="p-4 md:p-6 bg-white rounded-xl shadow-lg">
-                    <span className="text-xl">Recent Updates</span>
+                    <span className="text-xl mb-4 block">Recent Updates</span>
+                    
+                    <UpdatesTable
+                        filters={filters}
+                        latestUpdates={latestUpdates}
+                    />
+
+                    <Pagination data={latestUpdates} />
 
                     {showFilters && (
                         <Filters
@@ -57,13 +64,6 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
                             users={users}
                         />
                     )}
-
-                    <UpdatesTable
-                        filters={filters}
-                        latestUpdates={latestUpdates}
-                    />
-
-                    <Pagination data={latestUpdates} />
                 </div>
             </div>
         </Master>
