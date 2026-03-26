@@ -1,39 +1,75 @@
 import { router } from "@inertiajs/react";
-import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronsLeft, ChevronLeft, ChevronRight, ChevronDown, ChevronsRight } from "lucide-react";
+import { useRef, useState } from "react";
+
+function NavBtn({ onClick, disabled, title, children }) {
+    return (
+        <button
+            onClick={onClick}
+            disabled={disabled}
+            title={title}
+            className={`flex items-center justify-center w-8 h-8 rounded-lg border text-gray-600 bg-white transition-all duration-150 hover:bg-black hover:text-white hover:border-black active:scale-95
+                ${disabled
+                    ? "opacity-30 pointer-events-none border-gray-200"
+                    : "border-gray-200 cursor-pointer"
+                }
+            `}
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }}
+        >
+            {children}
+        </button>
+    );
+}
 
 export default function Pagination({ data, creditTerm, creditLimit }) {
+    const [pageInput, setPageInput] = useState("");
+    const inputRef = useRef(null);
+
+    const currentPage = data.current_page;
+    const totalPages = data.last_page;
+    const isFirst = currentPage === 1;
+    const isLast = currentPage === totalPages;
+
+    const currentPerPage =
+        new URLSearchParams(window.location.search).get("per_page") || 10;
+
+    const navigateToPage = (page) => {
+        const clamped = Math.min(Math.max(1, page), totalPages);
+        const searchParams = new URLSearchParams(window.location.search);
+        router.get(
+            window.location.pathname,
+            { ...Object.fromEntries(searchParams), page: clamped },
+            { preserveState: true, preserveScroll: true }
+        );
+    };
+
     const handlePerPageChange = (perPage) => {
         const searchParams = new URLSearchParams(window.location.search);
 
         router.get(
             window.location.pathname,
-            {
-                ...Object.fromEntries(searchParams),
-                per_page: perPage,
-                page: 1,
-            },
-            {
-                preserveState: true,
-                preserveScroll: true,
-            }
+            { ...Object.fromEntries(searchParams), per_page: perPage, page: 1 },
+            { preserveState: true, preserveScroll: true }
         );
     };
 
-    const currentPerPage =
-        new URLSearchParams(window.location.search).get("per_page") || 10;
+    const handlePageInputChange = (e) => {
+        const value = e.target.value;
+        if (value === "" || /^\d+$/.test(value)) {
+            setPageInput(value);
+        }
+    };
 
-    const prevLink = data.links.find((l) => l.label.toLowerCase().includes("previous"));
-    const nextLink = data.links.find((l) => l.label.toLowerCase().includes("next"));
-    const pageLinks = data.links.filter((l) =>
-            !l.label.toLowerCase().includes("previous") &&
-            !l.label.toLowerCase().includes("next")
-    );
-    const currentPage = pageLinks.find((l) => l.active)?.label ?? "—";
-    const totalPages = pageLinks.filter((l) => l.url || l.active).length;
+    const handlePageJump = () => {
+        if (!pageInput) return;
+        const page = parseInt(pageInput, 10);
+        if (isNaN(page)) return;
+        setPageInput("");
+        navigateToPage(page);
+    };
 
-    const navigate = (url) => {
-        if (!url) return;
-        router.get(url, {}, { preserveState: true, preserveScroll: true });
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") handlePageJump();
     };
 
     return (
@@ -80,51 +116,50 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                 </div>
             )}
 
-            <div className="flex items-center gap-1 order-1 sm:order-2">
-                <button
-                    disabled={!prevLink?.url}
-                    onClick={() => navigate(prevLink?.url)}
-                    className={`btn btn-sm rounded-xl flex items-center justify-center
-                        ${!prevLink?.url ? "opacity-50 cursor-not-allowed" : ""}
-                    `}
-                >
-                    <ChevronLeft size={18} />
-                </button>
+            <div className="flex items-center gap-1.5 order-1 sm:order-3">
+                <NavBtn onClick={() => navigateToPage(1)} disabled={isFirst} title="First page">
+                    <ChevronsLeft size={14} />
+                </NavBtn>
 
-                <div className="hidden sm:flex gap-1">
-                    {pageLinks.map((link, index) => (
-                        <button
-                            key={index}
-                            disabled={!link.url && !link.active}
-                            onClick={() => navigate(link.url)}
-                            className={`btn btn-sm rounded-xl min-w-[2rem]
-                                ${link.active ? "bg-neutral-800 text-white" : ""}
-                                ${!link.url && !link.active ? "opacity-50 cursor-not-allowed" : ""}
-                            `}
-                        >
-                            <span
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
-                        </button>
-                    ))}
+                <NavBtn onClick={() => navigateToPage(currentPage - 1)} disabled={isFirst} title="Previous page">
+                    <ChevronLeft size={14} />
+                </NavBtn>
+
+                <div
+                    className="flex items-stretch h-8 rounded-lg overflow-hidden border border-gray-200 bg-white"
+                    style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+                >
+                    <input
+                        ref={inputRef}
+                        type="text"
+                        inputMode="numeric"
+                        value={pageInput}
+                        onChange={handlePageInputChange}
+                        onKeyDown={handleKeyDown}
+                        onBlur={handlePageJump}
+                        placeholder={String(currentPage)}
+                        className="h-full w-11 text-center text-sm font-semibold border-none outline-none bg-transparent placeholder:text-gray-800 placeholder:font-semibold focus:bg-gray-50 transition-colors"
+                    />
+
+                    <div className="flex items-center">
+                        <div className="w-px h-4 bg-gray-200" />
+                    </div>
+
+                    <button
+                        onClick={() => inputRef.current?.focus()}
+                        className="flex items-center gap-3 px-2.5 text-xs text-gray-400 hover:bg-gray-50 transition-colors whitespace-nowrap cursor-pointer font-medium"
+                    >
+                        of <span className="text-gray-900 font-bold">{totalPages}</span>
+                    </button>
                 </div>
 
-                <div className="flex sm:hidden items-center px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg select-none">
-                    {currentPage}
-                    {totalPages > 0 && (
-                        <span className="text-gray-400 ml-1">/ {totalPages}</span>
-                    )}
-                </div>
+                <NavBtn onClick={() => navigateToPage(currentPage + 1)} disabled={isLast} title="Next page">
+                    <ChevronRight size={14} />
+                </NavBtn>
 
-                <button
-                    disabled={!nextLink?.url}
-                    onClick={() => navigate(nextLink?.url)}
-                    className={`btn btn-sm rounded-xl flex items-center justify-center
-                        ${!nextLink?.url ? "opacity-50 cursor-not-allowed" : ""}
-                    `}
-                >
-                    <ChevronRight size={18} />
-                </button>
+                <NavBtn onClick={() => navigateToPage(totalPages)} disabled={isLast} title="Last page">
+                    <ChevronsRight size={14} />
+                </NavBtn>
             </div>
         </div>
     );
