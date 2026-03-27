@@ -23,13 +23,35 @@ body {
 }
 
 @theme {
-    --color-one: #55548F;
-    --color-two: #FFC375;
-    --color-three: #F28F77;
-    --color-four: #53A3BD;
-    --color-five: #B9E69E;
+    /* Primary: Blue scale */
+    --color-primary-50:  #EDEDF5;
+    --color-primary-100: #D3D3E8;
+    --color-primary-200: #ABABD1;
+    --color-primary-300: #8484BA;
+    --color-primary-400: #6969A8;
+    --color-primary-500: #55548F;
+    --color-primary-600: #454476;
+    --color-primary-700: #35345C;
+    --color-primary-800: #252443;
+    --color-primary-900: #14142A;
+
+    /* Secondary: Green scale */
+    --color-secondary-50:  #F4FBEE;
+    --color-secondary-100: #E4F6D5;
+    --color-secondary-200: #D0EFBA;
+    --color-secondary-300: #B9E69E;
+    --color-secondary-400: #9DD880;
+    --color-secondary-500: #7EC85D;
+    --color-secondary-600: #5CA83E;
+    --color-secondary-700: #447E2E;
+    --color-secondary-800: #2D541F;
+    --color-secondary-900: #162A0F;
 }
 
 :root {
     --font-family-sans: "Poppins", sans-serif;
+    --color-primary: #55548F;
+    --color-primary-content: #ffffff;
+    --color-secondary: #B9E69E;
+    --color-secondary-content: #2D541F;
 }
