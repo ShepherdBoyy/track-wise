@@ -103,7 +103,7 @@ export default function Sidebar() {
             <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
             <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-74 w-74 lg:w-auto border-r border-primary-500/10 bg-base-100">
                 <ul className="menu w-full grow gap-y-2">
-                    <div className="flex justify-between items-center mb-4 pb-7 border-b border-black/30 px-1 is-drawer-close:justify-center is-drawer-close:px-0">
+                    <div className="flex justify-between items-center mb-4 pb-7 border-b border-gray-200 px-1 is-drawer-close:justify-center is-drawer-close:px-0">
                         <div className="flex items-center gap-2 is-drawer-close:hidden">
                             <img src="/favicon.png" alt="PMC Logo" className="w-7 h-7" />
                             <span className="text-primary-800 font-medium text-lg">Track Wise</span>
@@ -117,7 +117,7 @@ export default function Sidebar() {
 
                     {managementItems.length > 0 && (
                         <>
-                            <div className="h-px bg-gray-100 my-2" />
+                            <div className="h-px bg-gray-200 my-2" />
                             <p className="is-drawer-close:hidden text-[10px] uppercase tracking-wide text-gray-300 px-3 pb-1 pt-1">
                                 Management
                             </p>
