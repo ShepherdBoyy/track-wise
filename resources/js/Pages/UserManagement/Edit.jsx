@@ -27,7 +27,7 @@ export default function Edit({ setOpenEditModal, selectedUser, setShowToast, set
     const hasAreaRestriction = selectedPermissions.some((permissionId) => {
         const permission = Object.values(permissionList).flat()
             .find((p) => p.id === permissionId);
-        return permission.name === "view_area_hospitals";
+        return permission?.name === "view_area_hospitals";
     });
 
     return (
