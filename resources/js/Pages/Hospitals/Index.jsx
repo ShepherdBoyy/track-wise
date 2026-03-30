@@ -104,11 +104,11 @@ export default function Index({
                         <div className="flex gap-2">
                             {permissions.canManageHospitals && (
                                 <button
-                                    className="btn bg-linear-to-br from-primary/40 to-primary/20 text-black font-semibold rounded-xl flex w-full sm:w-auto"
+                                    className="btn bg-linear-to-br from-primary/40 to-primary/20 rounded-xl flex w-full sm:w-auto"
                                     onClick={() => setOpenCreateModal(true)}
                                 >
                                     <CirclePlus size={18} />
-                                    Add Hospital
+                                    <span className="font-normal">Add Hospital</span>
                                 </button>
                             )}
                         </div>
