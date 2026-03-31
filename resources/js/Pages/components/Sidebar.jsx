@@ -103,9 +103,9 @@ export default function Sidebar() {
             <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
             <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-74 w-74 lg:w-auto border-r border-primary-500/10 bg-base-100">
                 <ul className="menu w-full grow gap-y-2">
-                    <div className="flex justify-between items-center mb-4 pb-7 border-b border-gray-200 px-1 is-drawer-close:justify-center is-drawer-close:px-0">
-                        <div className="flex items-center gap-2 is-drawer-close:hidden">
-                            <img src="/favicon.png" alt="PMC Logo" className="w-7 h-7" />
+                    <div className="flex justify-between items-center pb-6 is-drawer-close:pb-7 border-b border-gray-200 px-1 is-drawer-close:justify-center is-drawer-close:px-0">
+                        <div className="flex w-full justify-center items-center mt-3 gap-3 is-drawer-close:hidden">
+                            <img src="/favicon.png" alt="PMC Logo" className="w-8 h-8" />
                             <span className="text-primary-800 font-medium text-lg">Track Wise</span>
                         </div>
                         <label htmlFor="my-drawer-4" className="btn btn-square btn-ghost text-gray-400 hover:text-gray-600">
