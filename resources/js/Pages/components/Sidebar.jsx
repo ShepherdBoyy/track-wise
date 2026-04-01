@@ -76,54 +76,60 @@ export default function Sidebar() {
     const NavLink = ({ item }) => {
         const active = isActive(item.href);
         const Icon = item.icon;
-
         return (
-            <li key={item.id}>
+            <li>
                 <Link
                     href={item.href}
                     className={`
                         flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 text-sm transition-all duration-200
-                        is-drawer-close:tooltip is-drawer-close:tooltip-right is-drawer-close:justify-center
+                        is-drawer-close:tooltip is-drawer-close:tooltip-right is-drawer-close:justify-center is-drawer-close:px-0 is-drawer-close:w-10 is-drawer-close:h-10 is-drawer-close:mx-auto
                         ${active
-                            ? "bg-primary-100 text-primary-800 font-medium"
-                            : "text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                            ? "bg-primary-500 text-white font-medium"
+                            : "text-gray-400 hover:bg-gray-100 hover:text-primary-600"
                         }
                     `}
                     data-tip={item.label}
                 >
-                    <Icon className={`shrink-0 size-4 ${active ? "text-primary-500" : ""}`} />
+                    <Icon className={`shrink-0 size-4 ${active ? "text-secondary-300" : ""}`} />
                     <span className="is-drawer-close:hidden">{item.label}</span>
                 </Link>
             </li>
         );
-    }
+    };
 
     return (
         <div className="drawer-side z-40 overflow-visible">
-            <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay"></label>
-            <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-74 w-74 lg:w-auto border-r border-primary-500/10 bg-base-100">
-                <ul className="menu w-full grow gap-y-2">
-                    <div className="flex justify-between items-center pb-6 is-drawer-close:pb-7 border-b border-gray-200 px-1 is-drawer-close:justify-center is-drawer-close:px-0">
-                        <div className="flex w-full justify-center items-center mt-3 gap-3 is-drawer-close:hidden">
-                            <img src="/favicon.png" alt="PMC Logo" className="w-8 h-8" />
-                            <span className="text-primary-800 font-medium text-lg">Track Wise</span>
+            <label htmlFor="my-drawer-4" aria-label="close sidebar" className="drawer-overlay" />
+            <div className="flex min-h-full flex-col items-start is-drawer-close:w-14 is-drawer-open:w-74 w-74 lg:w-auto bg-base-100 border-r border-gray-100">
+                <ul className="menu w-full grow gap-y-1 px-3 py-4 is-drawer-close:px-2">
+                    <div className="flex justify-between items-center pb-7.5 mb-1 border-b border-gray-200 is-drawer-close:justify-center is-drawer-close:px-0 px-1">
+                        <div className="flex items-center gap-2.5 is-drawer-close:hidden">
+                            <div className="rounded-lg flex items-center justify-center shrink-0">
+                                <img src="/favicon.png" alt="logo" className="w-7 h-7" />
+                            </div>
+                            <span className="text-primary-800 font-medium text-[15px]">Track Wise</span>
                         </div>
-                        <label htmlFor="my-drawer-4" className="btn btn-square btn-ghost text-gray-400 hover:text-gray-600">
+                        <label
+                            htmlFor="my-drawer-4"
+                            className="btn btn-square btn-ghost btn-sm text-gray-500 hover:text-white hover:bg-primary-500 is-drawer-close:mx-auto"
+                        >
                             <ArrowRightLeft size={12} />
                         </label>
                     </div>
 
-                    {mainItems.map(item => <NavLink key={item.id} item={item} />)}
+                    <div className="flex flex-col gap-2">
+                        {mainItems.map(item => <NavLink key={item.id} item={item} />)}
 
-                    {managementItems.length > 0 && (
-                        <>
-                            <div className="h-px bg-gray-200 my-2" />
-                            <p className="is-drawer-close:hidden text-[10px] uppercase tracking-wide text-gray-300 px-3 pb-1 pt-1">
-                                Management
-                            </p>
-                            {managementItems.map(item => <NavLink key={item.id} item={item} />)}
-                        </>
-                    )}
+                        {managementItems.length > 0 && (
+                            <>
+                                <div className="h-px bg-gray-100 my-2" />
+                                <p className="is-drawer-close:hidden text-[10px] uppercase tracking-widest text-gray-300 px-3 pb-1 pt-1">
+                                    Management
+                                </p>
+                                {managementItems.map(item => <NavLink key={item.id} item={item} />)}
+                            </>
+                        )}
+                    </div>
 
                     {visibleNavItems.length === 0 && (
                         <li className="text-center text-gray-300 py-4 text-sm">No pages available</li>
