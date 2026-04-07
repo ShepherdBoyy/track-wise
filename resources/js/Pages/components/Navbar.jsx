@@ -9,7 +9,7 @@ export default function Navbar() {
             <div className="flex-none lg:hidden">
                 <label
                     htmlFor="my-drawer-4"
-                    className="btn btn-square btn-ghost text-gray-400 hover:text-primary-600 hover:bg-primary-50"
+                    className="btn btn-square btn-ghost text-gray-300 hover:text-primary-500 hover:bg-primary-50"
                 >
                     <Menu />
                 </label>
@@ -22,12 +22,12 @@ export default function Navbar() {
                     <div
                         tabIndex={0}
                         role="button"
-                        className="flex items-center justify-between p-2 cursor-pointer border border-transparent rounded-[10px] hover:bg-primary-50 hover:border-primary-200 transition-all duration-200"
+                        className="flex items-center justify-between p-2 cursor-pointer border border-transparent rounded-[10px] hover:bg-primary-50 hover:border-primary-100 transition-all duration-150"
                     >
                         <div className="flex items-center">
                             <div className="avatar avatar-placeholder sm:mr-3">
-                                <div className="bg-primary-50 border-[1.5px] border-primary-200 text-white w-11 rounded-full flex items-center justify-center shrink-0">
-                                    <span className={`text-primary-600 ${userInitials.length > 2 ? "text-sm" : "text-md"}`}>
+                                <div className="bg-primary-500 border-[1.5px] border-primary-600 w-11 rounded-full flex items-center justify-center shrink-0">
+                                    <span className={`text-secondary-300 font-semibold ${userInitials.length > 2 ? "text-sm" : "text-md"}`}>
                                         {userInitials}
                                     </span>
                                 </div>
@@ -46,18 +46,18 @@ export default function Navbar() {
                         <ChevronsUpDown
                             size={20}
                             strokeWidth={1.5}
-                            className="text-primary-300 shrink-0"
+                            className="text-primary-200 shrink-0"
                         />
                     </div>
 
                     <ul
                         tabIndex={0}
-                        className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-2 w-52 p-2 shadow space-y-1"
+                        className="menu menu-sm dropdown-content z-50 mt-2 w-56 bg-base-100 rounded-xl border border-gray-100 shadow-lg shadow-primary-500/8 p-1.5 space-y-0.5"
                     >
                         <li>
                             <Link
                                 href="/profile"
-                                className="text-sm text-primary-800 hover:bg-primary-50 hover:text-primary-400 transition-colors duration-200"
+                                className="text-sm text-primary-800 hover:bg-primary-500 hover:text-white transition-colors duration-150"
                             >
                                 <User size={16} className="shrink-0 mr-1" />
                                 Profile
@@ -68,7 +68,7 @@ export default function Navbar() {
                             <Link
                                 href="/logout"
                                 method="post"
-                                className="text-sm text-primary-800 hover:bg-primary-50 hover:text-primary-400 transition-colors duration-200"
+                                className="text-sm text-primary-800 hover:bg-primary-500 hover:text-white transition-colors duration-150"
                             >
                                 <LogOut size={16} strokeWidth={1.5} className="shrink-0 mr-1" />
                                 Logout
