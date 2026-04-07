@@ -10,8 +10,8 @@ function NavBtn({ onClick, disabled, title, children }) {
             title={title}
             className={`flex items-center justify-center w-8 h-8 rounded-lg border transition-all duration-150 active:scale-95
                 ${disabled
-                    ? "pointer-events-none border-gray-100 text-gray-300 bg-white"
-                    : "border-gray-300 text-gray-400 bg-white cursor-pointer hover:bg-primary-50 hover:text-primary-700 hover:border-primary-200"
+                    ? "opactiy-30 pointer-events-none border-gray-100 text-gray-300 bg-white"
+                    : "border-primary-300 text-gray-500 bg-white cursor-pointer hover:bg-primary-500 hover:text-white hover:border-primary-500"
                 }
             `}
         >
@@ -69,8 +69,7 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
     };
 
     return (
-        <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3 bg-white rounded-xl">
-
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3">
             <div className="flex items-center gap-2 order-2 sm:order-1">
                 <span className="text-sm text-gray-400 hidden xs:inline sm:hidden md:inline">Rows per page</span>
                 <span className="text-sm text-gray-400 xs:hidden sm:inline md:hidden">Rows</span>
@@ -78,14 +77,14 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                     <select
                         value={currentPerPage}
                         onChange={(e) => handlePerPageChange(e.target.value)}
-                        className="appearance-none bg-primary-50 border border-primary-100 rounded-lg px-3 py-1 pr-7 text-sm font-medium text-primary-700 cursor-pointer hover:bg-primary-100 hover:border-primary-200 focus:outline-none focus:ring-2 focus:ring-primary-200 transition-colors duration-150"
+                        className="appearance-none white border border-primary-300 rounded-lg px-3 py-1 pr-7 text-sm font-medium text-gray-500 cursor-pointer hover:bg-primary-500 hover:text-white transition-colors duration-150"
                     >
                         <option value="10">10</option>
                         <option value="25">25</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
-                    <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-primary-500" />
+                    <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 hover:text-white" />
                 </div>
             </div>
 
@@ -94,7 +93,7 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                     {creditTerm && (
                         <div className="flex items-center gap-1.5">
                             <span className="text-[11px] uppercase tracking-widest text-gray-400">Credit Term</span>
-                            <span className="text-sm font-semibold bg-secondary-100 border border-secondary-300 text-secondary-800 px-2.5 py-0.5 rounded-full">
+                            <span className="text-sm font-semibold bg-secondary-300 border border-secondary-400 text-secondary-900 px-2.5 py-0.5 rounded-full">
                                 {creditTerm}
                             </span>
                         </div>
@@ -103,7 +102,7 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                     {creditLimit && (
                         <div className="flex items-center gap-1.5">
                             <span className="text-[11px] uppercase tracking-widest text-gray-400">Credit Limit</span>
-                            <span className="text-sm font-semibold bg-secondary-100 border border-secondary-300 text-secondary-800 px-2.5 py-0.5 rounded-full">
+                            <span className="text-sm font-semibold bg-secondary-300 border border-secondary-400 text-secondary-900 px-2.5 py-0.5 rounded-full">
                                 ₱ {Intl.NumberFormat("en-PH").format(creditLimit)}
                             </span>
                         </div>
@@ -119,7 +118,10 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                     <ChevronLeft size={14} />
                 </NavBtn>
 
-                <div className="flex items-center justify-between gap-4 h-8 px-2 rounded-[9px] border border-primary-200 bg-primary-50 cursor-text" onClick={() => inputRef.current?.focus()}>
+                <div
+                    className="flex items-center justify-between gap-3 h-8 px-3 rounded-lg border border-primary-500 bg-primary-500 cursor-text min-w-[100px]"
+                    onClick={() => inputRef.current?.focus()}
+                >
                     <input
                         ref={inputRef}
                         type="text"
@@ -129,10 +131,10 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                         onKeyDown={handleKeyDown}
                         onBlur={handlePageJump}
                         placeholder={String(currentPage)}
-                        className="w-7 text-center text-sm font-bold border-none outline-none bg-transparent text-primary-800 placeholder:text-primary-300 placeholder:font-bold focus:placeholder:text-primary-400 transition-colors"
+                        className="w-6 text-center text-sm font-bold border-none outline-none bg-transparent text-white placeholder:text-white/60 placeholder:font-bold transition-colors"
                     />
-                    <span className="text-xs text-gray-400 shrink-0">of</span>
-                    <span className="text-sm font-bold text-primary-700 shrink-0">{totalPages}</span>
+                    <span className="text-xs text-white/50 shrink-0">of</span>
+                    <span className="text-sm font-bold text-secondary-300 shrink-0">{totalPages}</span>
                 </div>
 
                 <NavBtn onClick={() => navigateToPage(currentPage + 1)} disabled={isLast} title="Next page">
