@@ -131,7 +131,7 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                         onKeyDown={handleKeyDown}
                         onBlur={handlePageJump}
                         placeholder={String(currentPage)}
-                        className="w-6 text-center text-sm font-bold border-none outline-none bg-transparent text-white placeholder:text-white/60 placeholder:font-bold transition-colors"
+                        className="w-7 text-center text-sm font-bold border-none outline-none bg-transparent text-white placeholder:text-white/60 placeholder:font-bold transition-colors"
                     />
                     <span className="text-xs text-white/50 shrink-0">of</span>
                     <span className="text-sm font-bold text-secondary-300 shrink-0">{totalPages}</span>
