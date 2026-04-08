@@ -122,7 +122,7 @@ export default function Sidebar() {
 
                         {managementItems.length > 0 && (
                             <>
-                                <div className="h-px bg-gray-100 my-2" />
+                                <div className="h-px bg-gray-200 my-2" />
                                 <p className="is-drawer-close:hidden text-[10px] uppercase tracking-widest text-gray-300 px-3 pb-1 pt-1">
                                     Management
                                 </p>
