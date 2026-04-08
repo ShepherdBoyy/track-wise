@@ -57,7 +57,7 @@ export default function Navbar() {
                         <li>
                             <Link
                                 href="/profile"
-                                className="text-sm text-primary-800 hover:bg-primary-500 hover:text-white transition-colors duration-150"
+                                className="px-2.5 py-2 rounded-[8px] text-sm text-primary-800 hover:bg-primary-500 hover:text-white transition-colors dutation-150"
                             >
                                 <User size={16} className="shrink-0 mr-1" />
                                 Profile
@@ -68,7 +68,7 @@ export default function Navbar() {
                             <Link
                                 href="/logout"
                                 method="post"
-                                className="text-sm text-primary-800 hover:bg-primary-500 hover:text-white transition-colors duration-150"
+                                className="px-2.5 py-2 rounded-[8px] text-sm text-primary-800 hover:bg-primary-500 hover:text-white transition-colors dutation-150"
                             >
                                 <LogOut size={16} strokeWidth={1.5} className="shrink-0 mr-1" />
                                 Logout
