@@ -27,6 +27,15 @@ class DataImport implements ToCollection, WithHeadingRow
             });
         });
 
+        $rows = $rows->filter(function ($row) {
+            $amount = floatval(str_replace(",", "", $row["amount"] ?? 0));
+            return $amount > 0;
+        });
+
+        if ($rows->isEmpty()) {
+            return;
+        }
+
         $areaNames = $rows->pluck("area")->unique()->toArray();
         $customerNos = $rows->pluck("customer_no")->unique()->toArray();
         $newInvoiceNumbers = $rows->pluck("invoice_no")->unique()->toArray();
@@ -45,15 +54,7 @@ class DataImport implements ToCollection, WithHeadingRow
         DB::beginTransaction();
 
         try {
-            foreach ($rows as $row) {
-                if (!isset($areas[$row["area"]])) {
-                    $areasToCreate[$row["area"]] = [
-                        "area_name" => $row["area"],
-                        "created_at" => now(),
-                        "updated_at" => now(),
-                    ];
-                }
-            }
+            $areasToCreate = $this->prepareAreasToCreate($rows, $areas);
 
             if (!empty($areasToCreate)) {
                 Area::insert(array_values($areasToCreate));
@@ -62,31 +63,7 @@ class DataImport implements ToCollection, WithHeadingRow
 
             Area::whereNotIn("area_name", $areaNames)->delete();
 
-            $hospitalsByNumber = $rows->groupBy("customer_no");
-
-            foreach ($hospitalsByNumber as $hospitalNumber => $hospitalRows) {
-                $row = $hospitalRows->first();
-
-                if (isset($hospitals[$hospitalNumber])) {
-                    $hospitalsToUpdate[$hospitalNumber] = [
-                        "hospital_name" => $row["customer_name"],
-                        "area_id" => $areas[$row["area"]],
-                        "credit_term" => $row["credit_terms"],
-                        "credit_limit" => $row["credit_limit"],
-                        "updated_at" => now(),
-                    ];
-                } else {
-                    $hospitalsToCreate[$hospitalNumber] = [
-                        "hospital_number" => $hospitalNumber,
-                        "hospital_name" => $row["customer_name"],
-                        "area_id" => $areas[$row["area"]],
-                        "credit_term" => $row["credit_terms"],
-                        "credit_limit" => $row["credit_limit"],
-                        "created_at" => now(),
-                        "updated_at" => now()
-                    ];
-                }
-            }
+            [$hospitalsToCreate, $hospitalsToUpdate] = $this->prepareHospitals($rows, $hospitals, $areas);
 
             foreach ($hospitalsToUpdate as $hospitalNumber => $updateData) {
                 Hospital::where("hospital_number", $hospitalNumber)->update($updateData);
@@ -100,63 +77,14 @@ class DataImport implements ToCollection, WithHeadingRow
 
             $hospitals = Hospital::whereIn("hospital_number", $customerNos)->get()->keyBy("hospital_number");
 
-            foreach ($rows as $row) {
-                $documentDate = $this->transformDate($row["document_date"]);
-                $dueDate = $this->transformDate($row["due_date"]);
-                $dateClosed = !empty($row["date_closed"]) ? $this->transformDate($row["date_closed"]) : null;
-
-                if (isset($existingInvoices[$row["invoice_no"]])) {
-                    if (!isset($invoicesToUpdate[$row["invoice_no"]])) {
-                        $invoicesToUpdate[$row["invoice_no"]] = [
-                            "hospital_id" => $hospitals[$row["customer_no"]]->id,
-                            "document_date" => $documentDate,
-                            "due_date" => $dueDate,
-                            "amount" => floatval(str_replace(",", "", $row["amount"])),
-                            "date_closed" => $dateClosed,
-                            "updated_at" => now()
-                        ];
-                    }
-                } else {
-                    $invoicesToCreate[] = [
-                        "invoice_number" => $row["invoice_no"],
-                        "hospital_id" => $hospitals[$row["customer_no"]]->id,
-                        "document_date" => $documentDate,
-                        "due_date" => $dueDate,
-                        "amount" => floatval(str_replace(",", "", $row["amount"])),
-                        "date_closed" => $dateClosed,
-                        "created_by" => Auth::id(),
-                        "created_at" => now(),
-                        "updated_at" => now(),
-                    ];
-                }
-            }
+            [$invoicesToCreate, $invoicesToUpdate] = $this->prepareInvoices($rows, $existingInvoices, $hospitals);
 
             foreach ($invoicesToUpdate as $invoiceNumber => $updateData) {
                 Invoice::where("invoice_number", $invoiceNumber)->update($updateData);
             }
 
             if (!empty($invoicesToCreate)) {
-                foreach (array_chunk($invoicesToCreate, 500) as $chunk) {
-                    Invoice::insert($chunk);
-                }
-
-                $invoiceNumbers = collect($invoicesToCreate)->pluck("invoice_number")->toArray();
-                $createdInvoices = Invoice::whereIn("invoice_number", $invoiceNumbers)->get()->keyBy("invoice_number");
-
-                foreach ($invoicesToCreate as $invoice) {
-                    $historiesToCreate[] = [
-                        "invoice_id" => $createdInvoices[$invoice["invoice_number"]]->id,
-                        "updated_by" => Auth::id(),
-                        "remarks" => "Invoice has been created from the imported Excel file",
-                        "status" => $this->determineStatus($invoice["due_date"], $invoice["date_closed"]),
-                        "created_at" => now(),
-                        "updated_at" => now(),
-                    ];
-                }
-
-                foreach (array_chunk($historiesToCreate, 500) as $chunk) {
-                    InvoiceHistory::insert($chunk);
-                }
+                $this->createInvoicesWithHistory($invoicesToCreate);
             }
 
             Invoice::whereNotIn("invoice_number", $newInvoiceNumbers)->delete();
@@ -165,6 +93,125 @@ class DataImport implements ToCollection, WithHeadingRow
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
+        }
+    }
+
+    private function prepareAreasToCreate(Collection $rows, $areas): array
+    {
+        $areasToCreate = [];
+
+        foreach ($rows as $row) {
+            if (!isset($areas[$row["area"]])) {
+                $areasToCreate[$row["area"]] = [
+                    "area_name" => $row["area"],
+                    "created_at" => now(),
+                    "updated_at" => now(),
+                ];
+            }
+        }
+
+        return $areasToCreate;
+    }
+
+    private function prepareHospitals(Collection $rows, $hospitals, $areas): array
+    {
+        $hospitalsToCreate = [];
+        $hospitalsToUpdate = [];
+        $hospitalsByNumber = $rows->groupBy("customer_no");
+
+        foreach ($hospitalsByNumber as $hospitalNumber => $hospitalRows) {
+            $row = $hospitalRows->first();
+
+            if (isset($hospitals[$hospitalNumber])) {
+                $hospitalsToUpdate[$hospitalNumber] = [
+                    "hospital_name" => $row["customer_name"],
+                    "area_id" => $areas[$row["area"]],
+                    "credit_term" => $row["credit_terms"],
+                    "credit_limit" => $row["credit_limit"],
+                    "updated_at" => now(),
+                ];
+            } else {
+                $hospitalsToCreate[$hospitalNumber] = [
+                    "hospital_number" => $hospitalNumber,
+                    "hospital_name" => $row["customer_name"],
+                    "area_id" => $areas[$row["area"]],
+                    "credit_term" => $row["credit_terms"],
+                    "credit_limit" => $row["credit_limit"],
+                    "created_at" => now(),
+                    "updated_at" => now()
+                ];
+            }
+        }
+
+        return [$hospitalsToCreate, $hospitalsToUpdate];
+    }
+
+    private function prepareInvoices(Collection $rows, $existingInvoices, $hospitals): array
+    {
+        $invoicesToCreate = [];
+        $invoicesToUpdate = [];
+
+        foreach ($rows as $row) {
+            $documentDate = $this->transformDate($row["document_date"]);
+            $dueDate = $this->transformDate($row["due_date"]);
+            $dateClosed = !empty($row["date_closed"]) ? $this->transformDate($row["date_closed"]) : null;
+            $amount = floatval(str_replace(",", "", $row["amount"]));
+
+            if ($amount <= 0) {
+                continue;
+            }
+
+            if (isset($existingInvoices[$row["invoice_no"]])) {
+                if (!isset($invoicesToUpdate[$row["invoice_no"]])) {
+                    $invoicesToUpdate[$row["invoice_no"]] = [
+                        "hospital_id" => $hospitals[$row["customer_no"]]->id,
+                        "document_date" => $documentDate,
+                        "due_date" => $dueDate,
+                        "amount" => floatval(str_replace(",", "", $row["amount"])),
+                        "date_closed" => $dateClosed,
+                        "updated_at" => now()
+                    ];
+                }
+            } else {
+                $invoicesToCreate[] = [
+                    "invoice_number" => $row["invoice_no"],
+                    "hospital_id" => $hospitals[$row["customer_no"]]->id,
+                    "document_date" => $documentDate,
+                    "due_date" => $dueDate,
+                    "amount" => floatval(str_replace(",", "", $row["amount"])),
+                    "date_closed" => $dateClosed,
+                    "created_by" => Auth::id(),
+                    "created_at" => now(),
+                    "updated_at" => now(),
+                ];
+            }
+        }
+
+        return [$invoicesToCreate, $invoicesToUpdate];
+    }
+
+    private function createInvoicesWithHistory(array $invoicesToCreate): void
+    {
+        foreach (array_chunk($invoicesToCreate, 500) as $chunk) {
+            Invoice::insert($chunk);
+        }
+
+        $invoiceNumbers = collect($invoicesToCreate)->pluck("invoice_number")->toArray();
+        $createdInvoices = Invoice::whereIn("invoice_number", $invoiceNumbers)->get()->keyBy("invoice_number");
+
+        foreach ($invoicesToCreate as $invoice) {
+            $historiesToCreate[] = [
+                "invoice_id" => $createdInvoices[$invoice["invoice_number"]]->id,
+                "updated_by" => Auth::id(),
+                "remarks" => "Invoice has been created from the imported Excel file",
+                "status" => $this->determineStatus($invoice["due_date"], $invoice["date_closed"]),
+                "created_at" => now(),
+                "updated_at" => now(),
+            ];
+        }
+
+        foreach (array_chunk($historiesToCreate, 500) as $chunk) {
+            InvoiceHistory::insert($chunk);
         }
     }
 
