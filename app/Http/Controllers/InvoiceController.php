@@ -75,7 +75,7 @@ class InvoiceController extends Controller
                     default => null,
                 };
             })
-            ->orderBy("due_date", "desc")
+            ->orderBy("document_date")
             ->paginate($perPage)
             ->withQueryString();
 
