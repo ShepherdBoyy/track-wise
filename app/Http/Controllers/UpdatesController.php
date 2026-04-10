@@ -64,9 +64,9 @@ class UpdatesController extends Controller
                                 $subQuery->selectRaw("
                                     CASE
                                         WHEN date_closed IS NOT NULL
-                                            THEN DATEDIFF(due_date, date_closed)
+                                            THEN DATEDIFF(date_closed, due_date)
                                         ELSE
-                                            DATEDIFF(due_date, CURDATE())
+                                            DATEDIFF(CURDATE(), due_date)
                                     END
                                 ");
                             }
@@ -141,9 +141,9 @@ class UpdatesController extends Controller
                             (
                                 SELECT CASE
                                     WHEN date_closed IS NOT NULL
-                                        THEN DATEDIFF(due_date, date_closed)
+                                        THEN DATEDIFF(date_closed, due_date)
                                     ELSE
-                                        DATEDIFF(due_date, CURDATE())
+                                        DATEDIFF(CURDATE(), due_date)
                                 END
                                 FROM invoices
                                 WHERE invoices.id = invoice_histories.invoice_id

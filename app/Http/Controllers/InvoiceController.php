@@ -41,9 +41,9 @@ class InvoiceController extends Controller
                     $query->selectRaw("
                         CASE
                             WHEN date_closed IS NOT NULL
-                                THEN DATEDIFF(due_date, date_closed)
+                                THEN DATEDIFF(date_closed, due_date)
                             ELSE
-                                DATEDIFF(due_date, CURDATE())
+                                DATEDIFF(CURDATE(), due_date)
                         END
                     ");
                 }
@@ -67,11 +67,11 @@ class InvoiceController extends Controller
             })
             ->when(!$searchQuery && $processingFilter, function ($query) use ($processingFilter) {
                 match ($processingFilter) {
-                    "Current" => $query->having("processing_days", ">", 0)->whereNull("date_closed"),
-                    "30-days" => $query->havingBetween("processing_days", [-30, -1])->whereNull("date_closed"),
-                    "31-60-days" => $query->havingBetween("processing_days", [-60, -31])->whereNull("date_closed"),
-                    "61-90-days" => $query->havingBetween("processing_days", [-90, -61])->whereNull("date_closed"),
-                    "91-over" => $query->having("processing_days", "<=", -91)->whereNull("date_closed"),
+                    "Current" => $query->having("processing_days", "<", 0)->whereNull("date_closed"),
+                    "30-days" => $query->havingBetween("processing_days", [1, 30])->whereNull("date_closed"),
+                    "31-60-days" => $query->havingBetween("processing_days", [31, 60])->whereNull("date_closed"),
+                    "61-90-days" => $query->havingBetween("processing_days", [61, 90])->whereNull("date_closed"),
+                    "91-over" => $query->having("processing_days", ">=", 91)->whereNull("date_closed"),
                     default => null,
                 };
             })
@@ -119,9 +119,9 @@ class InvoiceController extends Controller
             ->selectRaw("
                 CASE
                     WHEN date_closed is NOT NULL
-                        THEN DATEDIFF(due_date, date_closed)
+                        THEN DATEDIFF(date_closed, due_date)
                     ELSE
-                        DATEDIFF(due_date, CURDATE())
+                        DATEDIFF(CURDATE(), due_date)
                 END as processing_days
             ");
         
@@ -134,20 +134,20 @@ class InvoiceController extends Controller
                 COUNT(*) as total_count,
                 SUM(amount) as total_amount,
 
-                SUM(CASE WHEN processing_days > 0 AND date_closed IS NULL THEN 1 ELSE 0 END) as current_count,
-                SUM(CASE WHEN processing_days > 0 AND date_closed IS NULL THEN amount ELSE 0 END) as current_amount,
+                SUM(CASE WHEN processing_days < 0 AND date_closed IS NULL THEN 1 ELSE 0 END) as current_count,
+                SUM(CASE WHEN processing_days < 0 AND date_closed IS NULL THEN amount ELSE 0 END) as current_amount,
 
-                SUM(CASE WHEN processing_days BETWEEN -30 AND -1 AND date_closed IS NULL THEN 1 ELSE 0 END) as thirty_days_count,
-                SUM(CASE WHEN processing_days BETWEEN -30 AND -1 AND date_closed IS NULL THEN amount ELSE 0 END) as thirty_days_amount,
+                SUM(CASE WHEN processing_days BETWEEN 1 AND 30 AND date_closed IS NULL THEN 1 ELSE 0 END) as thirty_days_count,
+                SUM(CASE WHEN processing_days BETWEEN 1 AND 30 AND date_closed IS NULL THEN amount ELSE 0 END) as thirty_days_amount,
 
-                SUM(CASE WHEN processing_days BETWEEN -60 AND -31 AND date_closed IS NULL THEN 1 ELSE 0 END) as sixty_days_count,
-                SUM(CASE WHEN processing_days BETWEEN -60 AND -31 AND date_closed IS NULL THEN amount ELSE 0 END) as sixty_days_amount,
+                SUM(CASE WHEN processing_days BETWEEN 31 AND 60 AND date_closed IS NULL THEN 1 ELSE 0 END) as sixty_days_count,
+                SUM(CASE WHEN processing_days BETWEEN 31 AND 60 AND date_closed IS NULL THEN amount ELSE 0 END) as sixty_days_amount,
 
-                SUM(CASE WHEN processing_days BETWEEN -90 AND -61 AND date_closed IS NULL THEN 1 ELSE 0 END) as ninety_days_count,
-                SUM(CASE WHEN processing_days BETWEEN -90 AND -61 AND date_closed IS NULL THEN amount ELSE 0 END) as ninety_days_amount,
+                SUM(CASE WHEN processing_days BETWEEN 61 AND 90 AND date_closed IS NULL THEN 1 ELSE 0 END) as ninety_days_count,
+                SUM(CASE WHEN processing_days BETWEEN 61 AND 90 AND date_closed IS NULL THEN amount ELSE 0 END) as ninety_days_amount,
 
-                SUM(CASE WHEN processing_days <= -91 AND date_closed IS NULL THEN 1 ELSE 0 END) as over_ninety_count,
-                SUM(CASE WHEN processing_days <= -91 AND date_closed IS NULL THEN amount ELSE 0 END) as over_ninety_amount
+                SUM(CASE WHEN processing_days >= 91 AND date_closed IS NULL THEN 1 ELSE 0 END) as over_ninety_count,
+                SUM(CASE WHEN processing_days >= 91 AND date_closed IS NULL THEN amount ELSE 0 END) as over_ninety_amount
             ")
             ->first();
         
