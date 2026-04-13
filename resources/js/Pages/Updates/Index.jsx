@@ -35,10 +35,10 @@ export default function Index({ latestUpdates, filters, userAreas, users }) {
             <div className="bg-base-200">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                     <span className="text-2xl">Summary</span>
-                    <div className="flex justify-content-end gap-2 w-full sm:w-auto">
+                    <div className="flex gap-2 w-full sm:w-auto">
                         <SearchIt search={search} setSearch={setSearch} />
                         <button
-                            className="btn btn-outline border font-normal border-gray-300 rounded-full"
+                            className="flex items-center gap-2 px-4 py-2 rounded-[10px] border border-gray-200 bg-white text-sm text-gray-500 hover:bg-primary-500 hover:text-white hover:border-primary-500 transition-all duration-150 cursor-pointer"
                             onClick={() => setShowFilters(!showFilters)}
                         >
                             <ListFilter size={16} />
