@@ -77,7 +77,7 @@ export default function Pagination({ data, creditTerm, creditLimit }) {
                     <select
                         value={currentPerPage}
                         onChange={(e) => handlePerPageChange(e.target.value)}
-                        className="appearance-none white border border-primary-300 rounded-lg px-3 py-1 pr-7 text-sm font-medium text-gray-500 cursor-pointer hover:bg-primary-500 hover:text-white transition-colors duration-150"
+                        className="appearance-none bg-white border border-primary-300 rounded-lg px-3 py-1 pr-7 text-sm font-medium text-gray-500 cursor-pointer hover:bg-primary-500 hover:text-white hover:border-primary-500 focus:outline-none transition-colors duration-150"
                     >
                         <option value="10">10</option>
                         <option value="25">25</option>
