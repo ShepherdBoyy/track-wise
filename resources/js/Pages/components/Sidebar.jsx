@@ -1,12 +1,13 @@
 import { Link, usePage } from "@inertiajs/react";
 import {
-    FolderUp,
+    FolderInput,
+    FolderOutput,
     Hospital,
     ArrowRightLeft,
     CircleUserRound,
     TrendingUp,
     House,
-    // House
+    SquareArrowRightExit
 } from "lucide-react";
 import { useEffect } from "react";
 
@@ -36,18 +37,25 @@ export default function Sidebar() {
             canView: props.permissions.canAccessHospitals
         },
         {
-            id: "import-data",
-            label: "Import Data",
-            href: "/import-data",
-            icon: FolderUp,
-            canView: props.permissions.canViewImportData
-        },
-        {
             id: "user-management",
             label: "User Management",
             href: "/user-management",
             icon: CircleUserRound,
             canView: props.permissions.canViewUsers
+        },
+        {
+            id: "import-data",
+            label: "Import",
+            href: "/import-data",
+            icon: FolderInput,
+            canView: props.permissions.canViewImportData
+        },
+        {
+            id: "export",
+            label: "Export",
+            href: "/export",
+            icon: FolderOutput,
+            canView: true
         }
     ];
 
