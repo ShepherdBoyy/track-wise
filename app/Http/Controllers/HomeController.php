@@ -97,8 +97,8 @@ class HomeController extends Controller
         $results = DB::table(DB::raw("({$sql}) as sub"))
             ->addBinding($bindings, "where")
             ->selectRaw("
-                SUM(CASE WHEN processing_days < 0 AND date_closed IS NULL THEN 1 ELSE 0 END) as current_count,
-                SUM(CASE WHEN processing_days < 0 AND date_closed IS NULL THEN amount ELSE 0 END) as current_amount,
+                SUM(CASE WHEN processing_days <= 0 AND date_closed IS NULL THEN 1 ELSE 0 END) as current_count,
+                SUM(CASE WHEN processing_days <= 0 AND date_closed IS NULL THEN amount ELSE 0 END) as current_amount,
 
                 SUM(CASE WHEN processing_days BETWEEN 1 AND 30 AND date_closed IS NULL THEN 1 ELSE 0 END) as thirty_days_count,
                 SUM(CASE WHEN processing_days BETWEEN 1 AND 30 AND date_closed IS NULL THEN amount ELSE 0 END) as thirty_days_amount,

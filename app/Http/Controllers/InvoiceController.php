@@ -67,7 +67,7 @@ class InvoiceController extends Controller
             })
             ->when(!$searchQuery && $processingFilter, function ($query) use ($processingFilter) {
                 match ($processingFilter) {
-                    "Current" => $query->having("processing_days", "<", 0)->whereNull("date_closed"),
+                    "Current" => $query->having("processing_days", "<=", 0)->whereNull("date_closed"),
                     "30-days" => $query->havingBetween("processing_days", [1, 30])->whereNull("date_closed"),
                     "31-60-days" => $query->havingBetween("processing_days", [31, 60])->whereNull("date_closed"),
                     "61-90-days" => $query->havingBetween("processing_days", [61, 90])->whereNull("date_closed"),
@@ -134,8 +134,8 @@ class InvoiceController extends Controller
                 COUNT(*) as total_count,
                 SUM(amount) as total_amount,
 
-                SUM(CASE WHEN processing_days < 0 AND date_closed IS NULL THEN 1 ELSE 0 END) as current_count,
-                SUM(CASE WHEN processing_days < 0 AND date_closed IS NULL THEN amount ELSE 0 END) as current_amount,
+                SUM(CASE WHEN processing_days <= 0 AND date_closed IS NULL THEN 1 ELSE 0 END) as current_count,
+                SUM(CASE WHEN processing_days <= 0 AND date_closed IS NULL THEN amount ELSE 0 END) as current_amount,
 
                 SUM(CASE WHEN processing_days BETWEEN 1 AND 30 AND date_closed IS NULL THEN 1 ELSE 0 END) as thirty_days_count,
                 SUM(CASE WHEN processing_days BETWEEN 1 AND 30 AND date_closed IS NULL THEN amount ELSE 0 END) as thirty_days_amount,
