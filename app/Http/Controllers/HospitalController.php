@@ -129,7 +129,7 @@ class HospitalController extends Controller
                 ELSE 0
             END) as ninety_days,
             SUM(CASE
-                WHEN DATEDIFF(CURDATE(), invoices.due_date) >= 90
+                WHEN DATEDIFF(CURDATE(), invoices.due_date) >= 91
                 THEN invoices.amount
                 ELSE 0
             END) as over_ninety,
