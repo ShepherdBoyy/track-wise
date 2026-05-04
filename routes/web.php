@@ -68,6 +68,7 @@ Route::middleware(["auth"])->group(function () {
     Route::prefix("export")
         ->group(function () {
             Route::get("/", [ExportController::class, "index"]);
+            Route::get("/invoice-aging-report", [ExportController::class, "invoiceAging"]);
         });
 
     Route::post("/logout", [AuthController::class, "destroy"]);
