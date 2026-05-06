@@ -108,6 +108,38 @@
             background-color: #fafafa;
         }
 
+        .invoice-table th {
+            background-color: #222222;
+            color: #ffffff;
+            font-size: 8px;
+            font-weight: bold;
+            text-align: left;
+            padding: 5px 7px;
+            border: 1px solid #222222;
+        }
+
+        .invoice-table td {
+            font-size: 8px;
+            text-align: left;
+            padding: 5px 7px;
+            border: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        .invoice-table tr:nth-child(even) td {
+            background-color: #f7f7f7;
+        }
+
+        .invoice-table tr:nth-child(odd) td {
+            background-color: #ffffff;
+        }
+
+        .col-invoice { width: 11%; }
+        .col-docdate { width: 13%; }
+        .col-duedate { width: 11%; }
+        .col-amount { width: 13%; }
+        .col-remarks { width: 52%; }
+
         .hospital-block {
             margin-bottom: 20px;
             page-break-inside: avoid;
@@ -142,6 +174,15 @@
             font-size: 8px;
             color: #cccccc;
             text-align: right;
+        }
+
+        .hospital-body {
+            padding: 11px;
+        }
+
+        .hospital-body .section-label {
+            margin-top: 12px;
+            margin-bottom: 5px;
         }
 
         .report-footer {
@@ -196,21 +237,21 @@
             <tbody>
                 <tr>
                     @if (in_array("current", $agingFilter))
-                        <td>&#8369; {{ number_format($grandTotals["current"], 2) }}</td>
+                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["current"], 2), "0"), ".") }}</td>
                     @endif
                     @if (in_array("30", $agingFilter))
-                        <td>&#8369; {{ number_format($grandTotals["30"], 2) }}</td>
+                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["30"], 2), "0"), ".") }}</td>
                     @endif
                     @if (in_array("31-60", $agingFilter))
-                        <td>&#8369; {{ number_format($grandTotals["31-60"], 2) }}</td>
+                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["31-60"], 2), "0"), ".") }}</td>
                     @endif
                     @if (in_array("61-90", $agingFilter))
-                        <td>&#8369; {{ number_format($grandTotals["61-90"], 2) }}</td>
+                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["61-90"], 2), "0"), ".") }}</td>
                     @endif
                     @if (in_array("over_90", $agingFilter))
-                        <td>&#8369; {{ number_format($grandTotals["over_90"], 2) }}</td>
+                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["over_90"], 2), "0"), ".") }}</td>
                     @endif
-                    <td>&#8369; {{ number_format($grandTotals["total"], 2) }}</td>
+                    <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["total"], 2), "0"), ".") }}</td>
                 </tr>
             </tbody>
         </table>
@@ -243,8 +284,7 @@
                     </table>
                 </div>
 
-                <div>
-                    <div class="section-label">Aging Subtotal</div>
+                <div class="hospital-body">
                     <table class="subtotals-table">
                         <thead>
                             <tr>
@@ -269,22 +309,65 @@
                         <tbody>
                             <tr>
                                 @if (in_array("current", $agingFilter))
-                                    <td>&#8369; {{ number_format($grandTotals["current"], 2) }}</td>
+                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["current"], 2), "0"), ".") }}</td>
                                 @endif
                                 @if (in_array("30", $agingFilter))
-                                    <td>&#8369; {{ number_format($grandTotals["30"], 2) }}</td>
+                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["30"], 2), "0"), ".") }}</td>
                                 @endif
                                 @if (in_array("31-60", $agingFilter))
-                                    <td>&#8369; {{ number_format($grandTotals["31-60"], 2) }}</td>
+                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["31-60"], 2), "0"), ".") }}</td>
                                 @endif
                                 @if (in_array("61-90", $agingFilter))
-                                    <td>&#8369; {{ number_format($grandTotals["61-90"], 2) }}</td>
+                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["61-90"], 2), "0"), ".") }}</td>
                                 @endif
                                 @if (in_array("over_90", $agingFilter))
-                                    <td>&#8369; {{ number_format($grandTotals["over_90"], 2) }}</td>
+                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["over_90"], 2), "0"), ".") }}</td>
                                 @endif
-                                <td>&#8369; {{ number_format($grandTotals["total"], 2) }}</td>
+                                <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["total"], 2), '0'), '.') }}</td>
                             </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="section-label">Invoices</div>
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th class="col-invoice">Invoice #</th>
+                                <th class="col-docdate">Document Date</th>
+                                <th class="col-duedate">Due Date</th>
+                                <th class="col-amount">Amount</th>
+                                <th class="col-remarks">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($block["invoices"] as $invoice)
+                                <tr>
+                                    <td class="col-invoice">
+                                        {{ $invoice->invoice_number }}
+                                    </td>
+                                    <td class="col-docdate">
+                                        {{ \Carbon\Carbon::parse($invoice->document_date)->format("n/j/Y") }}
+                                    </td>
+                                    <td class="col-duedate">
+                                        {{ \Carbon\Carbon::parse($invoice->due_date)->format("n/j/Y") }}
+                                    </td>
+                                    <td class="col-amount">
+                                        &#8369; {{ rtrim(rtrim(number_format($invoice->amount, 2), '0'), '.') }}
+                                    </td>
+                                    <td class="col-remarks">
+                                        {{ $invoice->latestHistory->remarks }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td 
+                                        colspan="5"
+                                        style="text-align: center; padding: 12px; color: #999999; font-style: italic; border: 1px solid #e0e0e0;"
+                                    >
+                                        No invoices found
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
