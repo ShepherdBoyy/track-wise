@@ -6,6 +6,29 @@ export const AGING_BUCKETS = [
     { value: "over_90", label: "91 Over", desc: "More than 90 days overdue" },
 ];
 
+export function buildExportParams({
+    filterType,
+    selectedAreas,
+    selectedHospitals,
+    selectedAging
+}) {
+    const params = URLSearchParams();
+
+    params.append("filter_type", filterType);
+
+    if (filterType === "area") {
+        selectedAreas.forEach((id) => params.append("area_id[]", id));
+    }
+
+    if (filterType === "hospital") {
+        selectedHospitals.forEach((id) => params.append("hospital_id[]", id));
+    }
+
+    selectedAging.forEach((bucket) => params.append("aging_filter[]", bucket));
+
+    return params;
+}
+
 export function buildSummaryParts({
     filterType,
     selectedAreas,
