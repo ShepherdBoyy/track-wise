@@ -109,27 +109,27 @@ class HospitalController extends Controller
             areas.id as area_id,
             areas.area_name,
             SUM(CASE
-                WHEN DATEDIFF(invoices.due_date, CURDATE()) > 0
+                WHEN DATEDIFF(CURDATE(), invoices.due_date) <= 0
                 THEN invoices.amount
                 ELSE 0
             END) as current,
             SUM(CASE
-                WHEN DATEDIFF(invoices.due_date, CURDATE()) BETWEEN -30 AND -1
+                WHEN DATEDIFF(CURDATE(), invoices.due_date) BETWEEN 1 AND 30
                 THEN invoices.amount
                 ELSE 0
             END) as thirty_days,
             SUM(CASE
-                WHEN DATEDIFF(invoices.due_date, CURDATE()) BETWEEN -60 AND -31
+                WHEN DATEDIFF(CURDATE(), invoices.due_date) BETWEEN 31 AND 60
                 THEN invoices.amount
                 ELSE 0
             END) as sixty_days,
             SUM(CASE
-                WHEN DATEDIFF(invoices.due_date, CURDATE()) BETWEEN -90 AND -61
+                WHEN DATEDIFF(CURDATE(), invoices.due_date) BETWEEN 61 AND 90
                 THEN invoices.amount
                 ELSE 0
             END) as ninety_days,
             SUM(CASE
-                WHEN DATEDIFF(invoices.due_date, CURDATE()) <= -91
+                WHEN DATEDIFF(CURDATE(), invoices.due_date) >= 91
                 THEN invoices.amount
                 ELSE 0
             END) as over_ninety,

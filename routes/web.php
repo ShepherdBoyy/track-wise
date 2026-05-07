@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UpdatesController;
 use App\Http\Controllers\HospitalController;
@@ -63,6 +64,12 @@ Route::middleware(["auth"])->group(function () {
                 Route::get("/download-template", [ImportDataController::class, "downloadTemplate"]);
                 Route::post("/store", [ImportDataController::class, "store"]);
     });
+
+    Route::prefix("export")
+        ->group(function () {
+            Route::get("/", [ExportController::class, "index"]);
+            Route::get("/invoice-aging-report", [ExportController::class, "invoiceAging"]);
+        });
 
     Route::post("/logout", [AuthController::class, "destroy"]);
 });
