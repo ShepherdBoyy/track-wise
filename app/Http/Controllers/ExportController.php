@@ -25,7 +25,7 @@ class ExportController extends Controller
 
     public function invoiceAging(Request $request)
     {
-        ini_set('memory_limit', '512M');
+        ini_set('memory_limit', '1024M');
 
         $validated = $request->validate([
             "filter_type" => "required|in:overall,area,hospital",
@@ -151,12 +151,6 @@ class ExportController extends Controller
             "agingLabel" => $agingLabel,
             "agingFilter" => $agingFilter,
             "generatedAt" => Carbon::today()->format("F d, Y"),
-        ])->setOptions([
-            'isHtml5ParserEnabled' => true,
-            'isRemoteEnabled'      => false,
-            'defaultMediaType'     => 'print',
-            'isFontSubsettingEnabled' => false,
-            'defaultPaperSize'     => 'a4',
         ])->setPaper("a4", "portrait");
 
         $filename = "Invoice-Aging-Report-" . Carbon::today()->format("Y-m-d") . ".pdf";
