@@ -12,7 +12,7 @@ export function buildExportParams({
     selectedHospitals,
     selectedAging
 }) {
-    const params = URLSearchParams();
+    const params = new URLSearchParams();
 
     params.append("filter_type", filterType);
 
