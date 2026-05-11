@@ -155,6 +155,6 @@ class ExportController extends Controller
 
         $filename = "Invoice-Aging-Report-" . Carbon::today()->format("Y-m-d") . ".pdf";
 
-        return $pdf->stream($filename);
+        return $pdf->download($filename);
     }
 }
