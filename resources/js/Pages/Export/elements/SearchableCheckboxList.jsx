@@ -7,7 +7,8 @@ export default function SearchableCheckboxList({
     onChange,
     placeholder,
     emptyMessage,
-    showSearch
+    showSearch,
+    columns
 }) {
     const [search, setSearch] = useState("");
 
@@ -18,13 +19,17 @@ export default function SearchableCheckboxList({
         );
     }, [items, search]);
 
+    const listClass = columns > 1
+        ? `grid grid-cols-${columns} gap-0.5`
+        : "flex flex-col gap-0.5 max-h-48 overflow-y-auto"
+
     return (
         <div className="flex flex-col gap-2">
             {showSearch && (
               <SearchIt search={search} setSearch={setSearch} />
             )}
 
-            <div className="grid grid-cols-3 gap-0.5 max-h-48 overflow-y-auto">
+            <div className={listClass}>
               {filtered.length === 0 ? (
                   <p className="text-xs text-base-content/40 text-center py-5">No results &ldquo;{search}&rdquo;</p>
               ) : (
