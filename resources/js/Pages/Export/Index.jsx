@@ -217,13 +217,29 @@ export default function Index({ areas, hospitals }) {
                                     </p>
                                   ) : (
                                     summaryParts.map((part, i) => (
-                                        <div key={i} className="flex flex-col gap-0.5">
+                                        <div key={i} className="flex flex-col gap-1.5">
                                             <span className="text-xs text-base-content/50 uppercase tracking-wide font-semibold">
                                                 {part.label}
                                             </span>
-                                            <span className="text-sm text-base-content">
-                                                {part.value}
-                                            </span>
+                                            {part.pills ? (
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {part.pills.map((pill, j) => (
+                                                        <span
+                                                            key={j}
+                                                            className={`text-xs px-2.5 py-1 rounded-xl font-medium ${pill.startsWith("+")
+                                                                ? "bg-gray-200 text-base-content/50"
+                                                                : "bg-base-300 text-base-content"
+                                                            }`}
+                                                        >
+                                                            {pill}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <span className="text-sm text-base-content">
+                                                    {part.value}
+                                                </span>
+                                            )}
                                         </div>
                                     ))
                                   )}
