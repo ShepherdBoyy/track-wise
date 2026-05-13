@@ -8,8 +8,9 @@ export function usePermissions(initialPermissions = []) {
 
     const permissionDependencies = {
         6: [4],
-        10: [9],
         8: [7],
+        10: [9],
+        12: [11]
     };
 
     const getAutoDependencies = (permissionIds) => {
