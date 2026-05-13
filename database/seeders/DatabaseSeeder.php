@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             ['name' => 'update_invoices', 'display_name' => 'Update', 'category' => 'invoices'],
             ['name' => 'view_import_data', 'display_name' => 'View', 'category' => 'import_data'],
             ['name' => 'manage_import_data', 'display_name' => 'Manage', 'category' => 'import_data'],
+            ['name' => 'view_export', 'display_name' => 'View', 'category' => 'export'],
+            ['name' => 'manage_export', 'display_name' => 'Manage', 'category' => 'export'],
             ['name' => 'view_users', 'display_name' => 'View', 'category' => 'users'],
             ['name' => 'manage_users', 'display_name' => 'Manage', 'category' => 'users'],
         ];
