@@ -55,7 +55,7 @@ export default function Sidebar() {
             label: "Export",
             href: "/export",
             icon: FolderOutput,
-            canView: true
+            canView: props.permissions.canViewExport
         }
     ];
 

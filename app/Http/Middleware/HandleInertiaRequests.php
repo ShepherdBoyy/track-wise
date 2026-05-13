@@ -40,6 +40,8 @@ class HandleInertiaRequests extends Middleware
                 "canManageInvoiceHistory" => $user->hasPermission("manage_invoice_history"),
                 "canViewImportData" => $user->hasPermission("view_import_data"),
                 "canManageImportData" => $user->hasPermission("manage_import_data"),
+                "canViewExport" => $user->hasPermission("view_export"),
+                "canManageExport" => $user->hasPermission("manage_export"),
                 "canViewUsers" => $user->hasPermission("view_users"),
                 "canManageUsers" => $user->hasPermission("manage_users"),
             ] : null,

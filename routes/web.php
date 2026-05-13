@@ -66,6 +66,7 @@ Route::middleware(["auth"])->group(function () {
     });
 
     Route::prefix("export")
+        ->middleware(["permission:view_export"])
         ->group(function () {
             Route::get("/", [ExportController::class, "index"]);
             Route::get("/invoice-aging-report", [ExportController::class, "invoiceAging"]);
