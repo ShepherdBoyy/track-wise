@@ -112,7 +112,7 @@ export default function Create({ setOpenCreateModal, setShowToast, setSuccessMes
                             )}
                         </div>
                         <div className="rounded-lg max-h-74 px-4">
-                            <div className="grid grid-cols-2 grid-rows-2 gap-6">
+                            <div className="grid grid-cols-3 grid-rows-2 gap-6">
                                 {Object.entries(permissionList).map(([category, permissions]) => (
                                     <div key={category}>
                                         <h4 className="capitalize mb-2 text-sm">{category.replace("_", " ")}</h4>
