@@ -2,18 +2,18 @@ import { Search } from "lucide-react";
 
 export default function SearchIt({ search, setSearch }) {
     return (
-        <label className="input flex items-center w-sm gap-2 rounded-xl">
-            <input
-                type="search"
-                className=""
-                required
-                placeholder="Search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-            />
-            <button type="submit" className="flex items-center cursor-pointer">
+        <div className="w-full sm:w-64 md:w-72 lg:w-80">
+            <label className="input flex items-center w-full gap-2 rounded-xl">
                 <Search size="16" />
-            </button>
-        </label>
+                <input
+                    type="search"
+                    className=""
+                    required
+                    placeholder="Search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </label>
+        </div>
     );
 }
