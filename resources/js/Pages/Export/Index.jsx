@@ -5,14 +5,16 @@ import { AGING_BUCKETS, buildExportParams, buildSummaryParts } from "../utils/ex
 import SectionCard from "./elements/SectionCard";
 import SearchableCheckboxList from "./elements/SearchableCheckboxList";
 import AgingPeriodSelector from "./elements/AgingPeriodSelector";
-import SelectAllButton from "../components/SelectAllButton"
-;
+import SearchIt from "../components/SearchIt";
+
 export default function Index({ areas, hospitals }) {
     const [filterType, setFilterType] = useState("overall");
     const [selectedAreas, setSelectedAreas] = useState([]);
     const [selectedHospitals, setSelectedHospitals] = useState([]);
     const [selectedAging, setSelectedAging] = useState([]);
     const [agingAll, setAgingAll] = useState(false);
+    const [areaSearch, setAreaSearch] = useState("");
+    const [hospitalSearch, setHospitalSearch] = useState("");
 
     const areaItems = useMemo(() => 
         areas.map((a) => ({ value: String(a.id), label: a.area_name })),
@@ -120,29 +122,13 @@ export default function Index({ areas, hospitals }) {
                         </SectionCard>
 
                         {filterType === "area" && (
-                            <SectionCard
-                                step={2}
-                                title="Select Areas"
-                                headerAction={
-                                    <SelectAllButton
-                                        total={areaItems.length}
-                                        selected={selectedAreas.length}
-                                        onToggle={() => 
-                                            setSelectedAreas(selectedAreas.length === areaItems.length
-                                                ? []
-                                                : areaItems.map((i) => i.value)
-                                            )
-                                        }   
-                                    />
-                                }
-                            >
+                            <SectionCard step={2} title="Select Areas">
                                 <SearchableCheckboxList
                                     items={areaItems}
                                     selected={selectedAreas}
                                     onChange={setSelectedAreas}
-                                    placeholder="Search areas..."
+                                    search={areaSearch}
                                     emptyMessage="No areas available."
-                                    showSearch={false}
                                     columns={3}
                                 />
                             </SectionCard>
@@ -153,25 +139,15 @@ export default function Index({ areas, hospitals }) {
                                 step={2}
                                 title="Select Hospitals"
                                 headerAction={
-                                    <SelectAllButton
-                                        total={hospitalItems.length}
-                                        selected={selectedHospitals.length}
-                                        onToggle={() => 
-                                            setSelectedHospitals(selectedHospitals.length === hospitalItems.length
-                                                ? []
-                                                : hospitalItems.map((i) => i.value)
-                                            )
-                                        }
-                                    />
+                                    <SearchIt search={hospitalSearch} setSearch={setHospitalSearch} />
                                 }
                             >
                                 <SearchableCheckboxList
                                     items={hospitalItems}
                                     selected={selectedHospitals}
                                     onChange={setSelectedHospitals}
-                                    placeholder="Search hospitals..."
+                                    search={hospitalSearch}
                                     emptyMessage="No hospitals available."
-                                    showSearch={true}
                                     columns={1}
                                 />
                             </SectionCard>

@@ -1,37 +1,30 @@
-import { useMemo, useState } from "react";
-import SearchIt from "../../components/SearchIt";
+import { useMemo } from "react";
+import useDebounce from "../../hooks/useDebounce"
 
 export default function SearchableCheckboxList({
     items,
     selected,
     onChange,
-    placeholder,
+    search,
     emptyMessage,
-    showSearch,
     columns
 }) {
-    const [search, setSearch] = useState("");
-
+    const debouncedSearch = useDebounce(search, 300);
     const filtered = useMemo(() => {
-        if (!search.trim()) return items;
+        if (!debouncedSearch.trim()) return items;
         return items.filter((item) =>
-            item.label.toLowerCase().includes(search.toLowerCase()),
+            item.label.toLowerCase().includes(debouncedSearch.toLowerCase()),
         );
-    }, [items, search]);
-
-    const listClass = columns > 1
-        ? `grid grid-cols-${columns} gap-0.5`
-        : "flex flex-col gap-0.5 max-h-48 overflow-y-auto"
+    }, [items, debouncedSearch]);
 
     return (
-        <div className="flex flex-col gap-2">
-            {showSearch && (
-              <SearchIt search={search} setSearch={setSearch} />
-            )}
-
-            <div className={listClass}>
+        <div className="flex flex-col gap-3 w-full">
+            <div className={columns > 1 
+                ? `grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${columns} gap-1 max-h-60 overflow-y-auto`
+                : "flex flex-col gap-1 max-h-60 overflow-y-auto"
+            }>
               {filtered.length === 0 ? (
-                  <p className="text-xs text-base-content/40 text-center py-5">No results &ldquo;{search}&rdquo;</p>
+                  <p className="text-xs text-base-content/40 text-center py-5">No results "{search}"</p>
               ) : (
                   filtered.map((item) => (
                       <label
@@ -40,7 +33,7 @@ export default function SearchableCheckboxList({
                       >
                           <input
                               type="checkbox"
-                              className="checkbox checkbox-sm checkbox-primary"
+                              className="checkbox checkbox-sm checkbox-primary shrink-0"
                               checked={selected.includes(item.value)}
                               onChange={() =>
                                 onChange(selected.includes(item.value)
@@ -49,7 +42,7 @@ export default function SearchableCheckboxList({
                                 )
                               }
                           />
-                          <span className="text-sm">{item.label}</span>
+                          <span className="text-sm break-words leading-snug">{item.label}</span>
                       </label>
                   ))
               )}
