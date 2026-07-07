@@ -20,8 +20,8 @@ class UpdatesController extends Controller
         $user = Auth::user();
         $searchQuery = $request->query("search");
         $filterArea = $request->query("selected_area");
-        $filterStatus = $request->query("selected_status");
         $filterUser = $request->query("selected_user");
+        $filterProcessingDays = $request->query("processing_days");
         $perPage = $request->query("per_page", 10);
         $sortBy = $request->query("sort_by", "updated_at");
         $sortOrder = $request->query("sort_order", "desc");
@@ -102,8 +102,26 @@ class UpdatesController extends Controller
             ->when($filterUser, function ($query) use ($filterUser) {
                 $query->where("updated_by", $filterUser);
             })
-            ->when($filterStatus, function ($query) use ($filterStatus) {
-                $query->where("status", $filterStatus);
+            ->when($filterProcessingDays, function ($query) use ($filterProcessingDays) {
+                $query->whereHas("invoice", function ($q) use ($filterProcessingDays) {
+                    $processingDaysRaw = "
+                        CASE
+                            WHEN date_closed IS NOT NULL
+                                THEN DATEDIFF(date_closed, due_date)
+                            ELSE
+                                DATEDIFF(CURDATE(), due_date)
+                        END
+                    ";
+
+                    match ($filterProcessingDays) {
+                        "current" => $q->whereRaw("({$processingDaysRaw}) < 0"),
+                        "30-days" => $q->whereRaw("({$processingDaysRaw}) BETWEEN 0 AND 30"),
+                        "31-60-days" => $q->whereRaw("({$processingDaysRaw}) BETWEEN 31 AND 60"),
+                        "61-90-days" => $q->whereRaw("({$processingDaysRaw}) BETWEEN 61 AND 90"),
+                        "91-over" => $q->whereRaw("({$processingDaysRaw}) > 90"),
+                        default => null
+                    };
+                });
             })
             ->when($minAmount !== null && $minAmount !== "negative", function ($query) use ($minAmount) {
                 $query->whereHas("invoice", function ($q) use ($minAmount) {
@@ -184,7 +202,7 @@ class UpdatesController extends Controller
             "filters" => [
                 "search" => $searchQuery,
                 "area" => $filterArea,
-                "status" => $filterStatus,
+                "processing_days" => $filterProcessingDays,
                 "user" => $filterUser,
                 "sort_order" => $sortOrder,
                 "sort_by" => $sortBy,

@@ -5,9 +5,18 @@ import { useState } from "react";
 const AMOUNT_STEPS = [null, 0, 250000, 500000, 750000, 1000000];
 const AMOUNT_LABELS = ["<₱0", "₱0", "₱250K", "₱500K", "₱750K", "₱1M+"];
 
+const PROCESSING_DAYS_OPTIONS = [
+    { value: "", label: "All" },
+    { value: "current", label: "Current" },
+    { value: "30-days", label: "1-30 days" },
+    { value: "31-60-days", label: "31-60 days" },
+    { value: "61-90-days", label: "61-90 days" },
+    { value: "91-over", label: "Over 90 days" },
+];
+
 export default function Filters({ setShowFilters, userAreas, users, filters }) {
     const [selectedArea, setSelectedArea] = useState(filters.area || "");
-    const [selectedStatus, setSelectedStatus] = useState(filters.status || "");
+    const [selectedProcesingDays, setSelectedProcessingDays] = useState(filters.processing_days || "");
     const [selectedUser, setSelectedUser] = useState(filters.user || "");
     const [minAmountIndex, setMinAmountIndex] = useState(filters.min_amount === "negative"
         ? 0
@@ -19,8 +28,8 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
 
     const handleClearFilters = () => {
         setSelectedArea("");
-        setSelectedStatus("");
         setSelectedUser("");
+        setSelectedProcessingDays("");
         setMinAmountIndex(0);
         setMaxAmountIndex(5);
 
@@ -34,8 +43,8 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
     const applyFilters = (overrides = {}) => {
         const current = {
             selected_area: selectedArea,
-            selected_status: selectedStatus,
             selected_user: selectedUser,
+            processing_days: selectedProcesingDays,
             per_page: filters.per_page,
             min_amount: minAmountIndex === 0 ? "negative" : AMOUNT_STEPS[minAmountIndex],
             max_amount: maxAmountIndex === 5 ? null : AMOUNT_STEPS[maxAmountIndex],
@@ -72,20 +81,21 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                 </div>
 
                 <div>
-                    <label className="label text-md">By Status</label>
+                    <label className="label text-md">By Processing Days</label>
                     <select
                         className="select w-full rounded-xl"
-                        value={selectedStatus}
+                        value={selectedProcesingDays}
                         onChange={(e) => {
-                            setSelectedStatus(e.target.value);
-                            applyFilters({ selected_status: e.target.value });
+                            setSelectedProcessingDays(e.target.value);
+                            applyFilters({ processing_days: e.target.value });
                             setShowFilters(false);
                         }}
                     >
-                        <option value="">Select</option>
-                        <option value="open">Open</option>
-                        <option value="overdue">Overdue</option>
-                        <option value="closed">Closed</option>
+                        {PROCESSING_DAYS_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
