@@ -20,26 +20,19 @@ class UpdatesController extends Controller
         $user = Auth::user();
         $searchQuery = $request->query("search");
         $filterArea = $request->query("selected_area");
-        $filterUser = $request->query("selected_user");
         $filterProcessingDays = $request->query("processing_days");
         $perPage = $request->query("per_page", 10);
-        $sortBy = $request->query("sort_by", "updated_at");
-        $sortOrder = $request->query("sort_order", "desc");
         $minAmount = $request->query("min_amount");
         $maxAmount = $request->query("max_amount");
 
-        $userAreas = Gate::allows("viewAll", Hospital::class) ? Area::all() : $user->areas;
+        $hasActiveFilter = $filterArea || $filterProcessingDays
+            || ($minAmount !== null && $minAmount !== "negative")
+            || $maxAmount !== null;
 
-        $users = User::query()
-            ->where("username", "!=", "developer")
-            ->when(!Gate::allows("viewAll", Hospital::class), function ($query) use ($user) {
-                $userAreaIds = $user->areas->pluck("id");
-                $query->whereHas("areas", function ($q) use ($userAreaIds) {
-                    $q->whereIn("areas.id", $userAreaIds);
-                });
-            })
-            ->orderBy("name")
-            ->get(["id", "name"]);
+        $sortBy = $request->query("sort_by", $hasActiveFilter ? "hospital_name" : "updated_at");
+        $sortOrder = $request->query("sort_order", $hasActiveFilter ? "asc" : "desc");
+
+        $userAreas = Gate::allows("viewAll", Hospital::class) ? Area::all() : $user->areas;
 
         // Get the latest history of an invoice
         $latestHistoryIds = InvoiceHistory::query()
@@ -98,9 +91,6 @@ class UpdatesController extends Controller
                 if ($filterArea) {
                     $query->where("area_id", $filterArea);
                 }
-            })
-            ->when($filterUser, function ($query) use ($filterUser) {
-                $query->where("updated_by", $filterUser);
             })
             ->when($filterProcessingDays, function ($query) use ($filterProcessingDays) {
                 $query->whereHas("invoice", function ($q) use ($filterProcessingDays) {
@@ -198,12 +188,10 @@ class UpdatesController extends Controller
         return Inertia::render("Updates/Index", [
             "latestUpdates" => $latestUpdates,
             "userAreas" => $userAreas,
-            "users" => $users,
             "filters" => [
                 "search" => $searchQuery,
                 "area" => $filterArea,
                 "processing_days" => $filterProcessingDays,
-                "user" => $filterUser,
                 "sort_order" => $sortOrder,
                 "sort_by" => $sortBy,
                 "per_page" => $perPage,

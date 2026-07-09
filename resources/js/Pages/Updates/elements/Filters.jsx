@@ -14,10 +14,9 @@ const PROCESSING_DAYS_OPTIONS = [
     { value: "91-over", label: "Over 90 days" },
 ];
 
-export default function Filters({ setShowFilters, userAreas, users, filters }) {
+export default function Filters({ setShowFilters, userAreas, filters }) {
     const [selectedArea, setSelectedArea] = useState(filters.area || "");
     const [selectedProcesingDays, setSelectedProcessingDays] = useState(filters.processing_days || "");
-    const [selectedUser, setSelectedUser] = useState(filters.user || "");
     const [minAmountIndex, setMinAmountIndex] = useState(filters.min_amount === "negative"
         ? 0
         : filters.min_amount
@@ -28,7 +27,6 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
 
     const handleClearFilters = () => {
         setSelectedArea("");
-        setSelectedUser("");
         setSelectedProcessingDays("");
         setMinAmountIndex(0);
         setMaxAmountIndex(5);
@@ -43,7 +41,6 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
     const applyFilters = (overrides = {}) => {
         const current = {
             selected_area: selectedArea,
-            selected_user: selectedUser,
             processing_days: selectedProcesingDays,
             per_page: filters.per_page,
             min_amount: minAmountIndex === 0 ? "negative" : AMOUNT_STEPS[minAmountIndex],
@@ -95,24 +92,6 @@ export default function Filters({ setShowFilters, userAreas, users, filters }) {
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div>
-                    <label className="label text-md">By Users</label>
-                    <select
-                        className="select w-full rounded-xl"
-                        value={selectedUser}
-                        onChange={(e) => {
-                            setSelectedUser(e.target.value);
-                            applyFilters({ selected_user: e.target.value });
-                            setShowFilters(false);
-                        }}
-                    >
-                        <option value="">Select</option>
-                        {users.map((user) => (
-                            <option key={user.id} value={user.id}>{user.name}</option>
                         ))}
                     </select>
                 </div>
