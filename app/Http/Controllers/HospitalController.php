@@ -20,7 +20,7 @@ class HospitalController extends Controller
 
         $searchQuery = $request->query("hospital_search");
         $perPage = $request->query("per_page", 10);
-        $sortBy = $request->query("sort_by", "area_name");
+        $sortBy = $request->query("sort_by", "hospital_name");
         $sortOrder = $request->query("sort_order", "asc");
         $filterArea = intval($request->query("selected_area"));
         $user = Auth::user();
@@ -82,6 +82,7 @@ class HospitalController extends Controller
                 "area" => $filterArea,
                 "search" => $searchQuery,
                 "per_page" => $perPage,
+                "page" => $hospitals->currentPage()
             ],
             "breadcrumbs" => [
                 ["label" => "Hospitals", "url" => null]

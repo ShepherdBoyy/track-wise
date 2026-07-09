@@ -32,6 +32,7 @@ class InvoiceController extends Controller
             "sort_by",
             "sort_order",
             "selected_area",
+            "hospital_page",
         ]);
 
         $baseQuery = Invoice::query()
@@ -94,7 +95,14 @@ class InvoiceController extends Controller
         $filteredParams = array_filter($queryParams, function($value) {
             return !is_null($value) && $value !== '' && $value !== [];
         });
-        $queryString = http_build_query($filteredParams);
+
+        $hospitalsUrlParams = $filteredParams;
+        if (isset($hospitalsUrlParams["hospital_page"])) {
+            $hospitalsUrlParams["page"] = $hospitalsUrlParams["hospital_page"];
+            unset($hospitalsUrlParams["hospital_page"]);
+        }
+
+        $queryString = http_build_query($hospitalsUrlParams);
         $hospitalsUrl = '/hospitals' . ($queryString ? '?' . $queryString : '');
 
         return Inertia::render("Invoices/Index", [
