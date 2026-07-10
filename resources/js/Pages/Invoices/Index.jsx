@@ -73,12 +73,12 @@ export default function Index({
         );
     }
     const statItems = [
-        { label: "Current", key: "Current", style: "bg-emerald-100" },
-        { label: "30 days", key: "30 days", style: "bg-sky-100" },
-        { label: "31-60 days", key: "31-60 days", style: "bg-amber-100" },
-        { label: "61-90 days", key: "61-90 days", style: "bg-orange-200" },
-        { label: "91 over", key: "91 over", style: "bg-rose-300" },
-        { label: "All Total", key: "All", style: "bg-slate-100" },
+        { label: "Current", key: "Current", style: "bg-emerald-300" },
+        { label: "30 days", key: "30 days", style: "bg-sky-300" },
+        { label: "31-60 days", key: "31-60 days", style: "bg-amber-300" },
+        { label: "61-90 days", key: "61-90 days", style: "bg-orange-400/80" },
+        { label: "91 over", key: "91 over", style: "bg-rose-400" },
+        { label: "All Total", key: "All", style: "bg-slate-300" },
     ]
 
     return (

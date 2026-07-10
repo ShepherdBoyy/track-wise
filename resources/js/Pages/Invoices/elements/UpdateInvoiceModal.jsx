@@ -69,10 +69,10 @@ export default function UpdateInvoiceModal({
                 </div>
 
                 <div className="flex justify-end gap-2">
-                    <button className="btn btn-outline rounded-xl" onClick={() => setOpenUpdateModal(false)}>
+                    <button type="button" className="btn btn-outline rounded-xl" onClick={() => setOpenUpdateModal(false)}>
                         Cancel
                     </button>
-                    <button className="btn bg-gray-800 text-white rounded-xl">
+                    <button type="submit" className="btn bg-gray-800 text-white rounded-xl">
                         Update
                     </button>
                 </div>
