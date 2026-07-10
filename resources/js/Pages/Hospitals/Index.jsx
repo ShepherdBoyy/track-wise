@@ -53,12 +53,12 @@ export default function Index({
     }, [debouncedSearch, sortBy, sortOrder]);
 
     const statItems = [
-        { label: "Current", key: "current", style: "bg-emerald-100" },
-        { label: "1-30 days", key: "thirty_days", style: "bg-sky-100" },
-        { label: "31-60 days", key: "sixty_days", style: "bg-amber-100" },
-        { label: "61-90 days", key: "ninety_days", style: "bg-orange-200" },
-        { label: "91 over", key: "over_ninety", style: "bg-rose-300" },
-        { label: "Grand Total", key: "total", style: "bg-slate-100" },
+        { label: "Current", key: "current", style: "bg-emerald-300" },
+        { label: "1-30 days", key: "thirty_days", style: "bg-sky-300" },
+        { label: "31-60 days", key: "sixty_days", style: "bg-amber-300" },
+        { label: "61-90 days", key: "ninety_days", style: "bg-orange-400/80" },
+        { label: "91 over", key: "over_ninety", style: "bg-rose-400" },
+        { label: "Grand Total", key: "total", style: "bg-slate-300" },
     ];
 
     return (

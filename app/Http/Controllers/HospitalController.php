@@ -31,6 +31,28 @@ class HospitalController extends Controller
 
         $query = Hospital::withCount("invoices")
             ->withSum("invoices", "amount")
+            ->withCount([
+                "invoices as current_count" => function ($q) {
+                    $q->whereNull("date_closed")
+                      ->whereRaw("DATEDIFF(CURDATE(), due_date) <= 0");
+                },
+                "invoices as thirty_days_count" => function ($q) {
+                    $q->whereNull("date_closed")
+                      ->whereRaw("DATEDIFF(CURDATE(), due_date) BETWEEN 1 AND 30");
+                },
+                "invoices as sixty_days_count" => function ($q) {
+                    $q->whereNull("date_closed")
+                      ->whereRaw("DATEDIFF(CURDATE(), due_date) BETWEEN 31 AND 60");
+                },
+                "invoices as ninety_days_count" => function ($q) {
+                    $q->whereNull("date_closed")
+                      ->whereRaw("DATEDIFF(CURDATE(), due_date) BETWEEN 61 AND 90");
+                },
+                "invoices as over_ninety_count" => function ($q) {
+                    $q->whereNull("date_closed")
+                      ->whereRaw("DATEDIFF(CURDATE(), due_date) >= 91");
+                }
+            ])
             ->with("area");
 
         if (!Gate::allows("viewAll", Hospital::class)) {

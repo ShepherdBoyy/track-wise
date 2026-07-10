@@ -5,7 +5,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import Edit from "../Edit";
 import DeleteHospitalModal from "./DeleteHospitalModal";
 import { useState } from "react";
-
+import AgingIndicator from "./AgingIndicator";
 
 export default function HospitalsTable({
     sortBy, 
@@ -57,7 +57,7 @@ export default function HospitalsTable({
         <table className="table w-full">
             <thead>
                 <tr>
-                    <th className="w-[50px]">#</th>
+                    <th className="w-12.5">#</th>
                     <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSort("area_name")}>
                         <div className="flex items-center gap-2">
                             Area
@@ -76,18 +76,16 @@ export default function HospitalsTable({
                             <SortIcon column="hospital_name" sortOrder={sortOrder} sortBy={sortBy} />
                         </div>
                     </th>
-                    <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSort("invoices_count")}>
-                        <div className="flex items-center gap-2">
-                            <div className="flex flex-col items-center">
-                                <span>Number of Invoices</span>
-                            </div>
-                            <SortIcon column="invoices_count" sortOrder={sortOrder} sortBy={sortBy} />
-                        </div>
-                    </th>
                     <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSort("invoices_sum_amount")}>
                         <div className="flex items-center gap-2">
                             Total Amount of Invoices
                             <SortIcon column="invoices_sum_amount" sortOrder={sortOrder} sortBy={sortBy} />
+                        </div>
+                    </th>
+                    <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSort("invoices_count")}>
+                        <div className="flex items-center gap-2">
+                            <span>Aging</span>
+                            <SortIcon column="invoices_count" sortOrder={sortOrder} sortBy={sortBy} />
                         </div>
                     </th>
                     {permissions.canManageHospitals && (
@@ -123,8 +121,10 @@ export default function HospitalsTable({
                         <td>{hospital.area.area_name}</td>
                         <td>{hospital.hospital_number}</td>
                         <td>{hospital.hospital_name}</td>
-                        <td>{hospital.invoices_count}</td>
                         <td>₱{parseFloat(hospital.invoices_sum_amount).toLocaleString("en-PH", {minimumFractionDigits: 0, maximumFractionDigits: 2})}</td>
+                        <td>
+                            <AgingIndicator hospital={hospital} />
+                        </td>
                         {permissions.canManageHospitals && (
                             <td>
                                 <div className="flex gap-3 items-center justify-end">
