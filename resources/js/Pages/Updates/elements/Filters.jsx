@@ -16,7 +16,13 @@ const PROCESSING_DAYS_OPTIONS = [
 
 export default function Filters({ setShowFilters, userAreas, filters }) {
     const [selectedArea, setSelectedArea] = useState(filters.area || "");
-    const [selectedProcesingDays, setSelectedProcessingDays] = useState(filters.processing_days || "");
+    const [selectedProcesingDays, setSelectedProcessingDays] = useState(
+        Array.isArray(filters.processing_days)
+            ? filters.processing_days
+            : filters.processing_days
+            ? [filters.processing_days]
+            : []
+    );
     const [minAmountIndex, setMinAmountIndex] = useState(filters.min_amount === "negative"
         ? 0
         : filters.min_amount
@@ -27,7 +33,7 @@ export default function Filters({ setShowFilters, userAreas, filters }) {
 
     const handleClearFilters = () => {
         setSelectedArea("");
-        setSelectedProcessingDays("");
+        setSelectedProcessingDays(["61-90-days", "91-over"]);
         setMinAmountIndex(0);
         setMaxAmountIndex(5);
 
@@ -41,7 +47,7 @@ export default function Filters({ setShowFilters, userAreas, filters }) {
     const applyFilters = (overrides = {}) => {
         const current = {
             selected_area: selectedArea,
-            processing_days: selectedProcesingDays,
+            processing_days: selectedProcesingDays.length ? selectedProcesingDays : "none",
             per_page: filters.per_page,
             min_amount: minAmountIndex === 0 ? "negative" : AMOUNT_STEPS[minAmountIndex],
             max_amount: maxAmountIndex === 5 ? null : AMOUNT_STEPS[maxAmountIndex],
@@ -79,21 +85,26 @@ export default function Filters({ setShowFilters, userAreas, filters }) {
 
                 <div>
                     <label className="label text-md">By Processing Days</label>
-                    <select
-                        className="select w-full rounded-xl"
-                        value={selectedProcesingDays}
-                        onChange={(e) => {
-                            setSelectedProcessingDays(e.target.value);
-                            applyFilters({ processing_days: e.target.value });
-                            setShowFilters(false);
-                        }}
-                    >
-                        {PROCESSING_DAYS_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
+                    <div className="flex flex-col gap-2 mt-1">
+                        {PROCESSING_DAYS_OPTIONS.filter((o) => o.value !== "").map((option) => (
+                            <label key={option.value} className="label cursor-pointer justify-start gap-3">
+                                <input
+                                    type="checkbox"
+                                    className="checkbox checkbox-sm rounded-md"
+                                    checked={selectedProcesingDays.includes(option.value)}
+                                    onChange={() => {
+                                        const updated = selectedProcesingDays.includes(option.value)
+                                            ? selectedProcesingDays.filter((d) => d !== option.value)
+                                            : [...selectedProcesingDays, option.value];
+                                        
+                                        setSelectedProcessingDays(updated);
+                                        applyFilters({ processing_days: updated.length ? updated : "none" });
+                                    }}
+                                />
+                                <span className="label-text">{option.label}</span>
+                            </label>
                         ))}
-                    </select>
+                    </div>
                 </div>
 
                 <div>

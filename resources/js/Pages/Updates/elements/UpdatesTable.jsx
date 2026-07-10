@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import Show from "../../Invoices/Show";
 
 export default function UpdatesTable({ filters, latestUpdates }) {
-    const [sortOrder, setSortOrder] = useState(filters.sort_order || "desc");
-    const [sortBy, setSortBy] = useState(filters.sort_by || "updated_at");
+    const [sortOrder, setSortOrder] = useState(filters.sort_order);
+    const [sortBy, setSortBy] = useState("");
     const [openHistoryModal, setOpenHistoryModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
 

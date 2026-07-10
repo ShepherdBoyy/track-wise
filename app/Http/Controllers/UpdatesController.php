@@ -20,17 +20,22 @@ class UpdatesController extends Controller
         $user = Auth::user();
         $searchQuery = $request->query("search");
         $filterArea = $request->query("selected_area");
-        $filterProcessingDays = $request->query("processing_days");
         $perPage = $request->query("per_page", 10);
         $minAmount = $request->query("min_amount");
         $maxAmount = $request->query("max_amount");
+        $sortBy = $request->query("sort_by", "hospital_name");
+        $sortOrder = $request->query("sort_order", "asc");
+        $filterProcessingDays = $request->query("processing_days");
 
-        $hasActiveFilter = $filterArea || $filterProcessingDays
-            || ($minAmount !== null && $minAmount !== "negative")
-            || $maxAmount !== null;
-
-        $sortBy = $request->query("sort_by", $hasActiveFilter ? "hospital_name" : "updated_at");
-        $sortOrder = $request->query("sort_order", $hasActiveFilter ? "asc" : "desc");
+        if ($filterProcessingDays === null) {
+            $filterProcessingDays = ["61-90-days", "91-over"];
+        } elseif ($filterProcessingDays === "none") {
+            $filterProcessingDays = [];
+        } else {
+            $filterProcessingDays = is_array($filterProcessingDays)
+                ? $filterProcessingDays
+                : [$filterProcessingDays];
+        }
 
         $userAreas = Gate::allows("viewAll", Hospital::class) ? Area::all() : $user->areas;
 
@@ -92,7 +97,7 @@ class UpdatesController extends Controller
                     $query->where("area_id", $filterArea);
                 }
             })
-            ->when($filterProcessingDays, function ($query) use ($filterProcessingDays) {
+            ->when(!empty($filterProcessingDays), function ($query) use ($filterProcessingDays) {
                 $query->whereHas("invoice", function ($q) use ($filterProcessingDays) {
                     $processingDaysRaw = "
                         CASE
@@ -103,14 +108,18 @@ class UpdatesController extends Controller
                         END
                     ";
 
-                    match ($filterProcessingDays) {
-                        "current" => $q->whereRaw("({$processingDaysRaw}) < 0"),
-                        "30-days" => $q->whereRaw("({$processingDaysRaw}) BETWEEN 0 AND 30"),
-                        "31-60-days" => $q->whereRaw("({$processingDaysRaw}) BETWEEN 31 AND 60"),
-                        "61-90-days" => $q->whereRaw("({$processingDaysRaw}) BETWEEN 61 AND 90"),
-                        "91-over" => $q->whereRaw("({$processingDaysRaw}) > 90"),
-                        default => null
-                    };
+                    $q->where(function ($sub) use ($filterProcessingDays, $processingDaysRaw) {
+                        foreach ($filterProcessingDays as $days) {
+                            match ($days) {
+                                "current" => $sub->orWhereRaw("({$processingDaysRaw}) <= 0"),
+                                "30-days" => $sub->orWhereRaw("({$processingDaysRaw}) BETWEEN 0 AND 30"),
+                                "31-60-days" => $sub->orWhereRaw("({$processingDaysRaw}) BETWEEN 31 AND 60"),
+                                "61-90-days" => $sub->orWhereRaw("({$processingDaysRaw}) BETWEEN 61 AND 90"),
+                                "91-over" => $sub->orWhereRaw("({$processingDaysRaw}) >= 90"),
+                                default => null
+                            };
+                        }
+                    });
                 });
             })
             ->when($minAmount !== null && $minAmount !== "negative", function ($query) use ($minAmount) {
