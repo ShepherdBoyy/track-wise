@@ -11,9 +11,12 @@ return new class extends Migration {
             $table->id();
             $table->string("name");
             $table->string("slug")->unique();
+            $table->string("domain")->unique();
+            $table->string("database");
             $table->string("address_line1");
             $table->string("address_line2");
             $table->string("logo_path");
+            $table->string("favicon_path")->nullable();
             $table->string('color_one')->default('#55548F');
             $table->string('color_two')->default('#FFC375');
             $table->string('color_three')->default('#F28F77');
