@@ -2,48 +2,47 @@
 
 namespace Database\Seeders;
 
-use App\Models\Permission;
-use App\Models\User;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $permissions = [
-            ['name' => 'view_all_hospitals', 'display_name' => 'View All Areas', 'category' => 'hospitals'],
-            ['name' => 'view_area_hospitals', 'display_name' => 'View Specific Area', 'category' => 'hospitals'],
-            ['name' => 'manage_hospitals', 'display_name' => 'Manage', 'category' => 'hospitals'],
-            ['name' => 'view_invoices', 'display_name' => 'View', 'category' => 'invoices'],
-            ['name' => 'manage_invoices', 'display_name' => 'Manage', 'category' => 'invoices'],
-            ['name' => 'update_invoices', 'display_name' => 'Update', 'category' => 'invoices'],
-            ['name' => 'view_import_data', 'display_name' => 'View', 'category' => 'import_data'],
-            ['name' => 'manage_import_data', 'display_name' => 'Manage', 'category' => 'import_data'],
-            ['name' => 'view_export', 'display_name' => 'View', 'category' => 'export'],
-            ['name' => 'manage_export', 'display_name' => 'Manage', 'category' => 'export'],
-            ['name' => 'view_users', 'display_name' => 'View', 'category' => 'users'],
-            ['name' => 'manage_users', 'display_name' => 'Manage', 'category' => 'users'],
-        ];
-
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(
-                ['name' => $permission['name']],
-                $permission
-            );
-        }
-
-        $admin = User::firstOrCreate(
-            ['username' => 'developer'],
+        Company::updateOrCreate(
+            ['slug' => 'pmc'],
             [
-                'name' => 'Web Developer',
-                'password' => Hash::make('developer'),
-                'visible_password' => Crypt::encryptString('developer'),
+                'name' => 'Progressive Medical Corp.',
+                'domain' => env('PMC_DOMAIN', 'pmc.trackwise.test'),
+                'database' => env('PMC_DATABASE', 'trackwise_pmc'),
+                'address_line1' => '200 C. Raymundo Avenue Caniogan,',
+                'address_line2' => 'Pasig City 1606 Philippines',
+                'logo_path' => 'images/pmc-logo.jpg',
+                'favicon_path' => 'images/pmc-favicon.png',
+                'color_one' => '#55548F',
+                'color_two' => '#FFC375',
+                'color_three' => '#F28F77',
+                'color_four' => '#53A3BD',
+                'color_five' => '#B9E69E',
             ]
         );
 
-        $allPermissionIds = Permission::pluck('id');
-        $admin->permissions()->sync($allPermissionIds);
+        Company::updateOrCreate(
+            ['slug' => 'panamed'],
+            [
+                'name' => 'Panamed Philippines Inc.',
+                'domain' => env('PANAMED_DOMAIN', 'panamed.trackwise.test'),
+                'database' => env('PANAMED_DATABASE', 'trackwise_panamed'),
+                'address_line1' => '5F Meriton One Building 1668 Quezon Avenue',
+                'address_line2' => 'Quezon City 1103 Philippines',
+                'logo_path' => 'images/panamed-logo.png',
+                'favicon_path' => 'images/panamed-favicon.png',
+                'color_one' => '#1F6F5C',
+                'color_two' => '#F2B134',
+                'color_three' => '#ED553B',
+                'color_four' => '#3C91E6',
+                'color_five' => '#9BC53D',
+            ]
+        );
     }
 }
