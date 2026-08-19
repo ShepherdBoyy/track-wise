@@ -113,13 +113,13 @@
         <table class="header-table">
             <tr>
                 <td>
-                    <strong>Progressive Medical Corp.</strong><br>
-                    200 C. Raymundo Avenue Caniogan,<br>
-                    Pasig City 1606 Philippines
+                    <strong>{{ $company->name }}</strong><br>
+                    {{ $company->address_line1 }}<br>
+                    {{ $company->address_line2 }}
                 </td>
 
                 <td align="right">
-                    <img src="{{ public_path('images/pmc-logo.jpg') }}" class="logo">
+                    <img src="{{ public_path($company->logo_path) }}" class="logo">
                 </td>
             </tr>
         </table>

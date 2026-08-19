@@ -6,13 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
+    protected $connection = "mysql";
+
     protected $fillable = [
         "name",
         "slug",
         "domain",
+        "database",
         "address_line1",
         "address_line2",
         "logo_path",
+        "favicon_path",
         "color_one",
         "color_two",
         "color_three",

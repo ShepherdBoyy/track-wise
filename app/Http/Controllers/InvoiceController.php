@@ -319,7 +319,8 @@ class InvoiceController extends Controller
             "history" => $history,
             "daysRemaining" => $daysRemaining,
             "daysOverdue" => $daysOverdue,
-            "dateClosed" => $dateClosed
+            "dateClosed" => $dateClosed,
+            "company" => app("currentCompany")
         ])->setPaper("letter");
 
         $hospitalName = str_replace(" ", "-", $invoice->hospital->hospital_name);

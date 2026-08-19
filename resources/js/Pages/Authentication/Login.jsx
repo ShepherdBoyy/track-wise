@@ -57,7 +57,7 @@ export default function Login() {
                                 exit={{ opacity: 0, y: -15 }}
                                 transition={{ duration: 0.3, ease: "easeOut" }}
                             >
-                                <div className=" w-[500px] flex items-center justify-center">
+                                <div className="w-125 flex items-center justify-center">
                                     <Form
                                         action="/login"
                                         method="post"
