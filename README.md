@@ -99,3 +99,57 @@ Built with Laravel and React (via Inertia.js), it was developed as a real, produ
 ```
 
 8. Open your browser and go to `http://localhost:8000`
+
+## Project Structure
+
+```
+track-wise/
+├── app/
+│   ├── Exports/              # Excel/PDF export logic
+│   ├── Http/
+│   │   ├── Controllers/      # Auth, Export, Home, Hospital, Import, Invoice, Updates, User
+│   │   ├── Middleware/        # Permission checks, Inertia request handling
+│   │   └── Requests/          # Form validation (Store/Update requests)
+│   ├── Imports/                # Excel import & validation logic
+│   ├── Models/                  # Area, Hospital, Invoice, InvoiceHistory, Permission, User, ImportHistory
+│   ├── Policies/                 # Authorization policies (Hospital, Invoice, User)
+│   └── Providers/
+│
+├── database/
+│   ├── factories/
+│   ├── migrations/
+│   └── seeders/               # DatabaseSeeder — sample/demo data
+│
+├── resources/
+│   ├── css/
+│   ├── fonts/
+│   ├── js/
+│   │   ├── Pages/
+│   │   │   ├── Authentication/  # Login
+│   │   │   ├── Export/           # Invoice & aging report exports
+│   │   │   ├── Home/               # Dashboard (KPIs, charts, summaries)
+│   │   │   ├── Hospitals/           # CRUD views
+│   │   │   ├── ImportData/          # Bulk Excel import UI
+│   │   │   ├── Invoices/             # CRUD views
+│   │   │   ├── Updates/               # Invoice history
+│   │   │   ├── UserManagement/         # User & permission management
+│   │   │   ├── components/              # Shared UI (Navbar, Sidebar, Pagination, etc.)
+│   │   │   ├── hooks/
+│   │   │   └── utils/
+│   │   └── app.jsx
+│   └── views/
+│       ├── app.blade.php
+│       └── pdf/                # Invoice & aging report PDF templates
+│
+├── routes/
+│   └── web.php
+│
+├── tests/
+│   ├── Feature/
+│   └── Unit/
+│
+├── composer.json
+├── package.json
+├── vite.config.js
+└── README.md
+```
