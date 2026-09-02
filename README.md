@@ -105,41 +105,41 @@ Built with Laravel and React (via Inertia.js), it was developed as a real, produ
 ```
 track-wise/
 ├── app/
-│   ├── Exports/              # Excel/PDF export logic
+│   ├── Exports/
 │   ├── Http/
-│   │   ├── Controllers/      # Auth, Export, Home, Hospital, Import, Invoice, Updates, User
-│   │   ├── Middleware/        # Permission checks, Inertia request handling
-│   │   └── Requests/          # Form validation (Store/Update requests)
-│   ├── Imports/                # Excel import & validation logic
-│   ├── Models/                  # Area, Hospital, Invoice, InvoiceHistory, Permission, User, ImportHistory
-│   ├── Policies/                 # Authorization policies (Hospital, Invoice, User)
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   ├── Imports/
+│   ├── Models/
+│   ├── Policies/
 │   └── Providers/
 │
 ├── database/
 │   ├── factories/
 │   ├── migrations/
-│   └── seeders/               # DatabaseSeeder — sample/demo data
+│   └── seeders/
 │
 ├── resources/
 │   ├── css/
 │   ├── fonts/
 │   ├── js/
 │   │   ├── Pages/
-│   │   │   ├── Authentication/  # Login
-│   │   │   ├── Export/           # Invoice & aging report exports
-│   │   │   ├── Home/               # Dashboard (KPIs, charts, summaries)
-│   │   │   ├── Hospitals/           # CRUD views
-│   │   │   ├── ImportData/          # Bulk Excel import UI
-│   │   │   ├── Invoices/             # CRUD views
-│   │   │   ├── Updates/               # Invoice history
-│   │   │   ├── UserManagement/         # User & permission management
-│   │   │   ├── components/              # Shared UI (Navbar, Sidebar, Pagination, etc.)
+│   │   │   ├── Authentication/
+│   │   │   ├── Export/
+│   │   │   ├── Home/
+│   │   │   ├── Hospitals/
+│   │   │   ├── ImportData/
+│   │   │   ├── Invoices/
+│   │   │   ├── Updates/
+│   │   │   ├── UserManagement/
+│   │   │   ├── components/
 │   │   │   ├── hooks/
 │   │   │   └── utils/
 │   │   └── app.jsx
 │   └── views/
 │       ├── app.blade.php
-│       └── pdf/                # Invoice & aging report PDF templates
+│       └── pdf/
 │
 ├── routes/
 │   └── web.php
@@ -153,3 +153,7 @@ track-wise/
 ├── vite.config.js
 └── README.md
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE)
