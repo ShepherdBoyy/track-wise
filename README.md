@@ -53,3 +53,49 @@ Built with Laravel and React (via Inertia.js), it was developed as a real, produ
 | barryvdh/laravel-dompdf | PDF invoice export | 3.1 |
 | maatwebsite/excel | Bulk Excel import/export | 3.1 |
 | Vite | Frontend build tool | 7.0.7 |
+
+## Installation
+
+1. Clone the repository
+```bash
+    git clone https://github.com/ShepherdBoyy/track-wise.git
+    cd track-wise
+```
+
+2. Install PHP dependencies
+```bash
+    composer install
+```
+
+3. Copy the environment file and generate an app key
+```bash
+    cp .env.example .env
+    php artisan key:generate
+```
+
+4. Configure your database in `.env`
+```bash
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=track_wise
+    DB_USERNAME=your_username
+    DB_PASSWORD=your_password
+```
+
+5. Run database migrations and seed the database with sample data
+```bash
+    php artisan migrate --seed
+```
+
+6. Install frontend dependencies
+```bash
+    npm install
+```
+
+7. Start the development environment (server, queue listener, and Vite)
+```bash
+    composer run dev
+```
+
+8. Open your browser and go to `http://localhost:8000`
