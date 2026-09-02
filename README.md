@@ -37,3 +37,19 @@ Built with Laravel and React (via Inertia.js), it was developed as a real, produ
   - Monthly Outstanding Trend & Invoice Volume
   - Top 10 Hospitals by Outstanding Amount
 - Role-based permission system with 13 granular permissions, allowing admins to assign access based on each employee's responsibilities
+
+## Tech Stack
+
+| Technology | Purpose | Version |
+|---|---|---|
+| PHP | Backend language | 8.2 |
+| Laravel | Backend framework | 12.0 |
+| Inertia.js | Connects Laravel backend to React frontend (no separate API) | 2.0 |
+| React | Frontend UI library | 19.2.0 |
+| Tailwind CSS | Styling | 4.0.0 |
+| DaisyUI | UI component library for Tailwind | 5.5.0 |
+| MySQL | Database | 15 |
+| Recharts | Dashboard charts & analytics visualizations | 3.7.0 |
+| barryvdh/laravel-dompdf | PDF invoice export | 3.1 |
+| maatwebsite/excel | Bulk Excel import/export | 3.1 |
+| Vite | Frontend build tool | 7.0.7 |
