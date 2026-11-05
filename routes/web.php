@@ -70,6 +70,7 @@ Route::middleware(["auth"])->group(function () {
         ->group(function () {
             Route::get("/", [ExportController::class, "index"]);
             Route::get("/invoice-aging-report", [ExportController::class, "invoiceAging"]);
+            Route::get("/invoice-aging-report/excel", [ExportController::class, "invoiceAgingExcel"]);
         });
 
     Route::post("/logout", [AuthController::class, "destroy"]);

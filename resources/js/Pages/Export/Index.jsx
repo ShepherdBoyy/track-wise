@@ -1,7 +1,11 @@
 import { useMemo, useState } from "react";
 import Master from "../components/Master";
-import { AlertCircle, Download, FileText } from "lucide-react";
-import { AGING_BUCKETS, buildExportParams, buildSummaryParts } from "../utils/exportHelpers";
+import { AlertCircle, Download, FileSpreadsheet, FileText } from "lucide-react";
+import {
+    AGING_BUCKETS,
+    buildExportParams,
+    buildSummaryParts,
+} from "../utils/exportHelpers";
 import SectionCard from "./elements/SectionCard";
 import SearchableCheckboxList from "./elements/SearchableCheckboxList";
 import AgingPeriodSelector from "./elements/AgingPeriodSelector";
@@ -16,14 +20,18 @@ export default function Index({ areas, hospitals }) {
     const [areaSearch, setAreaSearch] = useState("");
     const [hospitalSearch, setHospitalSearch] = useState("");
 
-    const areaItems = useMemo(() => 
-        areas.map((a) => ({ value: String(a.id), label: a.area_name })),
-        [areas]
+    const areaItems = useMemo(
+        () => areas.map((a) => ({ value: String(a.id), label: a.area_name })),
+        [areas],
     );
 
-    const hospitalItems = useMemo(() => 
-        hospitals.map((h) => ({ value: String(h.id), label: h.hospital_name })),
-        [hospitals]
+    const hospitalItems = useMemo(
+        () =>
+            hospitals.map((h) => ({
+                value: String(h.id),
+                label: h.hospital_name,
+            })),
+        [hospitals],
     );
 
     const handleAgingAll = () => {
@@ -34,7 +42,7 @@ export default function Index({ areas, hospitals }) {
             setAgingAll(true);
             setSelectedAging(AGING_BUCKETS.map((b) => b.value));
         }
-    }
+    };
 
     const handleAgingBucket = (value) => {
         const next = selectedAging.includes(value)
@@ -42,7 +50,7 @@ export default function Index({ areas, hospitals }) {
             : [...selectedAging, value];
         setSelectedAging(next);
         setAgingAll(next.length === AGING_BUCKETS.length);
-    }
+    };
 
     const errors = useMemo(() => {
         const e = [];
@@ -55,8 +63,36 @@ export default function Index({ areas, hospitals }) {
         return e;
     }, [filterType, selectedAreas, selectedHospitals, selectedAging]);
 
-    const summaryParts = useMemo(() => 
-        buildSummaryParts({
+    const handleExport = (format) => {
+        if (errors.length !== 0) return;
+
+        const params = buildExportParams({
+            filterType,
+            selectedAreas,
+            selectedHospitals,
+            selectedAging,
+        });
+
+        const path =
+            format === "excel"
+                ? "/export/invoice-aging-report/excel"
+                : "/export/invoice-aging-report";
+
+        window.location.href = `${path}?${params.toString()}`;
+    };
+
+    const summaryParts = useMemo(
+        () =>
+            buildSummaryParts({
+                filterType,
+                selectedAreas,
+                selectedHospitals,
+                selectedAging,
+                agingAll,
+                areas,
+                hospitals,
+            }),
+        [
             filterType,
             selectedAreas,
             selectedHospitals,
@@ -64,15 +100,8 @@ export default function Index({ areas, hospitals }) {
             agingAll,
             areas,
             hospitals,
-        }), [
-        filterType,
-        selectedAreas,
-        selectedHospitals,
-        selectedAging,
-        agingAll,
-        areas,
-        hospitals,
-    ]);
+        ],
+    );
 
     return (
         <Master>
@@ -84,9 +113,21 @@ export default function Index({ areas, hospitals }) {
                         <SectionCard step={1} title="Filter By">
                             <div className="flex flex-col sm:flex-row gap-3">
                                 {[
-                                    { value: "overall", label: "Overall", desc: "All areas & hospitals" },
-                                    { value: "area", label: "By Area", desc: "Select specific areas" },
-                                    { value: "hospital", label: "By Hospital", desc: "Select specific hospitals" },
+                                    {
+                                        value: "overall",
+                                        label: "Overall",
+                                        desc: "All areas & hospitals",
+                                    },
+                                    {
+                                        value: "area",
+                                        label: "By Area",
+                                        desc: "Select specific areas",
+                                    },
+                                    {
+                                        value: "hospital",
+                                        label: "By Hospital",
+                                        desc: "Select specific hospitals",
+                                    },
                                 ].map(({ value, label, desc }) => (
                                     <label
                                         key={value}
@@ -139,7 +180,10 @@ export default function Index({ areas, hospitals }) {
                                 step={2}
                                 title="Select Hospitals"
                                 headerAction={
-                                    <SearchIt search={hospitalSearch} setSearch={setHospitalSearch} />
+                                    <SearchIt
+                                        search={hospitalSearch}
+                                        setSearch={setHospitalSearch}
+                                    />
                                 }
                             >
                                 <SearchableCheckboxList
@@ -187,38 +231,46 @@ export default function Index({ areas, hospitals }) {
                                 <div className="divider my-0" />
 
                                 <div className="flex flex-col gap-3">
-                                  {summaryParts.length === 0 ? (
-                                    <p className="text-xs text-base-content/40 italic">
-                                      No filters configured yet.
-                                    </p>
-                                  ) : (
-                                    summaryParts.map((part, i) => (
-                                        <div key={i} className="flex flex-col gap-1.5">
-                                            <span className="text-xs text-base-content/50 uppercase tracking-wide font-semibold">
-                                                {part.label}
-                                            </span>
-                                            {part.pills ? (
-                                                <div className="flex flex-wrap gap-1.5">
-                                                    {part.pills.map((pill, j) => (
-                                                        <span
-                                                            key={j}
-                                                            className={`text-xs px-2.5 py-1 rounded-xl font-medium ${pill.startsWith("+")
-                                                                ? "bg-gray-200 text-base-content/50"
-                                                                : "bg-base-300 text-base-content"
-                                                            }`}
-                                                        >
-                                                            {pill}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <span className="text-sm text-base-content">
-                                                    {part.value}
+                                    {summaryParts.length === 0 ? (
+                                        <p className="text-xs text-base-content/40 italic">
+                                            No filters configured yet.
+                                        </p>
+                                    ) : (
+                                        summaryParts.map((part, i) => (
+                                            <div
+                                                key={i}
+                                                className="flex flex-col gap-1.5"
+                                            >
+                                                <span className="text-xs text-base-content/50 uppercase tracking-wide font-semibold">
+                                                    {part.label}
                                                 </span>
-                                            )}
-                                        </div>
-                                    ))
-                                  )}
+                                                {part.pills ? (
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {part.pills.map(
+                                                            (pill, j) => (
+                                                                <span
+                                                                    key={j}
+                                                                    className={`text-xs px-2.5 py-1 rounded-xl font-medium ${
+                                                                        pill.startsWith(
+                                                                            "+",
+                                                                        )
+                                                                            ? "bg-gray-200 text-base-content/50"
+                                                                            : "bg-base-300 text-base-content"
+                                                                    }`}
+                                                                >
+                                                                    {pill}
+                                                                </span>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-sm text-base-content">
+                                                        {part.value}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
 
                                 <div className="divider my-0" />
@@ -226,32 +278,41 @@ export default function Index({ areas, hospitals }) {
                                 {errors.length > 0 && (
                                     <div className="flex flex-col gap-1.5">
                                         {errors.map((error, index) => (
-                                            <div key={index} className="flex items-start gap-2 text-xs text-error">
-                                                <AlertCircle size={13} className="mt-0.5 shrink-0" />
+                                            <div
+                                                key={index}
+                                                className="flex items-start gap-2 text-xs text-error"
+                                            >
+                                                <AlertCircle
+                                                    size={13}
+                                                    className="mt-0.5 shrink-0"
+                                                />
                                                 <span>{error}</span>
                                             </div>
                                         ))}
                                     </div>
                                 )}
 
-                                <button
-                                    type="button"
-                                    disabled={errors.length !== 0}
-                                    className="btn btn-primary btn-sm w-full gap-2"
-                                    onClick={() => {
-                                        if (errors.length !== 0) return;
-                                        const params = buildExportParams({
-                                            filterType,
-                                            selectedAreas,
-                                            selectedHospitals,
-                                            selectedAging
-                                        })
-                                        window.location.href = `/export/invoice-aging-report?${params.toString()}`;
-                                    }}
-                                >
-                                    <Download size={14} />
-                                    Export PDF
-                                </button>
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        type="button"
+                                        disabled={errors.length !== 0}
+                                        className="btn btn-primary btn-sm w-full gap-2"
+                                        onClick={() => handleExport("pdf")}
+                                    >
+                                        <Download size={14} />
+                                        Export to PDF
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        disabled={errors.length !== 0}
+                                        className="btn btn-outline btn-primary btn-sm w-full gap-2"
+                                        onClick={() => handleExport("excel")}
+                                    >
+                                        <FileSpreadsheet size={14} />
+                                        Export to Excel
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

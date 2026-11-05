@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\InvoiceAgingExport;
 use App\Models\Area;
 use App\Models\Hospital;
 use App\Models\Invoice;
@@ -9,9 +10,19 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller
 {
+    private const BUCKET_ORDER = ["current", "30", "31-60", "61-90", "over_90"];
+    private const BUCKET_LABELS = [
+        "current" => "Current",
+        "30" => "1-30 Days",
+        "31-60" => "31-60 Days",
+        "61-90" => "61-90 Days",
+        "over_90" => "91 Over",
+    ];
+
     public function index()
     {
         $areas = Area::orderBy("area_name")->get(["id", "area_name"]);
@@ -25,9 +36,33 @@ class ExportController extends Controller
 
     public function invoiceAging(Request $request)
     {
-        ini_set('memory_limit', '1024M');
+        ini_set("memory_limit", "1024M");
 
-        $validated = $request->validate([
+        $data = $this->buildInvoiceAgingData($this->validateAgingRequest($request));
+
+        $pdf = Pdf::loadView("pdf.invoice-aging-report", $data)
+            ->setPaper("a4", "portrait");
+
+        $filename = "Invoice-Aging-Report-" . Carbon::today()->format("Y-m-d") . ".pdf";
+
+        return $pdf->download($filename);
+    }
+
+    public function invoiceAgingExcel(Request $request)
+    {
+        ini_set("memory_limit", "1024M");
+        set_time_limit(300);
+
+        $data = $this->buildInvoiceAgingData($this->validateAgingRequest($request));
+
+        $filename = "Invoice-Aging-Report-" . Carbon::today()->format("Y-m-d") . ".xlsx";
+
+        return Excel::download(new InvoiceAgingExport($data, self::BUCKET_LABELS), $filename);
+    }
+
+    private function validateAgingRequest(Request $request): array
+    {
+        return $request->validate([
             "filter_type" => "required|in:overall,area,hospital",
             "area_id" => "required_if:filter_type,area|array|min:1",
             "area_id.*" => "exists:areas,id",
@@ -36,7 +71,10 @@ class ExportController extends Controller
             "aging_filter" => "required|array|min:1",
             "aging_filter.*" => "in:current,30,31-60,61-90,over_90"
         ]);
+    }
 
+    private function buildInvoiceAgingData(array $validated): array
+    {
         $filterType = $validated["filter_type"];
         $agingFilter = $validated["aging_filter"];
 
@@ -75,7 +113,7 @@ class ExportController extends Controller
                 default => null
             };
         }
-            
+
         $invoices = $query->get();
 
         $invoices->each(function ($invoice) {
@@ -90,8 +128,7 @@ class ExportController extends Controller
             };
         });
 
-        $orderedBuckets = ["current", "30", "31-60", "61-90", "over_90"];
-        $agingFilter = collect($orderedBuckets)
+        $agingFilter = collect(self::BUCKET_ORDER)
             ->filter(fn($b) => in_array($b, $agingFilter))
             ->values()
             ->all();
@@ -115,7 +152,7 @@ class ExportController extends Controller
                 "subTotals" => $subTotals
             ];
         })->sortBy(fn($block) => $block["hospital"]->hospital_name)
-        ->values();
+            ->values();
 
         $grandTotals = [];
         foreach ($agingFilter as $bucket) {
@@ -124,19 +161,10 @@ class ExportController extends Controller
         $grandTotals["total"] = collect($agingFilter)
             ->sum(fn($bucket) => $invoices->where("aging_bucket", $bucket)->sum("amount"));
 
-        $bucketLabels = [
-            "current" => "Current",
-            "30" => "1-30 Days",
-            "31-60" => "31-60 Days",
-            "61-90" => "61-90 Days",
-            "over_90" => "91 Over"
-        ];
-
-        $allBuckets = ["current", "30", "31-60", "61-90", "over_90"];
-        $isAll = empty(array_diff($allBuckets, $agingFilter));
+        $isAll = empty(array_diff(self::BUCKET_ORDER, $agingFilter));
         $agingLabel = $isAll
             ? "All"
-            : collect($agingFilter)->map(fn($b) => $bucketLabels[$b])->join(", ");
+            : collect($agingFilter)->map(fn($b) => self::BUCKET_LABELS[$b])->join(", ");
 
         $filterLabel = match ($filterType) {
             "overall" => "Overall - All Areas & Hospitals",
@@ -144,17 +172,13 @@ class ExportController extends Controller
             "hospital" => "By Hospital - " . Hospital::whereIn("id", $validated["hospital_id"])->pluck("hospital_name")->join(", ")
         };
 
-        $pdf = Pdf::loadView("pdf.invoice-aging-report", [
+        return [
             "hospitalBlocks" => $hospitalBlocks,
             "grandTotals" => $grandTotals,
             "filterLabel" => $filterLabel,
             "agingLabel" => $agingLabel,
             "agingFilter" => $agingFilter,
             "generatedAt" => Carbon::today()->format("F d, Y"),
-        ])->setPaper("a4", "portrait");
-
-        $filename = "Invoice-Aging-Report-" . Carbon::today()->format("Y-m-d") . ".pdf";
-
-        return $pdf->download($filename);
+        ];
     }
 }
