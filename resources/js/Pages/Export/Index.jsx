@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import Master from "../components/Master";
-import { AlertCircle, Download, FileSpreadsheet, FileText } from "lucide-react";
+import { AlertCircle, Download, FileSpreadsheet } from "lucide-react";
 import {
     AGING_BUCKETS,
+    STANDARD_AGING,
     buildExportParams,
     buildSummaryParts,
 } from "../utils/exportHelpers";
@@ -40,7 +41,7 @@ export default function Index({ areas, hospitals }) {
             setSelectedAging([]);
         } else {
             setAgingAll(true);
-            setSelectedAging(AGING_BUCKETS.map((b) => b.value));
+            setSelectedAging(STANDARD_AGING);
         }
     };
 
@@ -49,7 +50,10 @@ export default function Index({ areas, hospitals }) {
             ? selectedAging.filter((v) => v !== value)
             : [...selectedAging, value];
         setSelectedAging(next);
-        setAgingAll(next.length === AGING_BUCKETS.length);
+        setAgingAll(
+            next.length === STANDARD_AGING.length &&
+            STANDARD_AGING.every((v) => next.includes(v))
+        );
     };
 
     const errors = useMemo(() => {

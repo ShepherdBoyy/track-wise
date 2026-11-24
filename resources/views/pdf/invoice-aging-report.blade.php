@@ -216,41 +216,17 @@
         <table class="totals-table">
             <thead>
                 <tr>
-                    @if (in_array("current", $agingFilter))
-                        <th>Current</th>
-                    @endif
-                    @if (in_array("30", $agingFilter))
-                        <th>1&ndash;30 Days</th>
-                    @endif
-                    @if (in_array("31-60", $agingFilter))
-                        <th>31&ndash;60 Days</th>
-                    @endif
-                    @if (in_array("61-90", $agingFilter))
-                        <th>61&ndash;90 Days</th>
-                    @endif
-                    @if (in_array("over_90", $agingFilter))
-                        <th>91 Over</th>
-                    @endif
+                    @foreach ($agingFilter as $bucket)
+                        <th>{{ str_replace("-", "\u{2013}", $bucketLabels[$bucket]) }}</th>
+                    @endforeach
                     <th>Total</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    @if (in_array("current", $agingFilter))
-                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["current"], 2), "0"), ".") }}</td>
-                    @endif
-                    @if (in_array("30", $agingFilter))
-                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["30"], 2), "0"), ".") }}</td>
-                    @endif
-                    @if (in_array("31-60", $agingFilter))
-                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["31-60"], 2), "0"), ".") }}</td>
-                    @endif
-                    @if (in_array("61-90", $agingFilter))
-                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["61-90"], 2), "0"), ".") }}</td>
-                    @endif
-                    @if (in_array("over_90", $agingFilter))
-                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["over_90"], 2), "0"), ".") }}</td>
-                    @endif
+                    @foreach ($agingFilter as $bucket)
+                        <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals[$bucket], 2), "0"), ".") }}</td>
+                    @endforeach
                     <td>&#8369; {{ rtrim(rtrim(number_format($grandTotals["total"], 2), "0"), ".") }}</td>
                 </tr>
             </tbody>
@@ -288,41 +264,17 @@
                     <table class="subtotals-table">
                         <thead>
                             <tr>
-                                @if (in_array("current", $agingFilter))
-                                    <th>Current</th>
-                                @endif
-                                @if (in_array("30", $agingFilter))
-                                    <th>1&ndash;30 Days</th>
-                                @endif
-                                @if (in_array("31-60", $agingFilter))
-                                    <th>31&ndash;60 Days</th>
-                                @endif
-                                @if (in_array("61-90", $agingFilter))
-                                    <th>61&ndash;90 Days</th>
-                                @endif
-                                @if (in_array("over_90", $agingFilter))
-                                    <th>91 Over</th>
-                                @endif
+                                @foreach ($agingFilter as $bucket)
+                                    <th>{{ str_replace("-", "\u{2013}", $bucketLabels[$bucket]) }}</th>
+                                @endforeach
                                 <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                @if (in_array("current", $agingFilter))
-                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["current"], 2), "0"), ".") }}</td>
-                                @endif
-                                @if (in_array("30", $agingFilter))
-                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["30"], 2), "0"), ".") }}</td>
-                                @endif
-                                @if (in_array("31-60", $agingFilter))
-                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["31-60"], 2), "0"), ".") }}</td>
-                                @endif
-                                @if (in_array("61-90", $agingFilter))
-                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["61-90"], 2), "0"), ".") }}</td>
-                                @endif
-                                @if (in_array("over_90", $agingFilter))
-                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["over_90"], 2), "0"), ".") }}</td>
-                                @endif
+                                @foreach ($agingFilter as $bucket)
+                                    <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"][$bucket], 2), "0"), ".") }}</td>
+                                @endforeach
                                 <td>&#8369; {{ rtrim(rtrim(number_format($block["subTotals"]["total"], 2), '0'), '.') }}</td>
                             </tr>
                         </tbody>

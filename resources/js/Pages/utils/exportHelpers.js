@@ -1,10 +1,28 @@
 export const AGING_BUCKETS = [
-    { value: "current", label: "Current", desc: "Not yet due" },
-    { value: "30", label: "1-30 Days", desc: "1 to 30 days overdue" },
-    { value: "31-60", label: "31-60 Days", desc: "31 to 60 days overdue" },
-    { value: "61-90", label: "61-90 Days", desc: "61 to 90 days overdue" },
-    { value: "over_90", label: "91 Over", desc: "More than 90 days overdue" },
+    { value: "current", label: "Current", desc: "Not yet due", scheme: "shared" },
+    { value: "30", label: "1-30 Days", desc: "1 to 30 days overdue", scheme: "standard" },
+    { value: "40", label: "1-40 Days", desc: "1 to 40 days overdue", scheme: "extended" },
+    { value: "31-60", label: "31-60 Days", desc: "31 to 60 days overdue", scheme: "standard" },
+    { value: "41-60", label: "41-60 Days", desc: "41 to 60 days overdue", scheme: "extended" },
+    { value: "61-90", label: "61-90 Days", desc: "61 to 90 days overdue", scheme: "shared" },
+    { value: "over_90", label: "91 Over", desc: "More than 90 days overdue", scheme: "shared" },
 ];
+
+export const STANDARD_AGING = AGING_BUCKETS
+    .filter((b) => b.scheme !== "extended")
+    .map((b) => b.value);
+
+const schemeOf = (value) => AGING_BUCKETS.find((b) => b.value === value)?.scheme;
+
+export function isAgingBucketDisabled(value, selectedAging) {
+    const scheme = schemeOf(value);
+    if (scheme === "shared") return false;
+
+    return selectedAging.some((v) => {
+        const other = schemeOf(v);
+        return other !== "shared" && other !== scheme;
+    })
+}
 
 const PILL_LIMIT = 20;
 

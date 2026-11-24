@@ -9,16 +9,20 @@ use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExportController extends Controller
 {
-    private const BUCKET_ORDER = ["current", "30", "31-60", "61-90", "over_90"];
+    private const BUCKET_ORDER = ["current", "30", "40", "31-60", "41-60", "61-90", "over_90"];
+    private const STANDARD_BUCKETS = ["current", "30", "31-60", "61-90", "over_90"];
     private const BUCKET_LABELS = [
         "current" => "Current",
         "30" => "1-30 Days",
+        "40" => "1-40 Days",
         "31-60" => "31-60 Days",
+        "41-60" => "41-60 Days",
         "61-90" => "61-90 Days",
         "over_90" => "91 Over",
     ];
@@ -62,15 +66,26 @@ class ExportController extends Controller
 
     private function validateAgingRequest(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             "filter_type" => "required|in:overall,area,hospital",
             "area_id" => "required_if:filter_type,area|array|min:1",
             "area_id.*" => "exists:areas,id",
             "hospital_id" => "required_if:filter_type,hospital|array|min:1",
             "hospital_id.*" => "exists:hospitals,id",
             "aging_filter" => "required|array|min:1",
-            "aging_filter.*" => "in:current,30,31-60,61-90,over_90"
+            "aging_filter.*" => "in:current,30,40,31-60,41-60,61-90,over_90"
         ]);
+
+        $hasStandard = array_intersect($validated["aging_filter"], ["30", "31-60"]);
+        $hasExtended = array_intersect($validated["aging_filter"], ["40", "41-60"]);
+
+        if ($hasStandard && $hasExtended) {
+            throw ValidationException::withMessages([
+                "aging_filter" => "1-30 / 31-60 cannot be combined with 1-40 / 41-60."
+            ]);
+        }
+
+        return $validated;
     }
 
     private function buildInvoiceAgingData(array $validated): array
@@ -107,7 +122,9 @@ class ExportController extends Controller
             match ($bucket) {
                 "current" => $query->orHaving("processing_days", "<=", 0),
                 "30" => $query->orHavingBetween("processing_days", [1, 30]),
+                "40" => $query->orHavingBetween("processing_days", [1, 40]),
                 "31-60" => $query->orHavingBetween("processing_days", [31, 60]),
+                "41-60" => $query->orHavingBetween("processing_days", [41, 60]),
                 "61-90" => $query->orHavingBetween("processing_days", [61, 90]),
                 "over_90" => $query->orHaving("processing_days", ">=", 91),
                 default => null
@@ -115,12 +132,15 @@ class ExportController extends Controller
         }
 
         $invoices = $query->get();
+        $extended = !empty(array_intersect($agingFilter, ["40", "41-60"]));
 
-        $invoices->each(function ($invoice) {
+        $invoices->each(function ($invoice) use ($extended) {
             $days = (int) $invoice->processing_days;
 
             $invoice->aging_bucket = match (true) {
                 $days <= 0 => "current",
+                $extended && $days <= 40 => "40",
+                $extended && $days <= 60 => "41-60",
                 $days <= 30 => "30",
                 $days <= 60 => "31-60",
                 $days <= 90 => "61-90",
@@ -161,7 +181,7 @@ class ExportController extends Controller
         $grandTotals["total"] = collect($agingFilter)
             ->sum(fn($bucket) => $invoices->where("aging_bucket", $bucket)->sum("amount"));
 
-        $isAll = empty(array_diff(self::BUCKET_ORDER, $agingFilter));
+        $isAll = empty(array_diff(self::STANDARD_BUCKETS, $agingFilter));
         $agingLabel = $isAll
             ? "All"
             : collect($agingFilter)->map(fn($b) => self::BUCKET_LABELS[$b])->join(", ");
@@ -178,6 +198,7 @@ class ExportController extends Controller
             "filterLabel" => $filterLabel,
             "agingLabel" => $agingLabel,
             "agingFilter" => $agingFilter,
+            "bucketLabels" => self::BUCKET_LABELS,
             "generatedAt" => Carbon::today()->format("F d, Y"),
         ];
     }
