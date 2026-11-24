@@ -32,6 +32,8 @@ class InvoiceController extends Controller
             "sort_by",
             "sort_order",
             "selected_area",
+            "min_days",
+            "max_days",
             "hospital_page",
         ]);
 

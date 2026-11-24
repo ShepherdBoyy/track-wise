@@ -34,6 +34,8 @@ export default function Index({
             sort_by: sortBy || undefined,
             sort_order: sortOrder || undefined,
             selected_area: selectedArea || undefined,
+            min_days: filters.min_days ?? undefined,
+            max_days: filters.max_days ?? undefined,
             per_page: filters.per_page || undefined,
             page:
                 debouncedSearch.trim() !== (filters.search || "")

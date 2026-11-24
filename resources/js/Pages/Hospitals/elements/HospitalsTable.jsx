@@ -39,6 +39,8 @@ export default function HospitalsTable({
             sort_by: column,
             sort_order: newSortOrder,
             selected_area: selectedArea || undefined,
+            min_days: filters.min_days ?? undefined,
+            max_days: filters.max_days ?? undefined,
             per_page: filters.per_page || undefined,
         };
 
@@ -109,6 +111,8 @@ export default function HospitalsTable({
                                 sort_by: filters.sort_by || undefined,
                                 sort_order: filters.sort_order || undefined,
                                 selected_area: filters.area || undefined,
+                                min_days: filters.min_days ?? undefined,
+                                max_days: filters.max_days ?? undefined,
                                 hospital_page: filters.page || undefined
                             },
                             { 

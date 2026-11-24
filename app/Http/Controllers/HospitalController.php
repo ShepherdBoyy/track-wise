@@ -23,6 +23,12 @@ class HospitalController extends Controller
         $sortBy = $request->query("sort_by", "hospital_name");
         $sortOrder = $request->query("sort_order", "asc");
         $filterArea = intval($request->query("selected_area"));
+        $rawMin = $request->query("min_days");
+        $rawMax = $request->query("max_days");
+        
+        $minDays = is_numeric($rawMin) ? max(0, intval($rawMin)) : null;
+        $maxDays = is_numeric($rawMax) ? max(0, intval($rawMax)) : null;
+        
         $user = Auth::user();
 
         $userAreas = Gate::allows("viewAll", Hospital::class) 
@@ -81,6 +87,19 @@ class HospitalController extends Controller
             ->when(!empty($filterArea), function ($query) use ($filterArea) {
                 $query->where("area_id", $filterArea);
             })
+            ->when($minDays !== null || $maxDays !== null, function ($query) use ($minDays, $maxDays) {
+                $query->whereHas("invoices", function ($q) use ($minDays, $maxDays) {
+                    $q->whereNull("date_closed");
+
+                    if ($minDays !== null) {
+                        $q->whereRaw("DATEDIFF(CURDATE(), due_date) >= ?", [$minDays]);
+                    }
+
+                    if ($maxDays !== null) {
+                        $q->whereRaw("DATEDIFF(CURDATE(), due_date) <= ?", [$maxDays]);
+                    }
+                });
+            })
             ->when($sortBy, function ($query) use ($sortBy, $sortOrder) {
                 if ($sortBy === "area_name") {
                     $query->leftJoin("areas", "hospitals.area_id", "=", "areas.id")
@@ -102,6 +121,8 @@ class HospitalController extends Controller
                 "sort_by" => $sortBy,
                 "sort_order" => $sortOrder,
                 "area" => $filterArea,
+                "min_days" => $minDays,
+                "max_days" => $maxDays,
                 "search" => $searchQuery,
                 "per_page" => $perPage,
                 "page" => $hospitals->currentPage()
